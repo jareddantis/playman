@@ -1,2 +1,29 @@
-# setlist &nbsp; [![Netlify Status](https://api.netlify.com/api/v1/badges/c6d7cd7a-1ac8-49ae-a447-0b3087e703ff/deploy-status)](https://app.netlify.com/sites/epic-perlman-fd3a96/deploys)
-A web app for managing your Spotify playlists 🛠
+# setlist
+
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Run your tests
+```
+npm run test
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
