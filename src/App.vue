@@ -1,9 +1,5 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
     <router-view :key="$route.fullPath" />
   </div>
 </template>
@@ -12,7 +8,7 @@
   @require './styles/global'
 
   #app
-    width 100vw
+    width 100%
 </style>
 
 <script lang="ts">
