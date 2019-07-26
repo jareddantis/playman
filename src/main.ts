@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './views'
-import store from './store'
+import eventBus from './plugins/eventBus'
+import store from './plugins/store'
 import './registerServiceWorker'
-import './plugins'
 
+Vue.use(eventBus)
 Vue.config.productionTip = false
 
 new Vue({
