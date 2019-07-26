@@ -7,3 +7,8 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "https://epic-perlman-fd3a96.netlify.com/*"
+  to = "https://setlist.jared.gq/:splat"
+  status = 301
