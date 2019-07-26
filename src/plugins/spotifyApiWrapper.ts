@@ -1,8 +1,8 @@
 import qs from 'qs'
-import _Vue from 'vue'
+import SpotifyWebApi from 'spotify-web-api-node'
 
-class SpotifyClient {
-  private accessToken: string = ''
+export default class SpotifyApiWrapper {
+  public client!: SpotifyWebApi
   private refreshToken: string = ''
   private stateToken: string = ''
   private expiry: number = 0
@@ -13,18 +13,23 @@ class SpotifyClient {
   constructor() {
     // Init state
     this.generateStateToken()
+
+    // Init API client
+    this.client = new SpotifyWebApi({
+      redirectUri: this.redirectUri,
+    })
   }
 
-  public getRedirUri(): string {
+  get redirectUri(): string {
     return process.env.NODE_ENV === 'production' ? 'https://setlist.jared.gq/callback'
       : 'http://localhost:8080/callback'
   }
 
-  public generateAuthUrl(): string {
+  get authUri(): string {
     const API_QUERY = qs.stringify({
       client_id: this.API_AUTH_ID,
       response_type: 'code',
-      redirect_uri: this.getRedirUri(),
+      redirect_uri: this.redirectUri,
       state: this.stateToken,
       scope: [
         'playlist-modify-private',
@@ -39,21 +44,12 @@ class SpotifyClient {
   }
 
   public setTokens(access: string, refresh: string, expiry: string) {
-    this.accessToken = access
-    this.refreshToken = refresh
+    this.client.setAccessToken(access)
     this.expiry = (parseInt(expiry, 10) * 1000) + new Date().getTime()
-  }
 
-  private async dispatch(endpoint: string, data: any) {
-    // Check if token is still fresh
-    if (new Date().getTime() >= this.expiry) {
-      // Refresh token
-      await this.reauth()
+    if (refresh !== 'null') {
+      this.refreshToken = refresh
     }
-
-    data.endpoint = endpoint
-    const QUERY_DATA = qs.stringify(data)
-    return fetch(`${this.API_BASE_URL}?${QUERY_DATA}`)
   }
 
   private generateStateToken() {
@@ -68,19 +64,16 @@ class SpotifyClient {
   }
 
   private async reauth() {
-    return fetch(`${this.API_BASE_URL}-refresh-token?refresh_token=${this.refreshToken}`)
-      .then((response) => response.json())
-      .then((result) => {
-        const {access_token, expires_in} = result
+    if (new Date().getTime() > this.expiry) {
+      await fetch(`${this.API_BASE_URL}-refresh-token?refresh_token=${this.refreshToken}`)
+        .then((response) => response.json())
+        .then((result) => {
+          const {access_token, expires_in} = result
 
-        if (access_token !== undefined) {
-          this.accessToken = access_token
-          this.expiry = parseInt(expires_in, 10)
-        }
-      })
+          if (access_token !== undefined) {
+            this.setTokens(access_token, 'null', expires_in)
+          }
+        })
+    }
   }
-}
-
-export default function spotifyClientPlugin(Vue: typeof _Vue): void {
-  Vue.prototype.$spCl = new SpotifyClient()
 }

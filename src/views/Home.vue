@@ -3,7 +3,7 @@
   <div class="home" v-if="!isLoggedIn">
     <h1>Welcome to Setlist</h1>
     <p>Manage your Spotify playlists in a cinch.</p>
-    <button @click="authenticate">Login</button>
+    <button @click="$store.dispatch('authenticate')">Login</button>
   </div>
 
 <!--  Home screen -->
@@ -11,10 +11,20 @@
     <h1>Playlists</h1>
 
     <div id="playlists">
-      <p v-for=""></p>
+      <div class="playlist"
+           v-for="playlist in playlists"
+           :key="playlist.id">
+        <img :src="playlist.images[0].url" alt="">
+        <h2>{{ playlist.name }}</h2>
+        <p>{{ playlist.tracks.total }} songs</p>
+      </div>
     </div>
   </div>
 </template>
+
+<style lang="stylus">
+  @require '../styles/views/Home'
+</style>
 
 <script lang="ts">
   import Vue from 'vue'
@@ -27,18 +37,5 @@
   export default class Home extends Vue {
     public isLoggedIn!: boolean
     public playlists!: any[]
-
-    public authenticate() {
-      const authWindow = window.open(this.$spCl.generateAuthUrl(), 'Login with Spotify', 'width=480,height=480')
-      authWindow!.addEventListener('beforeunload', () => {
-        if (localStorage.getItem('SPAT') !== undefined) {
-          this.$spCl.setTokens(localStorage.getItem('SPAT') as string,
-            localStorage.getItem('SPRT') as string,
-            localStorage.getItem('SPEI') as string)
-          localStorage.clear()
-          this.$store.commit('setLoggedIn', true)
-        }
-      })
-    }
   }
 </script>

@@ -28,7 +28,7 @@
         const AUTH_CODE = this.$route.query.code
         const AUTH_PARAMS = qs.stringify({
           code: AUTH_CODE,
-          redirect_uri: this.$spCl.getRedirUri(),
+          redirect_uri: this.$store.getters.redirectUri,
         })
 
         // Request access tokens
@@ -38,9 +38,9 @@
             const { access_token, refresh_token, expires_in } = result
 
             if (access_token !== undefined) {
-              localStorage.setItem('SPAT', access_token)
-              localStorage.setItem('SPRT', refresh_token)
-              localStorage.setItem('SPEI', expires_in)
+              localStorage.setItem('spotify-auth', JSON.stringify({
+                access_token, refresh_token, expires_in,
+              }))
               window.close()
             }
           })

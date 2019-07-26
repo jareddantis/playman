@@ -1,9 +1,12 @@
 import Vue from 'vue'
+import SpotifyWebApi from 'spotify-web-api-node'
 
 declare class SpotifyClient {
+  public authUri: string
+  public redirectUri: string
+  public client: SpotifyWebApi
+
   constructor()
-  public generateAuthUrl(): string
-  public getRedirUri(): string
   public setTokens(access: string, refresh: string, expiry: string): void
 }
 
