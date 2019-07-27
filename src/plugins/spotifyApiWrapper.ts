@@ -2,7 +2,7 @@ import qs from 'qs'
 import SpotifyWebApi from 'spotify-web-api-node'
 
 export default class SpotifyApiWrapper {
-  private apiClient!: SpotifyWebApi
+  private readonly apiClient!: SpotifyWebApi
   private refreshToken: string = ''
   private stateToken: string = ''
   private expiry: number = 0
