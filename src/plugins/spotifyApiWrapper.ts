@@ -44,11 +44,12 @@ export default class SpotifyApiWrapper {
   }
 
   public async setTokens(access: string, refresh: string, expiry: number) {
+    this.refreshToken = refresh
+
     if (new Date().getTime() >= expiry) {
       await this.reauth()
     } else {
       this.client.setAccessToken(access)
-      this.refreshToken = refresh
       this.expiry = expiry
     }
   }
