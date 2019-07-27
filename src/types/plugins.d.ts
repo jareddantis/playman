@@ -7,7 +7,7 @@ declare class SpotifyClient {
   public client: SpotifyWebApi
 
   constructor()
-  public setTokens(access: string, refresh: string, expiry: string): void
+  public setTokens(access: string, refresh: string, expiry: number): void
 }
 
 declare module 'vue/types/vue' {
