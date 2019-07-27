@@ -6,9 +6,6 @@ export default class SpotifyApiWrapper {
   private refreshToken: string = ''
   private stateToken: string = ''
   private expiry: number = 0
-  private readonly API_AUTH_ID = 'a2d37a37164c48e48d3693491c20e7ae'
-  private readonly API_AUTH_URL = 'https://accounts.spotify.com/authorize'
-  private readonly API_BASE_URL = '/.netlify/functions/spotify'
 
   constructor() {
     // Init state
@@ -27,7 +24,7 @@ export default class SpotifyApiWrapper {
 
   get authUri(): string {
     const API_QUERY = qs.stringify({
-      client_id: this.API_AUTH_ID,
+      client_id: 'a2d37a37164c48e48d3693491c20e7ae',
       response_type: 'code',
       redirect_uri: this.redirectUri,
       state: this.stateToken,
@@ -40,7 +37,7 @@ export default class SpotifyApiWrapper {
       show_dialog: false,
     })
 
-    return `${this.API_AUTH_URL}/?${API_QUERY}`
+    return `https://accounts.spotify.com/authorize?${API_QUERY}`
   }
 
   public async setTokens(access: string, refresh: string, expiry: number) {
@@ -66,7 +63,7 @@ export default class SpotifyApiWrapper {
   }
 
   private async reauth() {
-    return fetch(`${this.API_BASE_URL}-refresh-token?refresh_token=${this.refreshToken}`)
+    return fetch(`/.netlify/functions/spotify-refresh-token?refresh_token=${this.refreshToken}`)
       .then((response) => response.json())
       .then((result) => {
         const {access_token, expires_in} = result
