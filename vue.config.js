@@ -1,14 +1,5 @@
-const fs = require('fs');
-
-module.exports = {
-  devServer: {
-    proxy: {
-      '/.netlify': {
-        target: 'http://localhost:9000',
-        pathRewrite: {
-          '^/.netlify/functions': ''
-        }
-      }
-    }
-  },
-};
+if (process.env.NODE_ENV === 'production') {
+  module.exports = require('./config/vue.prd.js');
+} else {
+  module.exports = require('./config/vue.dev.js');
+}
