@@ -20,6 +20,6 @@ if (process.env.NODE_ENV === 'production') {
       window.location.reload()
     })
 
-    // wb.register()
+    wb.register()
   }
 }
