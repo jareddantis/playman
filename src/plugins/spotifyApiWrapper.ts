@@ -67,8 +67,12 @@ export default class SpotifyApiWrapper {
   }
 
   private async reauth() {
-    return fetch(`/.netlify/functions/spotify-refresh-token?refresh_token=${this.refreshToken}`)
-      .then((response) => response.json())
+    return fetch(`/.netlify/functions/spotify-refresh-token`, {
+      method: 'POST',
+      cache: 'no-cache',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `refresh_token=${this.refreshToken}`,
+    }).then((response) => response.json())
       .then((result) => {
         const {access_token, expires_in} = result
 

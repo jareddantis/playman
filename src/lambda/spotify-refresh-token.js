@@ -2,7 +2,15 @@ const queryString = require('querystring');
 const axios = require('axios');
 
 export function handler(event, context, callback) {
-  const { refresh_token } = event.queryStringParameters;
+  // Allow POST requests only
+  if (event.httpMethod !== 'POST') {
+    return callback(null, {
+      statusCode: 405,
+      body: '{"error": "Not allowed"}'
+    })
+  }
+
+  const { refresh_token } = queryString.parse(event.body);
   const { SPID, SPSC } = process.env;
   const AUTH_TOKEN = Buffer.from(`${SPID}:${SPSC}`).toString('base64');
   const AUTH_DATA = {
