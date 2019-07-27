@@ -32,9 +32,10 @@
   import { mapState } from 'vuex'
 
   @Component({
-    computed: mapState(['playlists']),
+    computed: mapState(['isLoggedIn', 'playlists']),
   })
   export default class Home extends Vue {
+    public isLoggedIn!: boolean
     public playlists!: any[]
 
     public created() {
@@ -42,10 +43,6 @@
         // Restore tokens from storage
         this.$store.dispatch('useTokens')
       }
-    }
-
-    get isLoggedIn(): boolean {
-      return this.$store.getters.isLoggedIn
     }
   }
 </script>

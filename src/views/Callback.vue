@@ -41,7 +41,8 @@
           .then((result) => {
             const expiry = parseInt(result.expires_in, 10) * 1000
             result.expires_in = expiry + new Date().getTime()
-            this.$store.dispatch('authenticate', result)
+            localStorage.setItem('spotify-login-data', JSON.stringify(result))
+            window.close()
           })
           .catch((err) => this.status = `Error: ${err}`)
       } catch (err) {

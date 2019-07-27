@@ -13,6 +13,7 @@ const PERSISTENCE = new VuexPersist({
 function getInitialState(): { [key: string]: any } {
   return {
     accessToken: '',
+    isLoggedIn: false,
     refreshToken: '',
     playlists: [],
     username: '',
@@ -20,7 +21,7 @@ function getInitialState(): { [key: string]: any } {
 }
 
 Vue.use(Vuex)
-// @ts-ignore
+
 export default new Vuex.Store({
   plugins: [ PERSISTENCE.plugin ],
   state: getInitialState(),
@@ -31,18 +32,28 @@ export default new Vuex.Store({
         Vue.set(state, key, initialState[key])
       })
     },
-    setPlaylists: (state: any, playlists) => state.playlists = playlists,
+    setLoggedIn: (state: any, loginStatus) => state.isLoggedIn = loginStatus,
+    setPlaylists: (state, playlists) => state.playlists = playlists,
     setTokens: (state, authData) => Object.assign(state, authData),
     setUsername: (state, username) => state.username = username,
   },
   getters: {
-    isLoggedIn: (state: any) =>  state.refreshToken !== '',
+    isLoggedIn: (state: any) =>  state.isLoggedIn,
     redirectUri: () => WRAPPER.redirectUri,
   },
   actions: {
     clearAllData: ({ commit }) => commit('reset'),
-    openAuthWindow() {
-      window.open(WRAPPER.authUri, 'Login with Spotify', 'width=480,height=480')
+    openAuthWindow({ commit, dispatch }) {
+      const authWindow = window.open(WRAPPER.authUri, 'Login with Spotify', 'width=480,height=480')
+      authWindow!.addEventListener('beforeunload', () => {
+        if (localStorage.getItem('spotify-login-data') !== null) {
+          dispatch('authenticate', JSON.parse(localStorage.getItem('spotify-login-data') as string))
+            .then(() => {
+              commit('setLoggedIn', true)
+              localStorage.removeItem('spotify-login-data')
+            })
+        }
+      })
     },
     useTokens({ state }) {
       const { accessToken, refreshToken, expiry } = state as any
