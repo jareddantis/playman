@@ -2,7 +2,7 @@ import qs from 'qs'
 import SpotifyWebApi from 'spotify-web-api-node'
 
 export default class SpotifyApiWrapper {
-  public client!: SpotifyWebApi
+  private apiClient!: SpotifyWebApi
   private refreshToken: string = ''
   private stateToken: string = ''
   private expiry: number = 0
@@ -12,14 +12,9 @@ export default class SpotifyApiWrapper {
     this.generateStateToken()
 
     // Init API client
-    this.client = new SpotifyWebApi({
+    this.apiClient = new SpotifyWebApi({
       redirectUri: this.redirectUri,
     })
-  }
-
-  get redirectUri(): string {
-    return process.env.NODE_ENV === 'production' ? 'https://setlist.jared.gq/callback'
-      : 'http://localhost:8080/callback'
   }
 
   get authUri(): string {
@@ -40,13 +35,22 @@ export default class SpotifyApiWrapper {
     return `https://accounts.spotify.com/authorize?${API_QUERY}`
   }
 
+  get client(): SpotifyWebApi {
+    return this.apiClient
+  }
+
+  get redirectUri(): string {
+    return process.env.NODE_ENV === 'production' ? 'https://setlist.jared.gq/callback'
+      : 'http://localhost:8080/callback'
+  }
+
   public async setTokens(access: string, refresh: string, expiry: number) {
     this.refreshToken = refresh
 
     if (new Date().getTime() >= expiry) {
       await this.reauth()
     } else {
-      this.client.setAccessToken(access)
+      this.apiClient.setAccessToken(access)
       this.expiry = expiry
     }
   }
@@ -69,7 +73,7 @@ export default class SpotifyApiWrapper {
         const {access_token, expires_in} = result
 
         if (access_token !== undefined) {
-          this.client.setAccessToken(access_token)
+          this.apiClient.setAccessToken(access_token)
           this.expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
         }
       })
