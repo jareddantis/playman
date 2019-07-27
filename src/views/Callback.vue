@@ -24,7 +24,7 @@
 
     public created() {
       // Parse query string
-      if (this.$route.query.hasOwnProperty('code') && this.$route.query.hasOwnProperty('state')) {
+      try {
         const AUTH_CODE = this.$route.query.code
         const AUTH_PARAMS = qs.stringify({
           code: AUTH_CODE,
@@ -35,16 +35,13 @@
         fetch(`/.netlify/functions/spotify-request-token?${AUTH_PARAMS}`)
           .then((response) => response.json())
           .then((result) => {
-            const { access_token, refresh_token, expires_in } = result
-
-            if (access_token !== undefined) {
-              localStorage.setItem('spotify-auth', JSON.stringify({
-                access_token, refresh_token, expires_in,
-              }))
-              window.close()
-            }
+            const expiry = parseInt(result.expires_in, 10) * 1000
+            result.expires_in = expiry + new Date().getTime()
+            this.$store.dispatch('authenticate', result)
           })
           .catch((err) => this.status = `Error: ${err}`)
+      } catch (err) {
+        this.status = `Error: ${err}`
       }
     }
   }

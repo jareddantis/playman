@@ -3,7 +3,7 @@
   <div class="home" v-if="!isLoggedIn">
     <h1>Welcome to Setlist</h1>
     <p>Manage your Spotify playlists in a cinch.</p>
-    <button @click="$store.dispatch('authenticate')">Login</button>
+    <button @click="$store.dispatch('openAuthWindow')">Login</button>
   </div>
 
 <!--  Home screen -->
@@ -32,10 +32,20 @@
   import { mapState } from 'vuex'
 
   @Component({
-    computed: mapState(['isLoggedIn', 'playlists']),
+    computed: mapState(['playlists']),
   })
   export default class Home extends Vue {
-    public isLoggedIn!: boolean
     public playlists!: any[]
+
+    public created() {
+      if (this.isLoggedIn) {
+        // Restore tokens from storage
+        this.$store.dispatch('useTokens')
+      }
+    }
+
+    get isLoggedIn(): boolean {
+      return this.$store.getters.isLoggedIn
+    }
   }
 </script>

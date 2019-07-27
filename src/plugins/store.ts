@@ -1,43 +1,65 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VuexPersist from 'vuex-persist'
+import localforage from 'localforage'
 import SpotifyApiWrapper from './spotifyApiWrapper'
 
 const WRAPPER = new SpotifyApiWrapper()
 const CLIENT = WRAPPER.client
-
-Vue.use(Vuex)
-export default new Vuex.Store({
-  state: {
-    isLoggedIn: false,
+const PERSISTENCE = new VuexPersist({
+  key: 'setlist',
+  storage: localforage,
+})
+function getInitialState(): { [key: string]: any } {
+  return {
+    accessToken: '',
+    refreshToken: '',
     playlists: [],
     username: '',
-  },
+  }
+}
+
+Vue.use(Vuex)
+// @ts-ignore
+export default new Vuex.Store({
+  plugins: [ PERSISTENCE.plugin ],
+  state: getInitialState(),
   mutations: {
-    setLoggedIn: (state, logInStatus) => state.isLoggedIn = logInStatus,
-    setPlaylists: (state, playlists) => state.playlists = playlists,
+    reset: (state: any) => {
+      const initialState = getInitialState()
+      Object.keys(initialState).forEach((key) => {
+        Vue.set(state, key, initialState[key])
+      })
+    },
+    setPlaylists: (state: any, playlists) => state.playlists = playlists,
+    setTokens: (state, authData) => Object.assign(state, authData),
     setUsername: (state, username) => state.username = username,
   },
   getters: {
-    isLoggedIn: (state) => state.isLoggedIn,
+    isLoggedIn: (state: any) =>  state.refreshToken !== '',
     redirectUri: () => WRAPPER.redirectUri,
   },
   actions: {
-    authenticate({ dispatch }) {
-      const authWindow = window.open(WRAPPER.authUri, 'Login with Spotify', 'width=480,height=480')
-      authWindow!.addEventListener('beforeunload', () => {
-        if (localStorage.getItem('spotify-auth') !== undefined) {
-          const authData = localStorage.getItem('spotify-auth') as string
-          const { access_token, refresh_token, expires_in } = JSON.parse(authData)
+    clearAllData: ({ commit }) => commit('reset'),
+    openAuthWindow() {
+      window.open(WRAPPER.authUri, 'Login with Spotify', 'width=480,height=480')
+    },
+    useTokens({ state }) {
+      const { accessToken, refreshToken, expiry } = state as any
+      return WRAPPER.setTokens(accessToken, refreshToken, expiry)
+    },
+    authenticate({ commit, dispatch }, payload) {
+      // Store tokens from Spotify API
+      commit('setTokens', {
+        accessToken: payload.access_token,
+        refreshToken: payload.refresh_token,
+        expiry: payload.expires_in,
+      })
 
-          // Store tokens and delete from localStorage
-          WRAPPER.setTokens(access_token, refresh_token, expires_in)
-          localStorage.removeItem('spotify-auth')
-
-          // Update playlists
-          dispatch('updateUserDetails').then(() => {
-            dispatch('updatePlaylists')
-          })
-        }
+      // Update playlists
+      dispatch('useTokens').then(() => {
+        dispatch('updateUserDetails')
+        dispatch('updatePlaylists')
       })
     },
     updatePlaylists({ state, commit }) {
@@ -48,7 +70,6 @@ export default new Vuex.Store({
       })
     },
     updateUserDetails({ commit }) {
-      commit('setLoggedIn', true)
       return CLIENT.getMe().then((response) => {
         commit('setUsername', response.body.id)
       })

@@ -43,12 +43,13 @@ export default class SpotifyApiWrapper {
     return `${this.API_AUTH_URL}/?${API_QUERY}`
   }
 
-  public setTokens(access: string, refresh: string, expiry: string) {
-    this.client.setAccessToken(access)
-    this.expiry = (parseInt(expiry, 10) * 1000) + new Date().getTime()
-
-    if (refresh !== 'null') {
+  public async setTokens(access: string, refresh: string, expiry: number) {
+    if (new Date().getTime() >= expiry) {
+      await this.reauth()
+    } else {
+      this.client.setAccessToken(access)
       this.refreshToken = refresh
+      this.expiry = expiry
     }
   }
 
@@ -64,16 +65,15 @@ export default class SpotifyApiWrapper {
   }
 
   private async reauth() {
-    if (new Date().getTime() > this.expiry) {
-      await fetch(`${this.API_BASE_URL}-refresh-token?refresh_token=${this.refreshToken}`)
-        .then((response) => response.json())
-        .then((result) => {
-          const {access_token, expires_in} = result
+    return fetch(`${this.API_BASE_URL}-refresh-token?refresh_token=${this.refreshToken}`)
+      .then((response) => response.json())
+      .then((result) => {
+        const {access_token, expires_in} = result
 
-          if (access_token !== undefined) {
-            this.setTokens(access_token, 'null', expires_in)
-          }
-        })
-    }
+        if (access_token !== undefined) {
+          this.client.setAccessToken(access_token)
+          this.expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
+        }
+      })
   }
 }
