@@ -12,11 +12,17 @@ const PERSISTENCE = new VuexPersist({
 })
 function getInitialState(): { [key: string]: any } {
   return {
+    // User auth
     accessToken: '',
-    isLoggedIn: false,
     refreshToken: '',
-    playlists: [],
+    isLoggedIn: false,
+
+    // User details
     username: '',
+    avatarUri: '',
+
+    // User data
+    playlists: [],
   }
 }
 
@@ -35,6 +41,7 @@ export default new Vuex.Store({
     setLoggedIn: (state: any, loginStatus) => state.isLoggedIn = loginStatus,
     setPlaylists: (state, playlists) => state.playlists = playlists,
     setTokens: (state, authData) => Object.assign(state, authData),
+    setUserAvatar: (state, uri) => state.avatarUri = uri,
     setUsername: (state, username) => state.username = username,
   },
   getters: {
@@ -82,7 +89,9 @@ export default new Vuex.Store({
     },
     updateUserDetails({ commit }) {
       return CLIENT.getMe().then((response) => {
-        commit('setUsername', response.body.id)
+        const result = response.body as any
+        commit('setUsername', result.id)
+        commit('setUserAvatar', result.images[0].url)
       })
     },
   },
