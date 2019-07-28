@@ -1,13 +1,13 @@
 <template>
 <!--  Login screen -->
-  <div class="home" v-if="!isLoggedIn">
+  <div class="home deauth" v-if="!isLoggedIn">
     <h1>Welcome to Setlist</h1>
     <p>Manage your Spotify playlists in a cinch.</p>
     <button @click="$store.dispatch('openAuthWindow')">Login</button>
   </div>
 
 <!--  Home screen -->
-  <div class="home" v-else>
+  <div class="home auth" v-else>
     <h1>Playlists</h1>
 
     <div id="playlists">
