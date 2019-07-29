@@ -15,8 +15,10 @@
            v-for="playlist in playlists"
            :key="playlist.id">
         <img :src="playlist.images[0].url" alt="">
-        <h2>{{ playlist.name }}</h2>
-        <p>{{ playlist.tracks.total }} songs</p>
+        <div class="playlist-detail">
+          <h2>{{ playlist.name }}</h2>
+          <p>{{ playlist.tracks.total }} songs</p>
+        </div>
       </div>
     </div>
   </div>
