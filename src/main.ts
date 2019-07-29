@@ -5,7 +5,7 @@ import router from './plugins/router'
 import store from './plugins/store'
 import vuetify from './plugins/vuetify'
 import './registerServiceWorker'
-import './styles/global.styl'
+import './components'
 
 Vue.use(eventBus)
 Vue.config.productionTip = false

@@ -9,15 +9,9 @@
 <!--  Home screen -->
   <div class="home auth" v-else>
     <div id="playlists">
-      <div class="playlist"
-           v-for="playlist in playlists"
-           :key="playlist.id">
-        <img :src="playlist.images[0].url" alt="">
-        <div class="playlist-detail">
-          <h2>{{ playlist.name }}</h2>
-          <p>{{ playlist.tracks.total }} songs</p>
-        </div>
-      </div>
+      <PlaylistCard v-for="playlist in playlists"
+                    :playlist="playlist"
+                    :key="playlist.id"></PlaylistCard>
     </div>
   </div>
 </template>
@@ -43,6 +37,6 @@
   }
 </script>
 
-<style lang="stylus" scoped>
-  @require '../styles/views/Home'
+<style lang="scss" scoped>
+  @import '../styles/views/Home';
 </style>
