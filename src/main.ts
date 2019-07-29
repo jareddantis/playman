@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './views'
 import eventBus from './plugins/eventBus'
+import router from './plugins/router'
 import store from './plugins/store'
+import vuetify from './plugins/vuetify'
 import './registerServiceWorker'
 import './styles/global.styl'
-import vuetify from './plugins/vuetify'
 
 Vue.use(eventBus)
 Vue.config.productionTip = false

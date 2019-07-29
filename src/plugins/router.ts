@@ -10,17 +10,17 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: () => import(/* webpackChunkName: "home" */ './Home.vue'),
+      component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
     },
     {
       path: '/callback',
       name: 'callback',
-      component: () => import(/* webpackChunkName: "callback" */ './Callback.vue'),
+      component: () => import(/* webpackChunkName: "callback" */ '../views/Callback.vue'),
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import(/* webpackChunkName: "about" */ './About.vue'),
+      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
     },
   ],
 })
