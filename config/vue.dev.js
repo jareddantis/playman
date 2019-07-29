@@ -33,6 +33,10 @@ module.exports = {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, '../src/index.html'),
         title: 'Setlist',
+        meta: {
+          'viewport': 'width=device-width, initial-scale=1, shrink-to-fit=no',
+          'charset': 'utf-8',
+        },
       }),
     ],
 
