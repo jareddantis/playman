@@ -68,15 +68,3 @@ workbox.routing.registerRoute(
   /^https:\/\/fonts\.gstatic\.com/,
   newCfStrategy('google-fonts-webfonts')
 );
-
-// Cache Spotify API playlist images.
-workbox.routing.registerRoute(
-  /^https:\/\/pl.scdn.co\/images/,
-  newSwrStrategy('spotify-playlist-img')
-);
-
-// Cache user avatar.
-workbox.routing.registerRoute(
-  /^https:\/\/profile-images.scdn.co\/images/,
-  newCfStrategy('spotify-user-img')
-);
