@@ -3,7 +3,10 @@
   <div class="home deauth" v-if="!isLoggedIn">
     <h1>Welcome to Setlist</h1>
     <p>Manage your Spotify playlists in a cinch.</p>
-    <button @click="$store.dispatch('openAuthWindow')">Login</button>
+    <v-btn rounded dark
+           color="#1DB954"
+           :loading="isLoggingIn"
+           @click="login">Login with Spotify</v-btn>
   </div>
 
 <!--  Home screen -->
@@ -18,7 +21,7 @@
 
 <script lang="ts">
   import Vue from 'vue'
-  import { Component } from 'vue-property-decorator'
+  import { Component, Watch } from 'vue-property-decorator'
   import { mapState } from 'vuex'
 
   @Component({
@@ -26,6 +29,7 @@
   })
   export default class Home extends Vue {
     public isLoggedIn!: boolean
+    public isLoggingIn: boolean = false
     public playlists!: any[]
 
     public created() {
@@ -33,6 +37,16 @@
         // Restore tokens from storage
         this.$store.dispatch('useTokens')
       }
+    }
+
+    public login() {
+      this.isLoggingIn = true
+      this.$store.dispatch('openAuthWindow')
+    }
+
+    @Watch('isLoggedIn')
+    public onLogin() {
+      this.isLoggingIn = false
     }
   }
 </script>
