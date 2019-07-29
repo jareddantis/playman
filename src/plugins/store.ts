@@ -62,9 +62,12 @@ export default new Vuex.Store({
         }
       })
     },
-    useTokens({ state }) {
+    useTokens({ state, dispatch }) {
       const { accessToken, refreshToken, expiry } = state as any
-      return WRAPPER.setTokens(accessToken, refreshToken, expiry)
+      WRAPPER.setTokens(accessToken, refreshToken, expiry).then(() => {
+        dispatch('updateUserDetails')
+        dispatch('updatePlaylists')
+      })
     },
     authenticate({ commit, dispatch }, payload) {
       // Store tokens from Spotify API
@@ -75,10 +78,7 @@ export default new Vuex.Store({
       })
 
       // Update playlists
-      dispatch('useTokens').then(() => {
-        dispatch('updateUserDetails')
-        dispatch('updatePlaylists')
-      })
+      return dispatch('useTokens')
     },
     updatePlaylists({ state, commit }) {
       return CLIENT.getUserPlaylists().then((response) => {
