@@ -22,10 +22,6 @@ module.exports = {
           test: /\.(js|ts|tsx)$/,
           loader: 'babel-loader',
         },
-        {
-          test: /\.styl$/,
-          loader: 'stylus-loader',
-        },
       ],
     },
 

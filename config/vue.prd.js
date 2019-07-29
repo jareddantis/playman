@@ -43,7 +43,7 @@ module.exports = {
           },
           styles: {
             name: 'styles',
-            test: /\.(css|styl)$/,
+            test: /\.(css|s[a|c]ss)$/,
             chunks: 'all',
             enforce: true,
           },
@@ -61,10 +61,6 @@ module.exports = {
         {
           test: /\.(js|ts|tsx)$/,
           loader: 'babel-loader',
-        },
-        {
-          test: /\.styl$/,
-          loader: 'stylus-loader',
         },
         {
           test: /\.css$/,

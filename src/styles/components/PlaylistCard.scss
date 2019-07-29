@@ -1,0 +1,45 @@
+.playlist {
+  .playlist-art {
+    width: 100%;
+
+    img {
+      width: 100%;
+      border-radius: 4px;
+    }
+  }
+
+  .playlist-detail {
+    overflow: hidden;
+
+    h2 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 1rem 0 0.5rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .playlist {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 4rem 1fr;
+    grid-auto-rows: 4rem;
+    grid-column-gap: 1.5rem;
+
+    .playlist-detail {
+      h2 {
+        font-size: 1.125rem;
+        margin: 0 0 0.5rem;
+      }
+      p {
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

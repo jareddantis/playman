@@ -4,15 +4,6 @@
   </div>
 </template>
 
-<style lang="stylus">
-  #status
-    position absolute
-    top 50%
-    left 50%
-    transform translate(-50%, -50%)
-    text-align center
-</style>
-
 <script lang="ts">
   import Vue from 'vue'
   import qs from 'qs'
@@ -51,3 +42,13 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  #status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+</style>

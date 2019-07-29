@@ -29,6 +29,6 @@
   }
 </script>
 
-<style lang="stylus" scoped>
-  @require './styles/App'
+<style lang="scss" scoped>
+  @import './styles/App';
 </style>
