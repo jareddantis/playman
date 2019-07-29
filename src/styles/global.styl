@@ -1,5 +1,6 @@
 // Body width
 body-width = calc(100vw - 6rem)
+body-width-small = calc(100vw - 4rem)
 
 html
   background linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat
@@ -9,6 +10,10 @@ body
   margin 3rem auto 0
   width body-width
   overscroll-behavior-y contain
+
+  @media screen and (max-width: 600px)
+    margin-top 2rem
+    width body-width-small
 
 // Fonts
 h1, h2, h3, p, td, span, input, select, option, li
