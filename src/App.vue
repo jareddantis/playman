@@ -11,10 +11,6 @@
   </div>
 </template>
 
-<style lang="stylus">
-  @require './styles/App'
-</style>
-
 <script lang="ts">
   import Vue from 'vue'
   import { Component } from 'vue-property-decorator'
@@ -27,5 +23,10 @@
     public avatarUri!: string
     public isLoggedIn!: boolean
     public username!: string
+    public userMenuIsVisible: boolean = false
   }
 </script>
+
+<style lang="stylus" scoped>
+  @require './styles/App'
+</style>

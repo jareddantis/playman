@@ -22,10 +22,6 @@
   </div>
 </template>
 
-<style lang="stylus">
-  @require '../styles/views/Home'
-</style>
-
 <script lang="ts">
   import Vue from 'vue'
   import { Component } from 'vue-property-decorator'
@@ -46,3 +42,7 @@
     }
   }
 </script>
+
+<style lang="stylus" scoped>
+  @require '../styles/views/Home'
+</style>
