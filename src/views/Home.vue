@@ -8,8 +8,6 @@
 
 <!--  Home screen -->
   <div class="home auth" v-else>
-    <h1>Playlists</h1>
-
     <div id="playlists">
       <div class="playlist"
            v-for="playlist in playlists"

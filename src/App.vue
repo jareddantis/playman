@@ -2,7 +2,7 @@
   <div id="app">
 <!--    Navbar -->
     <div id="navbar" v-show="isLoggedIn">
-      <span>{{ username }}</span>
+      <h1>Playlists</h1>
       <img :src="avatarUri" :alt="username" />
     </div>
 
@@ -12,7 +12,6 @@
 </template>
 
 <style lang="stylus">
-  @require './styles/global'
   @require './styles/App'
 </style>
 
