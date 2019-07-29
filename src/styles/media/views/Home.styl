@@ -1,12 +1,16 @@
 @require '../../global'
 
+@media screen and (max-width: 600px)
+  .home.auth #playlists .playlist-detail
+    h2
+      font-size 1.125rem
+
+    p
+      font-size 0.875rem
+
 @media screen and (max-width: 480px)
   .home.auth
     margin-bottom 2rem
-
-    h1
-      font-size 2rem
-      margin-bottom 2rem
 
     #playlists
       width body-width-small
@@ -23,7 +27,3 @@
         .playlist-detail
           h2
             margin 0 0 0.5rem
-            font-size 1.125rem
-
-          p
-            font-size 0.875rem
