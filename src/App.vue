@@ -6,7 +6,7 @@
         <h1>Playlists</h1>
         <div class="actions">
           <component :is="currentActionBar"></component>
-          <v-menu offset-y>
+          <v-menu offset-y nudge-bottom="10">
             <template v-slot:activator="{ on }">
               <img v-on="on" :src="avatarUri" :alt="username" />
             </template>
