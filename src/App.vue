@@ -6,7 +6,23 @@
         <h1>Playlists</h1>
         <div class="actions">
           <component :is="currentActionBar"></component>
-          <img :src="avatarUri" :alt="username" />
+          <v-menu offset-y>
+            <template v-slot:activator="{ on }">
+              <img v-on="on" :src="avatarUri" :alt="username" />
+            </template>
+            <v-list dense>
+              <v-list-item-group>
+                <v-list-item @click="$store.dispatch('clearAllData')">
+                  <v-list-item-icon>
+                    <v-icon>exit_to_app</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Sign out</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-menu>
         </div>
       </div>
 
@@ -31,7 +47,6 @@
     public currentActionBar: string = 'HomeBar'
     public isLoggedIn!: boolean
     public username!: string
-    public userMenuIsVisible: boolean = false
   }
 </script>
 
