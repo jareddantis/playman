@@ -1,14 +1,16 @@
 <template>
-  <div id="app">
-<!--    Navbar -->
-    <div id="navbar" v-show="isLoggedIn">
-      <h1>Playlists</h1>
-      <img :src="avatarUri" :alt="username" />
-    </div>
+  <v-app>
+    <div id="app">
+      <!-- Navbar -->
+      <div id="navbar" v-show="isLoggedIn">
+        <h1>Playlists</h1>
+        <img :src="avatarUri" :alt="username" />
+      </div>
 
-<!--    Router view -->
-    <router-view :key="$route.fullPath" />
-  </div>
+      <!-- Router view -->
+      <router-view :key="$route.fullPath" />
+    </div>
+  </v-app>
 </template>
 
 <script lang="ts">

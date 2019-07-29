@@ -16,6 +16,7 @@
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
     "vue-router": "^3.0.3",
+    "vuetify": "^2.0.0",
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.1",
     "workbox-window": "^4.3.1"
@@ -42,6 +43,8 @@
     "lint-staged": "^8.1.5",
     "mini-css-extract-plugin": "latest",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "sass": "^1.17.4",
+    "sass-loader": "^7.1.0",
     "script-ext-html-webpack-plugin": "^2.1.4",
     "style-ext-html-webpack-plugin": "^4.1.2",
     "stylus": "^0.54.5",
@@ -49,8 +52,10 @@
     "terser-webpack-plugin": "latest",
     "typescript": "^3.4.3",
     "vue-cli-plugin-netlify-lambda": "^0.1.1",
+    "vue-cli-plugin-vuetify": "^0.6.1",
     "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2",
     "webpack": "latest",
     "webpack-bundle-analyzer": "latest"
   },
