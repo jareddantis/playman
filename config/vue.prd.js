@@ -54,11 +54,6 @@ module.exports = {
     module: {
       rules: [
         {
-          test: /\.vue$/,
-          loader: 'vue-loader',
-          include: [ path.resolve( __dirname, 'src') ],
-        },
-        {
           test: /\.(js|ts|tsx)$/,
           loader: 'babel-loader',
         },
