@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <div id="app">
+    <v-content>
       <!-- Navbar -->
       <div id="navbar" v-show="isLoggedIn">
         <h1>Playlists</h1>
@@ -28,7 +28,7 @@
 
       <!-- Router view -->
       <router-view :key="$route.fullPath" />
-    </div>
+    </v-content>
   </v-app>
 </template>
 
