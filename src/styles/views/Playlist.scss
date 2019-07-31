@@ -1,0 +1,11 @@
+#playlist {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 1.5rem;
+
+  .meta {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
