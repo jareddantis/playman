@@ -51,6 +51,9 @@ export default class Home extends Vue {
   public onLogin() {
     this.isLoggingIn = false
 
+    // Update navbar title
+    this.$bus.$emit('change-navbar-title', 'Playlists')
+
     // Load playlists
     this.$bus.$emit('loading', true)
     this.$store.dispatch('updatePlaylists')
