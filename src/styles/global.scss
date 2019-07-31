@@ -4,10 +4,11 @@ $body-width-small: calc(100vw - 4rem);
 body {
   margin: 0;
   overscroll-behavior-y: contain;
+  background: linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat;
 }
 
 #app {
-  background: linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat;
+  background: none !important;
   min-height: 100vh;
 }
 
