@@ -1,8 +1,9 @@
 <template>
-  <div class="track">
+  <div :class="isChecked ? 'track selected' : 'track'">
     <div class="track-control">
       <v-checkbox dark hide-details
-                  v-model="isChecked"></v-checkbox>
+                  v-model="isChecked"
+                  :color="isChecked ? '#E5A3A0' : '#F5F5F5'"></v-checkbox>
     </div>
     <p class="track-name">{{ track.name }}</p>
     <p class="track-info">{{ track.artist }} &bullet; {{ track.album }}</p>
