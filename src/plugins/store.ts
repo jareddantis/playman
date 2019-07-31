@@ -63,35 +63,46 @@ export default new Vuex.Store({
       })
     },
     useTokens({ state, dispatch }) {
-      const { accessToken, refreshToken, expiry } = state as any
-      WRAPPER.setTokens(accessToken, refreshToken, expiry).then(() => {
-        dispatch('updateUserDetails')
-        dispatch('updatePlaylists')
+      return new Promise((resolve) => {
+        const { accessToken, refreshToken, expiry } = state as any
+
+        WRAPPER.setTokens(accessToken, refreshToken, expiry).then(() => {
+          dispatch('updateUserDetails')
+          resolve()
+        })
       })
     },
     authenticate({ commit, dispatch }, payload) {
-      // Store tokens from Spotify API
-      commit('setTokens', {
-        accessToken: payload.access_token,
-        refreshToken: payload.refresh_token,
-        expiry: payload.expires_in,
-      })
+      return new Promise((resolve) => {
+        // Persist tokens
+        commit('setTokens', {
+          accessToken: payload.access_token,
+          refreshToken: payload.refresh_token,
+          expiry: payload.expires_in,
+        })
 
-      // Update playlists
-      return dispatch('useTokens')
+        // Store tokens in client
+        dispatch('useTokens').then(() => resolve())
+      })
     },
     updatePlaylists({ state, commit }) {
-      return CLIENT.getUserPlaylists().then((response) => {
-        commit('setPlaylists', response.body.items.filter((playlist: any) => {
-          return playlist.owner.id === state.username
-        }))
+      return new Promise((resolve, reject) => {
+        CLIENT.getUserPlaylists().then((response) => {
+          commit('setPlaylists', response.body.items.filter((playlist: any) => {
+            return playlist.owner.id === state.username
+          }))
+          resolve()
+        }).catch((error) => reject(new Error(error)))
       })
     },
     updateUserDetails({ commit }) {
-      return CLIENT.getMe().then((response) => {
-        const result = response.body as any
-        commit('setUsername', result.id)
-        commit('setUserAvatar', result.images[0].url)
+      return new Promise((resolve, reject) => {
+        CLIENT.getMe().then((response) => {
+          const result = response.body as any
+          commit('setUsername', result.id)
+          commit('setUserAvatar', result.images[0].url)
+          resolve()
+        }).catch((error) => reject(new Error(error)))
       })
     },
   },
