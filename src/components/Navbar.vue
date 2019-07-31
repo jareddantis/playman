@@ -12,7 +12,7 @@
              v-show="backButton" @click="$router.back()">
         <v-icon>arrow_back</v-icon>
       </v-btn>
-      <h1 v-html="viewName"></h1>
+      <h1 v-html="viewName" class="text-truncate"></h1>
     </div>
     <div class="actions">
 <!--      View actions -->

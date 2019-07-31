@@ -17,8 +17,9 @@
   }
 
   .view {
+    overflow: hidden;
     button {
-      margin: 0 1rem 0 -1rem
+      margin: 0 1rem 0 -0.625rem
     }
 
     h1 {
