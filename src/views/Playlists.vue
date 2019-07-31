@@ -1,8 +1,10 @@
 <template>
   <div id="playlists">
-    <PlaylistCard v-for="playlist in playlists"
-                  :playlist="playlist"
-                  :key="playlist.id"></PlaylistCard>
+    <router-link v-for="playlist in playlists"
+                 :key="playlist.id"
+                 :to="'/playlists/' + playlist.id">
+      <PlaylistCard :playlist="playlist"></PlaylistCard>
+    </router-link>
   </div>
 </template>
 
@@ -16,7 +18,7 @@
     components: { PlaylistCard },
     computed: mapState(['playlists']),
   })
-  export default class Home extends Vue {
+  export default class Playlists extends Vue {
     public playlists!: any[]
 
     public mounted() {

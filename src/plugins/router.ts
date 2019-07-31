@@ -10,21 +10,19 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
+      name: 'landing',
+      component: () => import(/* webpackChunkName: "landing" */ '../views/Landing.vue'),
     },
     {
       path: '/callback',
       name: 'callback',
       component: () => import(/* webpackChunkName: "callback" */ '../views/Callback.vue'),
+    },
+    {
+      path: '/playlists',
+      name: 'playlists',
+      component: () => import(/* webpackChunkName: "playlists" */ '../views/Playlists.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/about',
