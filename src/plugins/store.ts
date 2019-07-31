@@ -66,10 +66,9 @@ export default new Vuex.Store({
       return new Promise((resolve) => {
         const { accessToken, refreshToken, expiry } = state as any
 
-        WRAPPER.setTokens(accessToken, refreshToken, expiry).then(() => {
-          dispatch('updateUserDetails')
-          resolve()
-        })
+        WRAPPER.setTokens(accessToken, refreshToken, expiry)
+          .then(() => dispatch('updateUserDetails'))
+          .then(() => resolve())
       })
     },
     authenticate({ commit, dispatch }, payload) {
