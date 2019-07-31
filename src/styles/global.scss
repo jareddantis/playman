@@ -1,14 +1,14 @@
 $body-width: calc(100vw - 6rem);
 $body-width-small: calc(100vw - 4rem);
 
-html {
-  background: linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat;
-  min-height: 100vh;
-}
-
 body {
   margin: 0;
   overscroll-behavior-y: contain;
+}
+
+#app {
+  background: linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat;
+  min-height: 100vh;
 }
 
 h1, h2, h3, p, td, span, input, select, option, li {
