@@ -98,6 +98,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         CLIENT.getMe().then((response) => {
           const result = response.body as any
+          commit('setLoggedIn', true)
           commit('setUsername', result.id)
           commit('setUserAvatar', result.images[0].url)
           resolve()
