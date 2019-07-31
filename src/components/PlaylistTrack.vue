@@ -2,7 +2,6 @@
   <div class="track">
     <div class="track-control">
       <v-checkbox dark hide-details
-                  @click="onToggle"
                   v-model="isChecked"></v-checkbox>
     </div>
     <p class="track-name">{{ track.name }}</p>
@@ -12,14 +11,15 @@
 
 <script lang="ts">
   import Vue from 'vue'
-  import { Component, Prop } from 'vue-property-decorator'
+  import { Component, Prop, Watch } from 'vue-property-decorator'
 
   @Component
   export default class PlaylistTrack extends Vue {
     @Prop({ required: true }) public readonly track: any
     public isChecked: boolean = false
 
-    public onToggle() {
+    @Watch('isChecked')
+    private onToggle() {
       this.$emit('track-toggled', { id: this.track.id, state: this.isChecked })
     }
   }

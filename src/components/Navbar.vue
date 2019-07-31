@@ -12,7 +12,7 @@
              v-show="backButton" @click="$router.back()">
         <v-icon>arrow_back</v-icon>
       </v-btn>
-      <h1>{{ viewName }}</h1>
+      <h1 v-html="viewName"></h1>
     </div>
     <div class="actions">
 <!--      View actions -->
@@ -48,9 +48,10 @@ import { mapState } from 'vuex'
 import { Component } from 'vue-property-decorator'
 import HomeBar from '@/components/HomeBar.vue'
 import PlaylistBar from '@/components/PlaylistBar.vue'
+import TracksBar from '@/components/TracksBar.vue'
 
 @Component({
-  components: { HomeBar, PlaylistBar },
+  components: { HomeBar, PlaylistBar, TracksBar },
   computed: mapState(['avatarUri', 'username']),
 })
 export default class Navbar extends Vue {

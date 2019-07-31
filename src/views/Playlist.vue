@@ -20,6 +20,7 @@
     </div>
     <div class="tracks">
       <PlaylistTrack v-for="track in playlistTracks"
+                     v-on:track-toggled="onTrackToggled"
                      :key="track.id" :track="track"></PlaylistTrack>
     </div>
   </div>
@@ -45,16 +46,34 @@
     public mounted() {
       this.$bus.$emit('loading', true)
       this.getPlaylist().then(() => this.$bus.$emit('loading', false))
+    }
 
-      // Listen to track check/uncheck events
-      this.$on('track-toggled', (payload: any) => {
-        const { id, state } = payload
+    public onTrackToggled(payload: any) {
+      const { id, state } = payload
 
-        if (state) {
-          this.checkedTracks.push(id)
-        } else {
-          this.checkedTracks.splice(this.checkedTracks.indexOf(id), 1)
-        }
+      if (state) {
+        this.checkedTracks.push(id)
+      } else {
+        this.checkedTracks.splice(this.checkedTracks.indexOf(id), 1)
+      }
+
+      // Update action bar
+      if (this.checkedTracks.length) {
+        this.$bus.$emit('change-navbar', {
+          actionBar: 'Tracks',
+          backButton: false,
+          name: '&nbsp;',
+        })
+      } else {
+        this.setInitialNavbar()
+      }
+    }
+
+    private setInitialNavbar() {
+      this.$bus.$emit('change-navbar', {
+        actionBar: 'Playlist',
+        backButton: true,
+        name: this.playlistName,
       })
     }
 
@@ -66,12 +85,7 @@
             this.playlistArt = playlist.images[0].url
             this.playlistName = playlist.name
             this.pages = Math.ceil(playlist.tracks.total / this.pageLimit)
-
-            this.$bus.$emit('change-navbar', {
-              actionBar: 'Playlist',
-              backButton: true,
-              name: playlist.name,
-            })
+            this.setInitialNavbar()
           })
           .catch((error) => reject(error))
 
