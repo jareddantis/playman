@@ -35,8 +35,10 @@
   import Vue from 'vue'
   import { mapState } from 'vuex'
   import { Component } from 'vue-property-decorator'
+  import HomeBar from '@/components/HomeBar.vue'
 
   @Component({
+    components: { HomeBar },
     computed: mapState(['avatarUri', 'username']),
   })
   export default class Navbar extends Vue {

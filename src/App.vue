@@ -14,11 +14,10 @@
   import Vue from 'vue'
   import { Component } from 'vue-property-decorator'
   import { mapState } from 'vuex'
-  import HomeBar from '@/components/HomeBar.vue'
   import Navbar from '@/components/Navbar.vue'
 
   @Component({
-    components: { HomeBar, Navbar },
+    components: { Navbar },
     computed: mapState(['avatarUri', 'isLoggedIn', 'username']),
   })
   export default class App extends Vue {
