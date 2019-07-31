@@ -45,3 +45,14 @@ button {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   user-select: none;
 }
+
+// Component transitions
+.component-fade-enter, .component-fade-leave {
+  will-change: opacity;
+}
+.component-fade-enter-active, .component-fade-leave-active {
+  transition: opacity 150ms ease;
+}
+.component-fade-enter, .component-fade-leave-to {
+  opacity: 0;
+}

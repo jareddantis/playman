@@ -24,8 +24,9 @@
     public mounted() {
       // Update navbar title
       this.$bus.$emit('change-navbar', {
-        name: 'Playlists',
+        actionBar: 'Home',
         backButton: false,
+        name: 'Playlists',
       })
 
       // Load playlists

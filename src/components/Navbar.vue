@@ -15,7 +15,12 @@
       <h1>{{ viewName }}</h1>
     </div>
     <div class="actions">
-      <component :is="currentActionBar"></component>
+<!--      View actions -->
+      <transition name="component-fade" mode="out-in">
+        <component :is="currentActionBar"></component>
+      </transition>
+
+<!--      User menu -->
       <v-menu offset-y nudge-bottom="10">
         <template v-slot:activator="{ on }">
           <img v-on="on" :src="avatarUri" :alt="username" />
@@ -38,32 +43,34 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-  import { mapState } from 'vuex'
-  import { Component } from 'vue-property-decorator'
-  import HomeBar from '@/components/HomeBar.vue'
+import Vue from 'vue'
+import { mapState } from 'vuex'
+import { Component } from 'vue-property-decorator'
+import HomeBar from '@/components/HomeBar.vue'
+import PlaylistBar from '@/components/PlaylistBar.vue'
 
-  @Component({
-    components: { HomeBar },
-    computed: mapState(['avatarUri', 'username']),
-  })
-  export default class Navbar extends Vue {
-    public avatarUri!: string
-    public backButton: boolean = false
-    public currentActionBar: string = 'HomeBar'
-    public loading: boolean = true
-    public username!: string
-    public viewName: string = ''
+@Component({
+  components: { HomeBar, PlaylistBar },
+  computed: mapState(['avatarUri', 'username']),
+})
+export default class Navbar extends Vue {
+  public avatarUri!: string
+  public backButton: boolean = false
+  public currentActionBar: string = 'HomeBar'
+  public loading: boolean = true
+  public username!: string
+  public viewName: string = ''
 
-    public created() {
-      this.$bus.$on('change-navbar', (payload: any) => {
-        const { name, backButton } = payload
-        this.viewName = name
-        this.backButton = backButton
-      })
-      this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
-    }
+  public created() {
+    this.$bus.$on('change-navbar', (payload: any) => {
+      const { actionBar, backButton, name } = payload
+      this.currentActionBar = `${actionBar}Bar`
+      this.viewName = name
+      this.backButton = backButton
+    })
+    this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
   }
+}
 </script>
 
 <style lang="scss" scoped>

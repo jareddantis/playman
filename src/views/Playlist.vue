@@ -43,8 +43,9 @@
         // Load playlist details
         this.$store.dispatch('getPlaylist', this.id)
           .then((playlist) => this.$bus.$emit('change-navbar', {
-            name: playlist.name,
+            actionBar: 'Playlist',
             backButton: true,
+            name: playlist.name,
           }))
           .catch((error) => reject(error))
 
