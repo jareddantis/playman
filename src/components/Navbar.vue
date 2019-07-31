@@ -7,7 +7,13 @@
       color="white"></v-progress-linear>
 
 <!--    Navbar content -->
-    <h1>{{ viewName }}</h1>
+    <div class="view">
+      <v-btn text small icon color="white"
+             v-show="backButton" @click="$router.back()">
+        <v-icon>arrow_back</v-icon>
+      </v-btn>
+      <h1>{{ viewName }}</h1>
+    </div>
     <div class="actions">
       <component :is="currentActionBar"></component>
       <v-menu offset-y nudge-bottom="10">
@@ -43,13 +49,18 @@
   })
   export default class Navbar extends Vue {
     public avatarUri!: string
+    public backButton: boolean = false
     public currentActionBar: string = 'HomeBar'
     public loading: boolean = true
     public username!: string
     public viewName: string = ''
 
     public created() {
-      this.$bus.$on('change-navbar-title', (title: string) => this.viewName = title)
+      this.$bus.$on('change-navbar', (payload: any) => {
+        const { name, backButton } = payload
+        this.viewName = name
+        this.backButton = backButton
+      })
       this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
     }
   }
