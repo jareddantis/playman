@@ -1,9 +1,9 @@
 <template>
   <div class="action-bar">
-    <v-btn text small fab color="white">
+    <v-btn text small icon color="white">
       <v-icon>select_all</v-icon>
     </v-btn>
-    <v-btn text small fab color="white">
+    <v-btn text small icon color="white">
       <v-icon>more_vert</v-icon>
     </v-btn>
   </div>
