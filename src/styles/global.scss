@@ -4,7 +4,8 @@ $body-width-small: calc(100vw - 4rem);
 body {
   margin: 0;
   overscroll-behavior-y: contain;
-  background: linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat;
+  background: linear-gradient(180deg, #121738 0%, #241D39 100%) no-repeat fixed;
+  background-size: cover;
 }
 
 #app {
