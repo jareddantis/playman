@@ -40,14 +40,25 @@ const router = new Router({
 
 // Redirect sensitive routes to landing if not authorized
 router.beforeEach((to, from, next) => {
-  store.dispatch('authenticate')
-    .then(() => {
-      if (to.path === '/') {
-        next({ path: '/playlists', replace: true })
-      } else {
-        next()
-      }
-    }).catch(() => next({ path: '/login', replace: true }))
+  if (to.path !== '/') {
+    // Check for authentication
+    if (to.meta.requiresAuth) {
+      // Redirect to / (login) on failed auth,
+      // otherwise continue as normal
+      store.dispatch('authenticate')
+        .then(() => next())
+        .catch(() => next({ path: '/', replace: true }))
+    } else {
+      // No need to authenticate, just continue as normal
+      next()
+    }
+  } else {
+    // Redirect to /playlists on successful auth,
+    // otherwise continue showing / (login) as normal
+    store.dispatch('authenticate')
+      .then(() => next('/playlists'))
+      .catch(() => next())
+  }
 })
 
 export default router
