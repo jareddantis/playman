@@ -1,11 +1,13 @@
 #playlist {
   display: grid;
-  grid-template-columns: 16rem 1fr;
+  grid-template-columns: [meta] 16rem [tracks] 1fr;
   grid-template-rows: 1fr;
   grid-column-gap: 4rem;
 
   .meta {
-    width: 100%;
+    grid-column: meta;
+    width: 16rem;
+    position: fixed;
 
     .v-image {
       border-radius: 4px;
@@ -14,6 +16,7 @@
   }
 
   .tracks {
+    grid-column: tracks;
     & > div {
       margin-bottom: 1rem
     }
@@ -25,6 +28,7 @@
     grid-row-gap: 2rem;
 
     .meta {
+      grid-column: unset;
       grid-row: meta;
       position: fixed;
       bottom: 0;
@@ -40,6 +44,7 @@
     }
 
     .tracks {
+      grid-column: unset;
       grid-row: tracks;
     }
   }
