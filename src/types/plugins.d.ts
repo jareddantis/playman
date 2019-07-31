@@ -8,6 +8,8 @@ declare class SpotifyApiWrapper {
   public client: SpotifyWebApi
 
   constructor()
+  public getPlaylistTracks(id: string, initial: any[], offset: number,
+                           resolve: (arg0: any) => void, reject: (arg0: any) => void): Promise<any>
   public setTokens(access: string, refresh: string, expiry: number): void
 }
 

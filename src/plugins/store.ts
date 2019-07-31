@@ -87,9 +87,7 @@ const store = new Vuex.Store({
     },
     getPlaylistTracks(context, id) {
       return new Promise((resolve, reject) => {
-        CLIENT.getPlaylistTracks(id, { fields: 'items' })
-          .then((response) => resolve(response.body))
-          .catch((error) => reject(new Error(error)))
+        WRAPPER.getPlaylistTracks(id, [], 0, resolve, reject)
       })
     },
     updatePlaylists({ state, commit }) {

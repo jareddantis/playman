@@ -55,6 +55,8 @@
           .then((playlist) => {
             this.playlistArt = playlist.images[0].url
             this.playlistName = playlist.name
+            this.pages = Math.ceil(playlist.tracks.total / this.pageLimit)
+
             this.$bus.$emit('change-navbar', {
               actionBar: 'Playlist',
               backButton: true,
@@ -67,17 +69,8 @@
         this.$store.dispatch('getPlaylistTracks', this.id)
           .then((response) => {
             // Store tracks
-            this.allTracks = response.items
-
-            // Calculate total number of pages
-            this.pages = Math.floor(response.total / this.pageLimit)
-
-            if (response.next === null) {
-              // All tracks have been fetched
-              resolve()
-            } else {
-              resolve()
-            }
+            this.allTracks = response
+            resolve()
           })
           .catch((error) => reject(error))
       })

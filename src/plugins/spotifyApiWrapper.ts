@@ -67,6 +67,26 @@ export default class SpotifyApiWrapper {
     })
   }
 
+  public getPlaylistTracks(id: string, initial: any[], offset: number,
+                           resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    const limit = 100
+
+    this.client.getPlaylistTracks(id, { offset, limit })
+      .then((response) => {
+        const results = initial.concat(response.body.items)
+
+        // Check if we have everything
+        if (response.body.next === null) {
+          // We have everything!
+          resolve(results)
+        } else {
+          // Retrieve next page
+          this.getPlaylistTracks(id, results, offset + limit, resolve, reject)
+        }
+      })
+      .catch((error) => reject(new Error(error)))
+  }
+
   private generateStateToken() {
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let result = ''
