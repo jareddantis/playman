@@ -44,7 +44,7 @@
   export default class Navbar extends Vue {
     public avatarUri!: string
     public currentActionBar: string = 'HomeBar'
-    public loading: boolean = false
+    public loading: boolean = true
     public username!: string
     public viewName: string = ''
 

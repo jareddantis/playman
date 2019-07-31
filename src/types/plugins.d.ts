@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import SpotifyWebApi from 'spotify-web-api-node'
 
-declare class SpotifyClient {
+declare class SpotifyApiWrapper {
   public authUri: string
+  public authenticated: boolean
   public redirectUri: string
   public client: SpotifyWebApi
 
@@ -13,6 +14,5 @@ declare class SpotifyClient {
 declare module 'vue/types/vue' {
   interface Vue {
     $bus: Vue,
-    $spCl: SpotifyClient,
   }
 }
