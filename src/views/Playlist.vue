@@ -2,7 +2,7 @@
   <div id="playlist">
     <div class="meta">
       <v-img :lazy-src="require('../assets/gradient.jpeg')"
-             :src="playlistArt" :alt="playlistName" class="image">
+             :src="playlistArt" :alt="playlistName">
         <template v-slot:placeholder>
           <v-layout fill-height align-center justify-center ma-0>
             <v-progress-circular indeterminate
