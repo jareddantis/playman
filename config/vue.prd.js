@@ -101,7 +101,7 @@ module.exports = {
       // Generate index.html
       new HtmlWebpackPlugin({
         filename: 'index.html',
-        template: path.resolve(__dirname, '../src/index.html'),
+        template: path.resolve(__dirname, '../src/index.prd.html'),
         title: 'Setlist',
         meta: {
           'viewport': 'width=device-width, initial-scale=1, shrink-to-fit=no',
