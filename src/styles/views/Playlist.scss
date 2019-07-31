@@ -1,8 +1,8 @@
 #playlist {
   display: grid;
-  grid-template-columns: 10rem 1fr;
+  grid-template-columns: 16rem 1fr;
   grid-template-rows: 1fr;
-  grid-column-gap: 1.5rem;
+  grid-column-gap: 4rem;
 
   .meta {
     width: 100%;
@@ -12,6 +12,35 @@
   .tracks {
     & > div {
       margin-bottom: 1rem
+    }
+  }
+
+  @media screen and (max-width: 960px) {
+    grid-template-columns: 10rem 1fr;
+  }
+
+  @media screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+    grid-template-rows:  [tracks] 1fr [meta] 2.5rem;
+    grid-row-gap: 2rem;
+
+    .meta {
+      grid-row: meta;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      background: linear-gradient(0deg, rgba(36, 29, 57, 100) 70%, rgba(36, 29, 57, 0) 100%) no-repeat;
+      margin-bottom: 0;
+      padding: 2rem 0 1rem;
+      z-index: 10;
+
+      .image {
+        display: none;
+      }
+    }
+
+    .tracks {
+      grid-row: tracks;
     }
   }
 }
