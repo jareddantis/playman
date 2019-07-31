@@ -2,7 +2,9 @@
   position: sticky;
   top: 0;
   left: 0;
-  padding: 1rem 0;
+  z-index: 5;
+  width: 100vw;
+  padding: 1rem;
   background: linear-gradient(180deg, #121738 70%, rgba(0, 0, 0, 0) 100%) no-repeat;
   display: flex;
   flex-direction: row;
