@@ -38,6 +38,7 @@ export default class Home extends Vue {
     if (this.isLoggedIn) {
       // Restore tokens from storage
       this.$store.dispatch('useTokens')
+        .then(() => this.onLogin())
     }
   }
 
