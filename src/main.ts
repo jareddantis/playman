@@ -4,10 +4,12 @@ import eventBus from './plugins/eventBus'
 import router from './plugins/router'
 import store from './plugins/store'
 import vuetify from './plugins/vuetify'
+import virtualScroller from 'vue-virtual-scroller'
 import './registerServiceWorker'
 import './styles/global.scss'
 
 Vue.use(eventBus)
+Vue.use(virtualScroller)
 Vue.config.productionTip = false
 
 new Vue({

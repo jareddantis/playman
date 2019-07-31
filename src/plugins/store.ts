@@ -78,6 +78,20 @@ const store = new Vuex.Store({
       })
     },
     clearAllData: ({ commit }) => commit('reset'),
+    getPlaylist({ state }, id) {
+      return new Promise((resolve, reject) => {
+        CLIENT.getPlaylist(id)
+          .then((response) => resolve(response.body))
+          .catch((error) => reject(new Error(error)))
+      })
+    },
+    getPlaylistTracks(context, id) {
+      return new Promise((resolve, reject) => {
+        CLIENT.getPlaylistTracks(id, { fields: 'items' })
+          .then((response) => resolve(response.body.items))
+          .catch((error) => reject(new Error(error)))
+      })
+    },
     updatePlaylists({ state, commit }) {
       return new Promise((resolve, reject) => {
         CLIENT.getUserPlaylists().then((response) => {

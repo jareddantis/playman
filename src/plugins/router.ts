@@ -25,6 +25,12 @@ const router = new Router({
       meta: { requiresAuth: true },
     },
     {
+      path: '/playlists/:id',
+      name: 'playlist',
+      component: () => import(/* webpackChunkName: "playlist" */ '../views/Playlist.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
@@ -34,17 +40,14 @@ const router = new Router({
 
 // Redirect sensitive routes to landing if not authorized
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth) {
-    store.dispatch('authenticate').then(() => {
-      if (store.state.isLoggedIn) {
-        next()
+  store.dispatch('authenticate')
+    .then(() => {
+      if (to.path === '/') {
+        next({ path: '/playlists', replace: true })
       } else {
-        next({ path: '/login', replace: true })
+        next()
       }
     }).catch(() => next({ path: '/login', replace: true }))
-  } else {
-    next()
-  }
 })
 
 export default router

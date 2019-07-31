@@ -1,7 +1,7 @@
 <template>
   <div id="playlists">
     <router-link v-for="playlist in playlists"
-                 :key="playlist.id"
+                 :key="playlist.id" class="playlist-link"
                  :to="'/playlists/' + playlist.id">
       <PlaylistCard :playlist="playlist"></PlaylistCard>
     </router-link>
@@ -23,7 +23,10 @@
 
     public mounted() {
       // Update navbar title
-      this.$bus.$emit('change-navbar-title', 'Playlists')
+      this.$bus.$emit('change-navbar', {
+        name: 'Playlists',
+        backButton: false,
+      })
 
       // Load playlists
       this.$bus.$emit('loading', true)

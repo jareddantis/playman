@@ -8,6 +8,10 @@
   grid-auto-rows: 1fr;
   grid-gap: 3rem;
 
+  .playlist-link {
+    text-decoration: none;
+  }
+
   @media screen and (max-width: 600px) {
     width: $body-width-small;
     margin-bottom: 2rem;
