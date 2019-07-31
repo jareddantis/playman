@@ -19,11 +19,8 @@
         :total-visible="10"></v-pagination>
     </div>
     <div class="tracks">
-      <div class="track"
-           v-for="item in playlistTracks"
-           :key="item.track.id">
-        <p class="body-1 white--text">{{ item.track.name }}</p>
-      </div>
+      <PlaylistTrack v-for="track in playlistTracks"
+                     :key="track.id" :track="track"></PlaylistTrack>
     </div>
   </div>
 </template>
@@ -31,21 +28,34 @@
 <script lang="ts">
   import Vue from 'vue'
   import { Component } from 'vue-property-decorator'
+  import PlaylistTrack from '@/components/PlaylistTrack.vue'
 
-  @Component
+  @Component({
+    components: { PlaylistTrack },
+  })
   export default class Playlist extends Vue {
     public page: number = 1
     public pages: number = 1
     public playlistName: string = ''
     public playlistArt: string = ''
     private allTracks: any[] = []
+    private checkedTracks: string[] = []
     private readonly pageLimit: number = 50
 
     public mounted() {
       this.$bus.$emit('loading', true)
+      this.getPlaylist().then(() => this.$bus.$emit('loading', false))
 
-      this.getPlaylist()
-        .then(() => this.$bus.$emit('loading', false))
+      // Listen to track check/uncheck events
+      this.$on('track-toggled', (payload: any) => {
+        const { id, state } = payload
+
+        if (state) {
+          this.checkedTracks.push(id)
+        } else {
+          this.checkedTracks.splice(this.checkedTracks.indexOf(id), 1)
+        }
+      })
     }
 
     private async getPlaylist() {
@@ -68,8 +78,18 @@
         // Load playlist tracks
         this.$store.dispatch('getPlaylistTracks', this.id)
           .then((response) => {
-            // Store tracks
-            this.allTracks = response
+            // Simplify track objects
+            // so we don't have to re-process everything when changing pages
+            for (const item of response) {
+              const { track } = item
+              this.allTracks.push({
+                id: track.id,
+                album: track.album.name,
+                artist: track.artists.length === 1 ? track.artists[0].name : this.generateArtists(track.artists),
+                name: track.name,
+              })
+            }
+
             resolve()
           })
           .catch((error) => reject(error))
@@ -83,6 +103,20 @@
       const begin = (this.page - 1) * this.pageLimit
       const end = begin + this.pageLimit
       return this.allTracks.slice(begin, end)
+    }
+
+    private generateArtists(artists: any[]): string {
+      let str = ''
+
+      artists.forEach((artist, index) => {
+        str += artist.name
+
+        if (index < artists.length - 1) {
+          str += ', '
+        }
+      })
+
+      return str
     }
   }
 </script>

@@ -1,0 +1,36 @@
+.track {
+  display: grid;
+  grid-template-columns: [col-control] 2.5rem [col-meta] 1fr;
+  grid-template-rows: [row-name] 1.5rem [row-info] 1.5rem;
+  grid-column-gap: 0.5rem;
+  align-items: center;
+
+  .track-control {
+    grid-column: col-control;
+    grid-row: row-name / span 2;
+    display: flex;
+
+    & > div {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .track-name, .track-info {
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .track-name {
+    grid-column: col-meta;
+    grid-row: row-name;
+    font-weight: 700;
+  }
+
+  .track-info {
+    grid-column: col-meta;
+    grid-row: row-info;
+  }
+}
