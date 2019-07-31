@@ -72,9 +72,8 @@ const store = new Vuex.Store({
               .catch((error) => reject(new Error(error)))
           }
         } else {
-          dispatch('updateUserMeta')
-            .then(() => resolve())
-            .catch((error) => reject(new Error(error)))
+          // Already authenticated
+          resolve()
         }
       })
     },
