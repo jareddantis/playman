@@ -22,6 +22,7 @@ h1, h2, h3, p, td, span, input, select, option, li, .v-application {
   text-rendering: optimizeLegibility !important;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
   color: #f5f5f5;
+  user-select: none;
 }
 
 .material-icons {
@@ -45,6 +46,7 @@ button {
   touch-action: manipulation;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   user-select: none;
+  outline: none;
 }
 
 // Component transitions
