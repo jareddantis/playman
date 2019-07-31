@@ -1,4 +1,11 @@
 .playlist {
+  transition: filter 200ms ease;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+
   .playlist-art {
     width: 100%;
 
