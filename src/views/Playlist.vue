@@ -1,6 +1,6 @@
 <template>
   <div id="playlist">
-    <div class="meta">
+    <div :class="pages > 1 ? 'meta' : 'meta mobile-empty'">
       <v-img :lazy-src="require('../assets/gradient.jpeg')"
              :src="playlistArt" :alt="playlistName">
         <template v-slot:placeholder>
@@ -11,7 +11,8 @@
         </template>
       </v-img>
 
-      <v-pagination v-model="page" circle dark
+      <v-pagination v-show="pages > 1"
+                    v-model="page" circle dark
                     next-icon="arrow_right"
                     prev-icon="arrow_left"
                     :page="page" :length="pages"

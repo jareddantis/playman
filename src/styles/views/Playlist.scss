@@ -39,6 +39,10 @@
       z-index: 10;
       width: 100%;
 
+      &.mobile-empty {
+        background: none;
+      }
+
       .v-image {
         display: none;
       }
