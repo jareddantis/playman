@@ -2,8 +2,7 @@
   <div id="playlist">
     <div class="meta">
       <v-img :lazy-src="require('../assets/gradient.jpeg')"
-             :src="playlistArt"
-             :alt="playlistName">
+             :src="playlistArt" :alt="playlistName" class="image">
         <template v-slot:placeholder>
           <v-layout fill-height align-center justify-center ma-0>
             <v-progress-circular indeterminate
@@ -12,11 +11,11 @@
         </template>
       </v-img>
 
-      <v-pagination v-model="page" circle
-        next-icon="arrow_back"
-        prev-icon="arrow_forward"
-        :page="page" :length="pages"
-        :total-visible="10"></v-pagination>
+      <v-pagination v-model="page" circle dark
+                    next-icon="arrow_right"
+                    prev-icon="arrow_left"
+                    :page="page" :length="pages"
+                    :total-visible="3"></v-pagination>
     </div>
     <div class="tracks">
       <PlaylistTrack v-for="track in playlistTracks"
