@@ -20,40 +20,42 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-  import { Component, Watch } from 'vue-property-decorator'
-  import { mapState } from 'vuex'
+import Vue from 'vue'
+import { Component, Watch } from 'vue-property-decorator'
+import { mapState } from 'vuex'
+import PlaylistCard from '@/components/PlaylistCard.vue'
 
-  @Component({
-    computed: mapState(['isLoggedIn', 'playlists']),
-  })
-  export default class Home extends Vue {
-    public isLoggedIn!: boolean
-    public isLoggingIn: boolean = false
-    public playlists!: any[]
+@Component({
+  components: { PlaylistCard },
+  computed: mapState(['isLoggedIn', 'playlists']),
+})
+export default class Home extends Vue {
+  public isLoggedIn!: boolean
+  public isLoggingIn: boolean = false
+  public playlists!: any[]
 
-    public created() {
-      if (this.isLoggedIn) {
-        // Restore tokens from storage
-        this.$store.dispatch('useTokens')
-      }
-    }
-
-    public login() {
-      this.isLoggingIn = true
-      this.$store.dispatch('openAuthWindow')
-    }
-
-    @Watch('isLoggedIn')
-    public onLogin() {
-      this.isLoggingIn = false
-
-      // Load playlists
-      this.$bus.$emit('loading', true)
-      this.$store.dispatch('updatePlaylists')
-        .then(() => this.$bus.$emit('loading', false))
+  public created() {
+    if (this.isLoggedIn) {
+      // Restore tokens from storage
+      this.$store.dispatch('useTokens')
     }
   }
+
+  public login() {
+    this.isLoggingIn = true
+    this.$store.dispatch('openAuthWindow')
+  }
+
+  @Watch('isLoggedIn')
+  public onLogin() {
+    this.isLoggingIn = false
+
+    // Load playlists
+    this.$bus.$emit('loading', true)
+    this.$store.dispatch('updatePlaylists')
+      .then(() => this.$bus.$emit('loading', false))
+  }
+}
 </script>
 
 <style lang="scss" scoped>
