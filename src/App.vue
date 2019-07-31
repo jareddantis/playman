@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <v-content>
-      <!-- Navbar -->
-      <Navbar v-show="isLoggedIn"/>
+    <!-- Navbar -->
+    <Navbar v-show="isLoggedIn"/>
 
+    <v-content class="app-content">
       <!-- Router view -->
       <router-view :key="$route.fullPath" />
     </v-content>
@@ -28,6 +28,6 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import './styles/App';
 </style>
