@@ -58,7 +58,7 @@ const store = new Vuex.Store({
     redirectUri: () => WRAPPER.redirectUri,
   },
   actions: {
-    async authenticate({ state, dispatch }) {
+    async authenticate({ state, commit, dispatch }) {
       return new Promise((resolve, reject) => {
         if (!WRAPPER.authenticated) {
           const { accessToken, refreshToken, expiry } = state as any
@@ -67,7 +67,17 @@ const store = new Vuex.Store({
             reject(new Error('Not authenticated'))
           } else {
             WRAPPER.setTokens(accessToken, refreshToken, expiry)
-              .then(() => dispatch('updateUserMeta'))
+              .then((results: any) => {
+                if (results.expired) {
+                  // Store new token and expiry
+                  commit('setTokens', {
+                    accessToken: results.newToken,
+                    expiry: results.newExpiry,
+                  })
+                }
+
+                dispatch('updateUserMeta')
+              })
               .then(() => resolve())
               .catch((error) => reject(new Error(error)))
           }

@@ -57,12 +57,17 @@ export default class SpotifyApiWrapper {
           reject(new Error('Invalid expiry'))
         }
 
-        this.reauth().then(() => resolve())
+        this.reauth()
+          .then((result: any) => resolve({
+            expired: true,
+            newExpiry: result.expiry,
+            newToken: result.access_token,
+          }))
           .catch((error) => reject(error))
       } else {
         this.apiClient.setAccessToken(access)
         this.expiry = expiry
-        resolve()
+        resolve({ expired: false })
       }
     })
   }
@@ -125,9 +130,10 @@ export default class SpotifyApiWrapper {
           const {access_token, expires_in} = result
 
           if (access_token !== undefined) {
+            const expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
             this.apiClient.setAccessToken(access_token)
-            this.expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
-            resolve()
+            this.expiry = expiry
+            resolve({ expiry, access_token })
           } else {
             reject(new Error('Failed to authenticate'))
           }
