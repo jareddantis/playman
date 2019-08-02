@@ -20,10 +20,7 @@ module.exports = {
     optimization: {
       minimizer: [
         new OptimizeCSSPlugin(),
-        new TerserPlugin({
-          parallel: true,
-          sourceMap: true,
-        }),
+        new TerserPlugin({ parallel: true }),
       ],
       runtimeChunk: 'single',
       splitChunks: {
@@ -59,6 +56,7 @@ module.exports = {
         },
         {
           test: /\.css$/,
+          exclude: /vue-virtual-scroller/,
           use: [
             MiniCSSExtractPlugin.loader,
             'css-loader',
