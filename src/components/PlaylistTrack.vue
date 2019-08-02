@@ -16,7 +16,6 @@
 
   @Component
   export default class PlaylistTrack extends Vue {
-    @Prop({ required: true }) public readonly index: number | undefined
     @Prop({ required: true }) public readonly track: any
     public isChecked: boolean = false
 
@@ -28,7 +27,6 @@
     public onToggle() {
       this.$emit('track-toggled', {
         id: this.track.id,
-        index: this.index,
         state: this.isChecked,
       })
     }

@@ -1,6 +1,6 @@
 <template>
   <div id="playlist">
-    <div :class="pages > 1 ? 'meta' : 'meta mobile-empty'">
+    <div class="meta">
       <v-img :lazy-src="require('../assets/gradient.jpeg')"
              :src="playlistArt" :alt="playlistName">
         <template v-slot:placeholder>
@@ -10,19 +10,16 @@
           </v-layout>
         </template>
       </v-img>
-
-      <v-pagination v-show="pages > 1"
-                    v-model="page" circle dark
-                    next-icon="arrow_right"
-                    prev-icon="arrow_left"
-                    :page="page" :length="pages"
-                    :total-visible="3"></v-pagination>
     </div>
     <div class="tracks">
-      <PlaylistTrack v-for="(track, index) in playlistTracks"
-                     v-on:track-toggled="onTrackToggled"
-                     :key="track.id" :index="index + ((page - 1) * pageLimit)"
-                     :track="track" :checked="track.checked"></PlaylistTrack>
+      <RecycleScroller class="scroller"
+                       :items="playlistTracks" :item-size="60"
+                       key-field="id" :page-mode="true"
+                       v-slot="{ item }" v-if="loaded">
+        <PlaylistTrack v-on:track-toggled="onTrackToggled"
+                       :key="item.id" :track="item" :checked="item.checked"></PlaylistTrack>
+      </RecycleScroller>
+      <p v-else>Loading your tracks, hang tight!</p>
     </div>
   </div>
 </template>
@@ -40,17 +37,10 @@ export default class Playlist extends Vue {
   get id(): string {
     return this.$route.params.id
   }
-  get playlistTracks(): any[] {
-    const begin = (this.page - 1) * this.pageLimit
-    const end = begin + this.pageLimit
-    return this.allTracks.slice(begin, end)
-  }
-  public readonly pageLimit: number = 50
-  public page: number = 1
-  public pages: number = 1
+  public loaded: boolean = false
   public playlistName: string = ''
   public playlistArt: string = ''
-  private allTracks: any[] = []
+  public playlistTracks: any[] = []
   private checkedTracks: string[] = []
 
   public mounted() {
@@ -59,9 +49,8 @@ export default class Playlist extends Vue {
   }
 
   public onTrackToggled(payload: any) {
-    const { id, index, state } = payload
+    const { id, state } = payload
     const checkedIdx = this.checkedTracks.indexOf(id)
-    this.allTracks[index].checked = state
 
     if (state) {
       this.checkedTracks.push(id)
@@ -101,7 +90,6 @@ export default class Playlist extends Vue {
         .then((playlist) => {
           this.playlistArt = playlist.images[0].url
           this.playlistName = playlist.name
-          this.pages = Math.ceil(playlist.tracks.total / this.pageLimit)
           this.setInitialNavbar()
         })
         .catch((error) => reject(error))
@@ -113,7 +101,7 @@ export default class Playlist extends Vue {
           // so we don't have to re-process everything when changing pages
           for (const item of response) {
             const { track } = item
-            this.allTracks.push({
+            this.playlistTracks.push({
               id: track.id,
               album: track.album.name,
               artist: track.artists.length === 1 ? track.artists[0].name : this.generateArtists(track.artists),
@@ -122,6 +110,7 @@ export default class Playlist extends Vue {
             })
           }
 
+          this.loaded = true
           resolve()
         })
         .catch((error) => reject(error))

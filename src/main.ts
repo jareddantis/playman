@@ -6,8 +6,11 @@ import store from './plugins/store'
 import vuetify from './plugins/vuetify'
 import './registerServiceWorker'
 import './styles/global.scss'
+import VirtualScroller from 'vue-virtual-scroller'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 Vue.use(eventBus)
+Vue.use(VirtualScroller)
 Vue.config.productionTip = false
 
 new Vue({

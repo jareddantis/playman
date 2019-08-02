@@ -59,3 +59,8 @@ button {
 .component-fade-enter, .component-fade-leave-to {
   opacity: 0;
 }
+
+// vue-virtual-scroller
+.vue-recycle-scroller__item-wrapper {
+  overflow: visible !important;
+}
