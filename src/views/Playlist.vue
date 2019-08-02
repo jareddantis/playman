@@ -12,21 +12,19 @@
       </v-img>
     </div>
     <div class="tracks">
-      <RecycleScroller class="scroller"
+      <RecycleScroller class="scroller" v-slot="{ item }"
                        :items="playlistTracks" :item-size="60"
-                       key-field="id" :page-mode="true"
-                       v-slot="{ item }" v-if="loaded">
+                       key-field="key" :page-mode="true">
         <PlaylistTrack v-on:track-toggled="onTrackToggled"
-                       :key="item.id" :track="item" :checked="item.checked"></PlaylistTrack>
+                       :key="item.key" :track="item" :checked="item.checked"></PlaylistTrack>
       </RecycleScroller>
-      <p v-else>Loading your tracks, hang tight!</p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component, Watch } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
 
 @Component({
@@ -37,25 +35,27 @@ export default class Playlist extends Vue {
   get id(): string {
     return this.$route.params.id
   }
-  public loaded: boolean = false
   public playlistName: string = ''
   public playlistArt: string = ''
   public playlistTracks: any[] = []
-  private checkedTracks: string[] = []
+  private checkedTracks: number[] = []
+  private snapshotId: string = ''
 
   public mounted() {
-    this.$bus.$emit('loading', true)
-    this.getPlaylist().then(() => this.$bus.$emit('loading', false))
+    this.getPlaylist()
+
+    // Navbar actions
+    this.$bus.$on('delete-tracks', () => this.deleteTracks())
   }
 
   public onTrackToggled(payload: any) {
-    const { id, state } = payload
-    const checkedIdx = this.checkedTracks.indexOf(id)
+    const { index, state } = payload
 
+    this.playlistTracks[index].checked = state
     if (state) {
-      this.checkedTracks.push(id)
+      this.checkedTracks.push(index)
     } else {
-      this.checkedTracks.splice(checkedIdx, 1)
+      this.checkedTracks.splice(this.checkedTracks.indexOf(index), 1)
     }
 
     // Update action bar
@@ -70,21 +70,49 @@ export default class Playlist extends Vue {
     }
   }
 
-  private setInitialNavbar() {
-    this.$bus.$emit('change-navbar', {
-      actionBar: 'Playlist',
-      backButton: true,
-      name: this.playlistName,
+  private loadStart() {
+    this.$bus.$emit('loading', true)
+  }
+
+  private loadEnd() {
+    this.$bus.$emit('loading', false)
+  }
+
+  private async deleteTracks() {
+    // Loading
+    this.loadStart()
+
+    // Remove checked tracks locally
+    this.playlistTracks = this.playlistTracks.filter((track) => !this.checkedTracks.includes(track.index))
+
+    return new Promise((resolve, reject) => {
+      this.$store.dispatch('deletePlaylistTracks', {
+        id: this.id,
+        snapshot: this.snapshotId,
+        tracks: this.checkedTracks,
+      }).then((snapshot) => {
+        // Save snapshot ID
+        this.snapshotId = snapshot
+
+        // Done
+        this.setInitialNavbar()
+        this.loadEnd()
+        resolve()
+      }).catch((error) => reject(error))
     })
   }
 
   private async getPlaylist() {
+    // Loading...
+    this.loadStart()
+
     return new Promise((resolve, reject) => {
       // Load playlist details
       this.$store.dispatch('getPlaylist', this.id)
         .then((playlist) => {
           this.playlistArt = playlist.images[0].url
           this.playlistName = playlist.name
+          this.snapshotId = playlist.snapshot_id
           this.setInitialNavbar()
         })
         .catch((error) => reject(error))
@@ -93,18 +121,21 @@ export default class Playlist extends Vue {
       this.$store.dispatch('getPlaylistTracks', this.id)
         .then((response) => {
           // Simplify track objects
-          for (const item of response) {
+          for (const [ index, item ] of response.entries()) {
             const { track } = item
             this.playlistTracks.push({
-              id: track.id,
               album: track.album.name,
               artist: track.artists.length === 1 ? track.artists[0].name : this.generateArtists(track.artists),
-              name: track.name,
+              id: track.id,
+              key: `${track.id}-${index}`,
+              index,
               checked: false,
+              name: track.name,
             })
           }
 
-          this.loaded = true
+          // Done
+          this.loadEnd()
           resolve()
         })
         .catch((error) => reject(error))
@@ -123,6 +154,14 @@ export default class Playlist extends Vue {
     })
 
     return str
+  }
+
+  private setInitialNavbar() {
+    this.$bus.$emit('change-navbar', {
+      actionBar: 'Playlist',
+      backButton: true,
+      name: this.playlistName,
+    })
   }
 }
 </script>

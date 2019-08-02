@@ -3,7 +3,8 @@
     <v-btn text small icon color="white">
       <v-icon>cut</v-icon>
     </v-btn>
-    <v-btn text small icon color="white">
+    <v-btn text small icon color="white"
+           @click="$bus.$emit('delete-tracks')">
       <v-icon>delete</v-icon>
     </v-btn>
   </div>

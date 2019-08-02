@@ -83,6 +83,11 @@ const store = new Vuex.Store({
         resolve()
       })
     },
+    async deletePlaylistTracks(context, { id, snapshot, tracks }) {
+      return new Promise((resolve, reject) => {
+        WRAPPER.deletePlaylistTracks(id, tracks, snapshot, resolve, reject)
+      })
+    },
     async getPlaylist({ state }, id) {
       return new Promise((resolve, reject) => {
         CLIENT.getPlaylist(id)

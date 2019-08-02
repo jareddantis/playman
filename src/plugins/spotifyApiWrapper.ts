@@ -87,6 +87,21 @@ export default class SpotifyApiWrapper {
       .catch((error) => reject(new Error(error)))
   }
 
+  public deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
+                              resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    this.client.removeTracksFromPlaylistByPosition(id, tracks.splice(0, 100), snapshot)
+      .then((response) => {
+        const snapshotId = response.body.snapshot_id
+
+        if (tracks.length) {
+          this.deletePlaylistTracks(id, tracks, snapshotId, resolve, reject)
+        } else {
+          resolve(snapshotId)
+        }
+      })
+      .catch((error) => reject(new Error(error)))
+  }
+
   private generateStateToken() {
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let result = ''

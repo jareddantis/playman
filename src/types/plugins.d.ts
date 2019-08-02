@@ -7,7 +7,8 @@ declare class SpotifyApiWrapper {
   public redirectUri: string
   public client: SpotifyWebApi
 
-  constructor()
+  public deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
+                              resolve: (arg0: any) => void, reject: (arg0: any) => void): Promise<any>
   public getPlaylistTracks(id: string, initial: any[], offset: number,
                            resolve: (arg0: any) => void, reject: (arg0: any) => void): Promise<any>
   public setTokens(access: string, refresh: string, expiry: number): void
