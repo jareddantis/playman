@@ -70,11 +70,6 @@ export default class Playlist extends Vue {
     }
   }
 
-  @Watch('page')
-  private onPageChanged() {
-    window.scrollTo(0, 0)
-  }
-
   private setInitialNavbar() {
     this.$bus.$emit('change-navbar', {
       actionBar: 'Playlist',
@@ -98,7 +93,6 @@ export default class Playlist extends Vue {
       this.$store.dispatch('getPlaylistTracks', this.id)
         .then((response) => {
           // Simplify track objects
-          // so we don't have to re-process everything when changing pages
           for (const item of response) {
             const { track } = item
             this.playlistTracks.push({
