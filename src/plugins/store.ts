@@ -58,7 +58,7 @@ const store = new Vuex.Store({
     redirectUri: () => WRAPPER.redirectUri,
   },
   actions: {
-    authenticate({ state, dispatch }) {
+    async authenticate({ state, dispatch }) {
       return new Promise((resolve, reject) => {
         if (!WRAPPER.authenticated) {
           const { accessToken, refreshToken, expiry } = state as any
@@ -77,20 +77,25 @@ const store = new Vuex.Store({
         }
       })
     },
-    clearAllData: ({ commit }) => commit('reset'),
-    getPlaylist({ state }, id) {
+    async clearAllData({ commit }) {
+      return new Promise((resolve) => {
+        commit('reset')
+        resolve()
+      })
+    },
+    async getPlaylist({ state }, id) {
       return new Promise((resolve, reject) => {
         CLIENT.getPlaylist(id)
           .then((response) => resolve(response.body))
           .catch((error) => reject(new Error(error)))
       })
     },
-    getPlaylistTracks(context, id) {
+    async getPlaylistTracks(context, id) {
       return new Promise((resolve, reject) => {
         WRAPPER.getPlaylistTracks(id, [], 0, resolve, reject)
       })
     },
-    updatePlaylists({ state, commit }) {
+    async updatePlaylists({ state, commit }) {
       return new Promise((resolve, reject) => {
         CLIENT.getUserPlaylists().then((response) => {
           commit('setPlaylists', response.body.items.filter((playlist: any) => {
@@ -100,7 +105,7 @@ const store = new Vuex.Store({
         }).catch((error) => reject(new Error(error)))
       })
     },
-    updateUserMeta({ commit }) {
+    async updateUserMeta({ commit }) {
       return new Promise((resolve, reject) => {
         // Store user avatar and username
         CLIENT.getMe().then((response) => {
