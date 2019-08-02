@@ -33,6 +33,7 @@
       this.$bus.$emit('loading', true)
       this.$store.dispatch('updatePlaylists')
         .then(() => this.$bus.$emit('loading', false))
+        .catch(() => this.$store.commit('setOffline', true))
     }
   }
 </script>

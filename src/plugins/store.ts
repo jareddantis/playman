@@ -31,6 +31,9 @@ function getInitialState(): { [key: string]: any } {
 
     // User data
     playlists: [],
+
+    // Connection status
+    offline: false,
   }
 }
 
@@ -47,6 +50,7 @@ const store = new Vuex.Store({
       })
     },
     setLoggedIn: (state: any, loginStatus) => state.isLoggedIn = loginStatus,
+    setOffline: (state, offline) => state.offline = offline,
     setPlaylists: (state, playlists) => state.playlists = playlists,
     setTokens: (state, authData) => Object.assign(state, authData),
     setUserAvatar: (state, uri) => state.avatarUri = uri,

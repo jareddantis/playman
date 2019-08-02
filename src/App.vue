@@ -6,6 +6,14 @@
     <v-content class="app-content">
       <!-- Router view -->
       <router-view :key="$route.fullPath" />
+
+      <!-- Offline snackbar -->
+      <v-snackbar bottom multi-line
+                  v-model="offline" :timeout="0"
+                  color="red darken-2">
+        <p class="snackbar-text">Can't communicate with Spotify API.<br>
+          Please check your connection or try again later.</p>
+      </v-snackbar>
     </v-content>
   </v-app>
 </template>
@@ -18,15 +26,21 @@
 
   @Component({
     components: { Navbar },
-    computed: mapState(['avatarUri', 'isLoggedIn', 'username']),
+    computed: mapState([
+      'avatarUri',
+      'isLoggedIn',
+      'offline',
+      'username',
+    ]),
   })
   export default class App extends Vue {
     public avatarUri!: string
     public isLoggedIn!: boolean
+    public offline!: boolean
     public username!: string
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import './styles/App';
 </style>
