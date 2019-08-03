@@ -82,7 +82,7 @@ export default class Navbar extends Vue {
 
   public logout() {
     this.$store.commit('reset')
-    this.$router.push('/')
+    window.location.reload()
   }
 }
 </script>
