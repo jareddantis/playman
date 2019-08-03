@@ -105,6 +105,13 @@ const store = new Vuex.Store({
         }
       })
     },
+    async changePlaylistDetails(context, { id, details }) {
+      return new Promise((resolve, reject) => {
+        api.changePlaylistDetails(id, details)
+          .then(() => resolve())
+          .catch((error: any) => reject(error))
+      })
+    },
     async getPlaylist({ state }, id) {
       return new Promise((resolve, reject) => {
         api.getPlaylist(id)

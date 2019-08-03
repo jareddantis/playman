@@ -1,6 +1,7 @@
 <template>
   <div class="action-bar">
-    <v-btn text small icon color="white">
+    <v-btn text small icon color="white"
+           @click="$bus.$emit('edit-playlist-details')">
       <v-icon>edit</v-icon>
     </v-btn>
     <v-btn text small icon color="white">

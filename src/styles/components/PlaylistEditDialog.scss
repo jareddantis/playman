@@ -1,0 +1,42 @@
+.v-card__title + .v-card__text {
+  padding-top: 1rem !important;
+}
+
+.editor {
+  display: grid;
+  grid-template-columns: [art] 12rem [details] 1fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 1rem;
+
+  .art, .details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .art {
+    grid-column: art;
+
+    img {
+      width: 100%;
+    }
+
+    .switches {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .details {
+    grid-column: details;
+
+    & > div {
+      width: 100%;
+    }
+
+    .v-text-field {
+      margin-bottom: 1rem;
+    }
+  }
+}

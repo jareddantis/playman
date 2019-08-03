@@ -20,6 +20,9 @@
                        :key="item.key" :track="item" :checked="item.checked"></PlaylistTrack>
       </RecycleScroller>
     </div>
+
+    <!-- Playlist details edit dialog -->
+    <PlaylistEditDialog />
   </div>
 </template>
 
@@ -27,19 +30,23 @@
 import Vue from 'vue'
 import { Component } from 'vue-property-decorator'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
+import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 
 @Component({
-  components: { PlaylistTrack },
+  components: { PlaylistEditDialog, PlaylistTrack },
 })
 export default class Playlist extends Vue {
 
   get id(): string {
     return this.$route.params.id
   }
+  public isCollaborative: boolean = false
+  public isPublic: boolean = true
   public loading: boolean = true
   public loadingMsg: string = 'Loading tracks, hang tight...'
-  public playlistName: string = ''
   public playlistArt: string = ''
+  public playlistDesc: string = ''
+  public playlistName: string = ''
   public playlistTracks: any[] = []
   private checkedTracks: number[] = []
   private snapshotId: string = ''
@@ -50,6 +57,16 @@ export default class Playlist extends Vue {
 
     // Navbar actions
     this.$bus.$on('delete-tracks', () => this.deleteTracks())
+    this.$bus.$on('edit-playlist-details', () => {
+      this.$bus.$emit('show-playlist-details-dialog', {
+        art: this.playlistArt,
+        desc: this.playlistDesc,
+        id: this.id,
+        isCollab: this.isCollaborative,
+        isPublic: this.isPublic,
+        name: this.playlistName,
+      })
+    })
   }
 
   public onTrackToggled(payload: any) {
@@ -129,6 +146,9 @@ export default class Playlist extends Vue {
       // Load playlist details
       this.$store.dispatch('getPlaylist', this.id)
         .then((playlist) => {
+          this.isCollaborative = playlist.collaborative
+          this.isPublic = playlist.public
+          this.playlistDesc = playlist.description
           this.playlistName = playlist.name
           this.snapshotId = playlist.snapshot_id
 

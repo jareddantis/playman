@@ -36,6 +36,7 @@ export default class Spotify {
         'playlist-modify-public',
         'playlist-read-collaborative',
         'playlist-read-private',
+        'ugc-image-upload',
       ].join(' '),
       show_dialog: false,
     })
@@ -52,26 +53,21 @@ export default class Spotify {
       : 'http://localhost:8080/callback'
   }
 
-  public async setTokens(access: string, refresh: string, expiry: number) {
+  public async changePlaylistDetails(id: string, details: any) {
     return new Promise((resolve, reject) => {
-      this.refreshToken = refresh
+      // Check if there is any cover art to commit
+      if (details.hasOwnProperty('art')) {
+        const art = details.art.split(',')[1]
+        delete details.art
+        this.throttler.add(() => this.client.uploadCustomPlaylistCoverImage(id, art))
+          .catch((error: any) => reject(new Error(error)))
+      }
 
-      if (new Date().getTime() >= expiry) {
-        if (expiry === 0) {
-          reject(new Error('Invalid expiry'))
-        }
-
-        this.reauth()
-          .then((result: any) => resolve({
-            expired: true,
-            newExpiry: result.expiry,
-            newToken: result.access_token,
-          }))
-          .catch((error) => reject(error))
-      } else {
-        this.client.setAccessToken(access)
-        this.expiry = expiry
-        resolve({ expired: false })
+      // Check if there are any details to commit
+      if (Object.keys(details).length) {
+        this.throttler.add(() => this.client.changePlaylistDetails(id, details))
+          .then(() => resolve())
+          .catch((error: any) => reject(new Error(error)))
       }
     })
   }
@@ -147,6 +143,30 @@ export default class Spotify {
           }})
           .then((playlists) => resolve(playlists))
       }).catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  public async setTokens(access: string, refresh: string, expiry: number) {
+    return new Promise((resolve, reject) => {
+      this.refreshToken = refresh
+
+      if (new Date().getTime() >= expiry) {
+        if (expiry === 0) {
+          reject(new Error('Invalid expiry'))
+        }
+
+        this.reauth()
+          .then((result: any) => resolve({
+            expired: true,
+            newExpiry: result.expiry,
+            newToken: result.access_token,
+          }))
+          .catch((error) => reject(error))
+      } else {
+        this.client.setAccessToken(access)
+        this.expiry = expiry
+        resolve({ expired: false })
+      }
     })
   }
 
