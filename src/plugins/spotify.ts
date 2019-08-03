@@ -1,19 +1,26 @@
 import qs from 'qs'
+import PromiseThrottle from 'promise-throttle'
 import SpotifyWebApi from 'spotify-web-api-node'
 import Worker from './spotify-worker'
 
 export default class Spotify {
-  private readonly apiClient!: SpotifyWebApi
+  private readonly client!: SpotifyWebApi
+  private readonly throttler!: PromiseThrottle
+  private expiry: number = 0
   private refreshToken: string = ''
   private stateToken: string = ''
-  private expiry: number = 0
 
   constructor() {
     // Init state
     this.generateStateToken()
 
+    // Init Promise Throttler
+    this.throttler = new PromiseThrottle({
+      requestsPerSecond: 5,
+    })
+
     // Init API client
-    this.apiClient = new SpotifyWebApi({
+    this.client = new SpotifyWebApi({
       redirectUri: this.redirectUri,
     })
   }
@@ -40,10 +47,6 @@ export default class Spotify {
     return this.refreshToken !== '' && this.expiry !== 0
   }
 
-  get client(): SpotifyWebApi {
-    return this.apiClient
-  }
-
   get redirectUri(): string {
     return process.env.NODE_ENV === 'production' ? 'https://setlist.jared.gq/callback'
       : 'http://localhost:8080/callback'
@@ -66,17 +69,18 @@ export default class Spotify {
           }))
           .catch((error) => reject(error))
       } else {
-        this.apiClient.setAccessToken(access)
+        this.client.setAccessToken(access)
         this.expiry = expiry
         resolve({ expired: false })
       }
     })
   }
 
-  public deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
-                              resolve: (arg0: any) => void, reject: (arg0: any) => void) {
-    this.client.removeTracksFromPlaylistByPosition(id, tracks.splice(0, 100), snapshot)
-      .then((response) => {
+  public async deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
+                                    resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    this.throttler.add(() => {
+      return this.client.removeTracksFromPlaylistByPosition(id, tracks.splice(0, 100), snapshot)
+    }).then((response: any) => {
         const snapshotId = response.body.snapshot_id
 
         if (tracks.length) {
@@ -85,15 +89,31 @@ export default class Spotify {
           resolve(snapshotId)
         }
       })
-      .catch((error) => reject(new Error(error)))
+      .catch((error: any) => reject(new Error(error)))
   }
 
-  public getPlaylistTracks(id: string, initial: any[], offset: number,
-                           resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+  public async getMe() {
+    return new Promise((resolve, reject) => {
+      this.throttler.add(() => this.client.getMe())
+        .then((me: any) => resolve(me))
+        .catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  public async getPlaylist(id: string) {
+    return new Promise((resolve, reject) => {
+      this.throttler.add(() => this.client.getPlaylist(id))
+        .then((playlist: any) => resolve(playlist))
+        .catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  public async getPlaylistTracks(id: string, initial: any[], offset: number,
+                                 resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     const limit = 100
 
-    this.client.getPlaylistTracks(id, { offset, limit })
-      .then((response) => {
+    this.throttler.add(() => this.client.getPlaylistTracks(id, { offset, limit }))
+      .then((response: any) => {
         const results = initial.concat(response.body.items)
 
         // Check if we have everything
@@ -106,18 +126,19 @@ export default class Spotify {
           // Retrieve next page
           this.getPlaylistTracks(id, results, offset + limit, resolve, reject)
         }
-      }).catch((error) => reject(new Error(error)))
+      }).catch((error: any) => reject(new Error(error)))
   }
 
-  public getUserPlaylists(username: string) {
+  public async getUserPlaylists(username: string) {
     return new Promise((resolve, reject) => {
-      this.client.getUserPlaylists().then((response) => {
-        Worker.send({ type: 'filter_user_playlists', data: {
+      this.throttler.add(() => this.client.getUserPlaylists())
+        .then((response: any) => {
+          Worker.send({ type: 'filter_user_playlists', data: {
             playlists: response.body.items,
             username,
           }})
           .then((playlists) => resolve(playlists))
-      }).catch((error) => reject(new Error(error)))
+      }).catch((error: any) => reject(new Error(error)))
     })
   }
 
@@ -145,7 +166,7 @@ export default class Spotify {
 
           if (access_token !== undefined) {
             const expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
-            this.apiClient.setAccessToken(access_token)
+            this.client.setAccessToken(access_token)
             this.expiry = expiry
             resolve({ expiry, access_token })
           } else {
