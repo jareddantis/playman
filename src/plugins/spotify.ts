@@ -59,7 +59,16 @@ export default class Spotify {
       if (details.hasOwnProperty('art')) {
         const art = details.art.split(',')[1]
         delete details.art
-        this.throttler.add(() => this.client.uploadCustomPlaylistCoverImage(id, art))
+        this.throttler.add(() => fetch(`https://api.spotify.com/v1/playlists/${id}/images`, {
+          method: 'PUT',
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'image/jpeg',
+            'Authorization': `Bearer ${this.client.getAccessToken()}`,
+          },
+          body: art,
+        })).then(() => resolve())
           .catch((error: any) => reject(new Error(error)))
       }
 
