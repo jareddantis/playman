@@ -77,15 +77,16 @@ const store = new Vuex.Store({
                     accessToken: results.newToken,
                     expiry: results.newExpiry,
                   })
+                  commit('setLoggedIn', true)
                 }
-
-                dispatch('updateUserMeta')
               })
+              .then(() => dispatch('updateUserMeta'))
               .then(() => resolve())
               .catch((error) => reject(new Error(error)))
           }
         } else {
           // Already authenticated
+          commit('setLoggedIn', true)
           resolve()
         }
       })
@@ -133,7 +134,6 @@ const store = new Vuex.Store({
         // Store user avatar and username
         api.getMe().then((response: any) => {
           const result = response.body as any
-          commit('setLoggedIn', true)
           commit('setUserAvatar', result.images[0].url)
           commit('setUsername', result.id)
           resolve()
