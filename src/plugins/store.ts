@@ -78,6 +78,8 @@ const store = new Vuex.Store({
                     expiry: results.newExpiry,
                   })
                 }
+
+                dispatch('updateUserMeta')
               })
               .then(() => resolve())
               .catch((error) => reject(new Error(error)))
