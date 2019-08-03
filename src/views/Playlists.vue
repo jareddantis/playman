@@ -32,8 +32,9 @@
       // Load playlists
       this.$bus.$emit('loading', true)
       this.$store.dispatch('updatePlaylists')
-        .then(() => this.$bus.$emit('loading', false))
+        .then((playlists) => this.$store.commit('setPlaylists', playlists))
         .catch(() => this.$store.commit('setOffline', true))
+        .finally(() => this.$bus.$emit('loading', false))
     }
   }
 </script>

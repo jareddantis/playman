@@ -154,18 +154,28 @@ export default class Spotify {
     })
   }
 
-  public async getUserPlaylists(username: string) {
-    return new Promise((resolve, reject) => {
-      this.reauth().then(() => {
-        this.throttler.add(() => this.client.getUserPlaylists())
-          .then((response: any) => {
-            Worker.send({ type: 'filter_user_playlists', data: {
-                playlists: response.body.items,
+  public async getUserPlaylists(username: string, initial: any[],
+                                resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    this.reauth().then(() => {
+      this.throttler.add(() => this.client.getUserPlaylists())
+        .then((response: any) => {
+          const playlists = initial.concat(response.body.items)
+
+          // Check if we have everything
+          if (response.body.next === null) {
+            // We have everything! Now let's filter the results to playlists that the user owns
+            Worker.send({
+              type: 'filter_user_playlists',
+              data: {
+                playlists,
                 username,
-              }})
-              .then((playlists) => resolve(playlists))
-          }).catch((error: any) => reject(new Error(error)))
-      })
+              },
+            }).then((results) => resolve(results))
+          } else {
+            // Retrieve next page
+            this.getUserPlaylists(username, playlists, resolve, reject)
+          }
+        }).catch((error: any) => reject(new Error(error)))
     })
   }
 

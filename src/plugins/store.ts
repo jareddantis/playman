@@ -119,14 +119,9 @@ const store = new Vuex.Store({
         api.getPlaylistTracks(id, [], 0, resolve, reject)
       })
     },
-    async updatePlaylists({ state, commit }) {
+    async updatePlaylists({ state }) {
       return new Promise((resolve, reject) => {
-        api.getUserPlaylists(state.username)
-          .then((playlists) => {
-            commit('setPlaylists', playlists)
-            resolve()
-          })
-          .catch((error) => reject(error))
+        api.getUserPlaylists(state.username, [], resolve, reject)
       })
     },
     async updateUserMeta({ commit }) {
