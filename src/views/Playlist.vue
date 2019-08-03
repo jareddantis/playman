@@ -94,17 +94,25 @@ export default class Playlist extends Vue {
     // Loading
     this.loadStart()
 
+    // Check if we're deleting all tracks
+    const willDeleteAll = this.checkedTracks.length === this.playlistTracks.length
+
     return new Promise((resolve, reject) => {
       this.$store.dispatch('deletePlaylistTracks', {
         id: this.id,
         snapshot: this.snapshotId,
-        tracks: this.checkedTracks,
+        tracks: willDeleteAll ? ['all'] : this.checkedTracks,
       }).then((snapshot) => {
         // Save snapshot ID
         this.snapshotId = snapshot
 
         // Remove checked tracks locally
-        this.playlistTracks = this.playlistTracks.filter((track) => !this.checkedTracks.includes(track.index))
+        if (willDeleteAll) {
+          this.checkedTracks = []
+          this.playlistTracks = []
+        } else {
+          this.playlistTracks = this.playlistTracks.filter((track) => !this.checkedTracks.includes(track.index))
+        }
 
         // Done
         this.loadEnd()

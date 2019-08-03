@@ -76,6 +76,14 @@ export default class Spotify {
     })
   }
 
+  public async deleteAllPlaylistTracks(id: string, snapshot: string,
+                                       resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    this.throttler.add(() => {
+      return this.client.replaceTracksInPlaylist(id, [])
+    }).then((response: any) => resolve(response.body.snapshot_id))
+      .catch((error: any) => reject(new Error(error)))
+  }
+
   public async deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
                                     resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     this.throttler.add(() => {

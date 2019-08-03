@@ -98,7 +98,11 @@ const store = new Vuex.Store({
     },
     async deletePlaylistTracks(context, { id, snapshot, tracks }) {
       return new Promise((resolve, reject) => {
-        api.deletePlaylistTracks(id, tracks, snapshot, resolve, reject)
+        if (tracks[0] === 'all') {
+          api.deleteAllPlaylistTracks(id, snapshot, resolve, reject)
+        } else {
+          api.deletePlaylistTracks(id, tracks, snapshot, resolve, reject)
+        }
       })
     },
     async getPlaylist({ state }, id) {
