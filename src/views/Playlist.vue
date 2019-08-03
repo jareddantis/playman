@@ -86,7 +86,7 @@ export default class Playlist extends Vue {
       this.setNavbar()
       this.loading = false
     } else {
-      this.setNavbar('empty')
+      this.setNavbar('Empty')
     }
   }
 
