@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersist from 'vuex-persist'
-import SpotifyApiWrapper from './spotifyApiWrapper'
+import Spotify from './spotify'
 
-const WRAPPER = new SpotifyApiWrapper()
+const WRAPPER = new Spotify()
 const CLIENT = WRAPPER.client
 const PERSISTENCE = new VuexPersist({
   key: 'setlist',
@@ -116,12 +116,12 @@ const store = new Vuex.Store({
     },
     async updatePlaylists({ state, commit }) {
       return new Promise((resolve, reject) => {
-        CLIENT.getUserPlaylists().then((response) => {
-          commit('setPlaylists', response.body.items.filter((playlist: any) => {
-            return playlist.owner.id === state.username
-          }))
-          resolve()
-        }).catch((error) => reject(new Error(error)))
+        WRAPPER.getUserPlaylists(state.username)
+          .then((playlists) => {
+            commit('setPlaylists', playlists)
+            resolve()
+          })
+          .catch((error) => reject(error))
       })
     },
     async updateUserMeta({ commit }) {

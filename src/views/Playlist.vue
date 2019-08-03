@@ -119,41 +119,13 @@ export default class Playlist extends Vue {
 
       // Load playlist tracks
       this.$store.dispatch('getPlaylistTracks', this.id)
-        .then((response) => {
-          // Simplify track objects
-          for (const [ index, item ] of response.entries()) {
-            const { track } = item
-            this.playlistTracks.push({
-              album: track.album.name,
-              artist: track.artists.length === 1 ? track.artists[0].name : this.generateArtists(track.artists),
-              id: track.id,
-              key: `${track.id}-${index}`,
-              index,
-              checked: false,
-              name: track.name,
-            })
-          }
-
-          // Done
+        .then((tracks) => {
+          this.playlistTracks = tracks
           this.loadEnd()
           resolve()
         })
         .catch((error) => reject(error))
     })
-  }
-
-  private generateArtists(artists: any[]): string {
-    let str = ''
-
-    artists.forEach((artist, index) => {
-      str += artist.name
-
-      if (index < artists.length - 1) {
-        str += ', '
-      }
-    })
-
-    return str
   }
 
   private setInitialNavbar() {

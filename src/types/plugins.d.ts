@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import SpotifyWebApi from 'spotify-web-api-node'
 
-declare class SpotifyApiWrapper {
+declare class Spotify {
   public authUri: string
   public authenticated: boolean
   public redirectUri: string
@@ -11,6 +11,7 @@ declare class SpotifyApiWrapper {
                               resolve: (arg0: any) => void, reject: (arg0: any) => void): Promise<any>
   public getPlaylistTracks(id: string, initial: any[], offset: number,
                            resolve: (arg0: any) => void, reject: (arg0: any) => void): Promise<any>
+  public getUserPlaylists(username: string): Promise<any>
   public setTokens(access: string, refresh: string, expiry: number): void
 }
 

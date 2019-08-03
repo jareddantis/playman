@@ -1,7 +1,8 @@
 import qs from 'qs'
 import SpotifyWebApi from 'spotify-web-api-node'
+import Worker from './spotify-worker'
 
-export default class SpotifyApiWrapper {
+export default class Spotify {
   private readonly apiClient!: SpotifyWebApi
   private refreshToken: string = ''
   private stateToken: string = ''
@@ -72,26 +73,6 @@ export default class SpotifyApiWrapper {
     })
   }
 
-  public getPlaylistTracks(id: string, initial: any[], offset: number,
-                           resolve: (arg0: any) => void, reject: (arg0: any) => void) {
-    const limit = 100
-
-    this.client.getPlaylistTracks(id, { offset, limit })
-      .then((response) => {
-        const results = initial.concat(response.body.items)
-
-        // Check if we have everything
-        if (response.body.next === null) {
-          // We have everything!
-          resolve(results)
-        } else {
-          // Retrieve next page
-          this.getPlaylistTracks(id, results, offset + limit, resolve, reject)
-        }
-      })
-      .catch((error) => reject(new Error(error)))
-  }
-
   public deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
                               resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     this.client.removeTracksFromPlaylistByPosition(id, tracks.splice(0, 100), snapshot)
@@ -105,6 +86,39 @@ export default class SpotifyApiWrapper {
         }
       })
       .catch((error) => reject(new Error(error)))
+  }
+
+  public getPlaylistTracks(id: string, initial: any[], offset: number,
+                           resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    const limit = 100
+
+    this.client.getPlaylistTracks(id, { offset, limit })
+      .then((response) => {
+        const results = initial.concat(response.body.items)
+
+        // Check if we have everything
+        if (response.body.next === null) {
+          // We have everything! Now let's simplify the received data
+          // into something we can easily consume
+          Worker.send({ type: 'decode_playlist_tracks', data: results })
+            .then((reply) => resolve(reply))
+        } else {
+          // Retrieve next page
+          this.getPlaylistTracks(id, results, offset + limit, resolve, reject)
+        }
+      }).catch((error) => reject(new Error(error)))
+  }
+
+  public getUserPlaylists(username: string) {
+    return new Promise((resolve, reject) => {
+      this.client.getUserPlaylists().then((response) => {
+        Worker.send({ type: 'filter_user_playlists', data: {
+            playlists: response.body.items,
+            username,
+          }})
+          .then((playlists) => resolve(playlists))
+      }).catch((error) => reject(new Error(error)))
+    })
   }
 
   private generateStateToken() {
