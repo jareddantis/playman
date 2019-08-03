@@ -39,7 +39,8 @@ export default class Landing extends Vue {
         localStorage.removeItem('spotify-login-data')
 
         // Redirect to dashboard
-        this.$router.push('/playlists')
+        this.$store.dispatch('updateUserMeta')
+          .then(() => this.$router.push('/playlists'))
       }
     })
   }

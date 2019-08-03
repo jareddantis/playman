@@ -78,8 +78,6 @@ const store = new Vuex.Store({
                     expiry: results.newExpiry,
                   })
                 }
-
-                dispatch('updateUserMeta')
               })
               .then(() => resolve())
               .catch((error) => reject(new Error(error)))
@@ -88,12 +86,6 @@ const store = new Vuex.Store({
           // Already authenticated
           resolve()
         }
-      })
-    },
-    async clearAllData({ commit }) {
-      return new Promise((resolve) => {
-        commit('reset')
-        resolve()
       })
     },
     async deletePlaylistTracks(context, { id, snapshot, tracks }) {

@@ -53,11 +53,16 @@ router.beforeEach((to, from, next) => {
       next()
     }
   } else {
-    // Redirect to /playlists on successful auth,
-    // otherwise continue showing / (login) as normal
-    store.dispatch('authenticate')
-      .then(() => next('/playlists'))
-      .catch(() => next())
+    if (store.state.isLoggedIn) {
+      // Redirect to /playlists on successful auth,
+      // otherwise show / (login)
+      store.dispatch('authenticate')
+        .then(() => next('/playlists'))
+        .catch(() => next())
+    } else {
+      // Not logged in, continue showing / (login)
+      next()
+    }
   }
 })
 

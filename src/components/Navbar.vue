@@ -27,7 +27,7 @@
         </template>
         <v-list dense>
           <v-list-item-group>
-            <v-list-item @click="$store.dispatch('clearAllData')">
+            <v-list-item @click="logout">
               <v-list-item-icon>
                 <v-icon>exit_to_app</v-icon>
               </v-list-item-icon>
@@ -78,6 +78,11 @@ export default class Navbar extends Vue {
       this.backButton = backButton
     })
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
+  }
+
+  public logout() {
+    this.$store.commit('reset')
+    this.$router.push('/')
   }
 }
 </script>
