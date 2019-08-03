@@ -81,13 +81,17 @@
         delete details.collab
       }
 
-      this.loading = true
-      this.$store.dispatch('changePlaylistDetails', { id: this.id, details })
-        .then(() => {
-          this.showDialog = false
-          this.$bus.$emit('change-navbar', { name: this.name })
-        })
-        .finally(() => this.loading = false)
+      if (Object.keys(details).length) {
+        this.loading = true
+        this.$store.dispatch('changePlaylistDetails', { id: this.id, details })
+          .then(() => {
+            this.showDialog = false
+            this.$bus.$emit('change-navbar', { name: this.name })
+          })
+          .finally(() => this.loading = false)
+      } else {
+        this.showDialog = false
+      }
     }
 
     public toggleCollab() {
