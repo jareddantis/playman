@@ -46,12 +46,13 @@
 import Vue from 'vue'
 import { mapState } from 'vuex'
 import { Component } from 'vue-property-decorator'
+import EmptyBar from '@/components/EmptyBar.vue'
 import HomeBar from '@/components/HomeBar.vue'
 import PlaylistBar from '@/components/PlaylistBar.vue'
 import TracksBar from '@/components/TracksBar.vue'
 
 @Component({
-  components: { HomeBar, PlaylistBar, TracksBar },
+  components: { HomeBar, EmptyBar, PlaylistBar, TracksBar },
   computed: mapState(['avatarUri', 'username']),
 })
 export default class Navbar extends Vue {
