@@ -12,7 +12,8 @@
       </v-img>
     </div>
     <div class="tracks">
-      <RecycleScroller class="scroller" v-slot="{ item }"
+      <p v-if="loading">{{ loadingMsg }}</p>
+      <RecycleScroller class="scroller" v-slot="{ item }" v-else
                        :items="playlistTracks" :item-size="60"
                        key-field="key" :page-mode="true">
         <PlaylistTrack v-on:track-toggled="onTrackToggled"
@@ -35,6 +36,8 @@ export default class Playlist extends Vue {
   get id(): string {
     return this.$route.params.id
   }
+  public loading: boolean = true
+  public loadingMsg: string = 'Loading tracks, hang tight...'
   public playlistName: string = ''
   public playlistArt: string = ''
   public playlistTracks: any[] = []
@@ -42,6 +45,7 @@ export default class Playlist extends Vue {
   private snapshotId: string = ''
 
   public mounted() {
+    this.setNavbar()
     this.getPlaylist()
 
     // Navbar actions
@@ -66,24 +70,29 @@ export default class Playlist extends Vue {
         name: '&nbsp;',
       })
     } else {
-      this.setInitialNavbar()
+      this.setNavbar('Playlist')
     }
   }
 
   private loadStart() {
     this.$bus.$emit('loading', true)
+    this.loading = true
   }
 
   private loadEnd() {
     this.$bus.$emit('loading', false)
+
+    if (this.playlistTracks.length) {
+      this.setNavbar()
+      this.loading = false
+    } else {
+      this.setNavbar('empty')
+    }
   }
 
   private async deleteTracks() {
     // Loading
     this.loadStart()
-
-    // Remove checked tracks locally
-    this.playlistTracks = this.playlistTracks.filter((track) => !this.checkedTracks.includes(track.index))
 
     return new Promise((resolve, reject) => {
       this.$store.dispatch('deletePlaylistTracks', {
@@ -94,8 +103,10 @@ export default class Playlist extends Vue {
         // Save snapshot ID
         this.snapshotId = snapshot
 
+        // Remove checked tracks locally
+        this.playlistTracks = this.playlistTracks.filter((track) => !this.checkedTracks.includes(track.index))
+
         // Done
-        this.setInitialNavbar()
         this.loadEnd()
         resolve()
       }).catch((error) => reject(error))
@@ -110,27 +121,34 @@ export default class Playlist extends Vue {
       // Load playlist details
       this.$store.dispatch('getPlaylist', this.id)
         .then((playlist) => {
-          this.playlistArt = playlist.images[0].url
           this.playlistName = playlist.name
           this.snapshotId = playlist.snapshot_id
-          this.setInitialNavbar()
-        })
-        .catch((error) => reject(error))
 
-      // Load playlist tracks
-      this.$store.dispatch('getPlaylistTracks', this.id)
-        .then((tracks) => {
-          this.playlistTracks = tracks
-          this.loadEnd()
-          resolve()
+          if (playlist.images.length) {
+            this.playlistArt = playlist.images[0].url
+
+            // Load playlist tracks
+            this.$store.dispatch('getPlaylistTracks', this.id)
+              .then((tracks) => {
+                this.playlistTracks = tracks
+                this.loadEnd()
+                resolve()
+              })
+              .catch((error) => reject(error))
+          } else {
+            this.playlistArt = require('../assets/gradient.jpeg')
+            this.loadingMsg = 'This playlist has no tracks.'
+            this.loadEnd()
+            resolve()
+          }
         })
         .catch((error) => reject(error))
     })
   }
 
-  private setInitialNavbar() {
+  private setNavbar(actionBar: string = 'Playlist') {
     this.$bus.$emit('change-navbar', {
-      actionBar: 'Playlist',
+      actionBar,
       backButton: true,
       name: this.playlistName,
     })
