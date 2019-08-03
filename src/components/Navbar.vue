@@ -65,8 +65,15 @@ export default class Navbar extends Vue {
 
   public created() {
     this.$bus.$on('change-navbar', (payload: any) => {
-      const { actionBar, backButton, name } = payload
-      this.currentActionBar = `${actionBar}Bar`
+      const {
+        actionBar = 'keep',
+        backButton = this.backButton,
+        name = this.viewName,
+      } = payload
+
+      if (actionBar !== 'keep') {
+        this.currentActionBar = `${actionBar}Bar`
+      }
       this.viewName = name
       this.backButton = backButton
     })
