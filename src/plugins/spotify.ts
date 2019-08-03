@@ -158,24 +158,16 @@ export default class Spotify {
   public async setTokens(access: string, refresh: string, expiry: number) {
     return new Promise((resolve, reject) => {
       this.refreshToken = refresh
+      this.expiry = expiry
 
-      if (new Date().getTime() >= expiry) {
-        if (expiry === 0) {
-          reject(new Error('Invalid expiry'))
-        }
-
-        this.reauth()
-          .then((result: any) => resolve({
-            expired: true,
-            newExpiry: result.expiry,
-            newToken: result.access_token,
-          }))
-          .catch((error) => reject(error))
-      } else {
-        this.client.setAccessToken(access)
-        this.expiry = expiry
-        resolve({ expired: false })
-      }
+      this.reauth()
+        .then((result: any) => {
+          if (!result.expired) {
+            this.client.setAccessToken(access)
+          }
+          resolve(result)
+        })
+        .catch((error) => reject(error))
     })
   }
 
@@ -192,25 +184,34 @@ export default class Spotify {
 
   private async reauth() {
     return new Promise((resolve, reject) => {
-      fetch(`/.netlify/functions/spotify-refresh-token`, {
-        method: 'POST',
-        cache: 'no-cache',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `refresh_token=${this.refreshToken}`,
-      }).then((response) => response.json())
-        .then((result) => {
-          const {access_token, expires_in} = result
+      if (new Date().getTime() >= this.expiry) {
+        fetch(`/.netlify/functions/spotify-refresh-token`, {
+          method: 'POST',
+          cache: 'no-cache',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: `refresh_token=${this.refreshToken}`,
+        }).then((response) => response.json())
+          .then((result) => {
+            const {access_token, expires_in} = result
 
-          if (access_token !== undefined) {
-            const expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
-            this.client.setAccessToken(access_token)
-            this.expiry = expiry
-            resolve({ expiry, access_token })
-          } else {
-            reject(new Error('Failed to authenticate'))
-          }
-        })
-        .catch((error) => reject(new Error(error)))
+            if (access_token !== undefined) {
+              const expiry = (parseInt(expires_in, 10) * 1000) + new Date().getTime()
+              this.client.setAccessToken(access_token)
+              this.expiry = expiry
+              resolve({
+                expired: true,
+                newExpiry: expiry,
+                newToken: access_token,
+              })
+            } else {
+              reject(new Error('Failed to authenticate'))
+            }
+          })
+          .catch((error) => reject(new Error(error)))
+      } else {
+        // Token is still valid
+        resolve({ expired: false })
+      }
     })
   }
 }
