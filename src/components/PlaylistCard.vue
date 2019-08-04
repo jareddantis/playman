@@ -2,8 +2,7 @@
   <div class="playlist">
     <div class="playlist-art">
       <v-img :lazy-src="require('../assets/gradient.jpeg')"
-             :src="getPlaylistImage(playlist.images)"
-             :alt="playlist.id">
+             :src="image" :alt="playlist.id">
         <template v-slot:placeholder>
           <v-layout fill-height align-center justify-center ma-0>
             <v-progress-circular indeterminate
@@ -28,8 +27,8 @@
   export default class PlaylistCard extends Vue {
     @Prop({ required: true }) public readonly playlist: any
 
-    public getPlaylistImage(images: any[]): string {
-      return images.length ? images[0].url : require('../assets/gradient.jpeg')
+    get image(): string {
+      return this.playlist.images.length ? this.playlist.images[0].url : require('../assets/gradient.jpeg')
     }
   }
 </script>
