@@ -33,6 +33,7 @@
     .meta {
       grid-row: meta;
       width: $body-width;
+      position: relative;
 
       h1 {
         line-height: 2rem;
