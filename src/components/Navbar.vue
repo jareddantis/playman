@@ -91,6 +91,9 @@ export default class Navbar extends Vue {
         backButton, cancelButton, name,
       } = payload
 
+      // Update view name
+      this.viewName = name
+
       // Retain current action bar if not specified
       if (actionBar !== 'keep') {
         this.currentActionBar = `${actionBar}Bar`
@@ -112,12 +115,7 @@ export default class Navbar extends Vue {
         }
 
         // Show current view name
-        if (payload.hasOwnProperty('name')) {
-          this.showViewName = true
-          this.viewName = name
-        } else {
-          this.showViewName = false
-        }
+        this.showViewName = true
       }
     })
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
