@@ -49,6 +49,11 @@ export default class Playlist extends Vue {
     return this.$route.params.id
   }
 
+  public static onBeforeUnload(event: Event) {
+    event.preventDefault()
+    event.returnValue = true
+  }
+
   public inCuttingMode: boolean = false
   public isCollaborative: boolean = false
   public isPublic: boolean = true
@@ -130,10 +135,12 @@ export default class Playlist extends Vue {
   private loadStart() {
     this.$bus.$emit('loading', true)
     this.loading = true
+    window.addEventListener('beforeunload', Playlist.onBeforeUnload)
   }
 
   private loadEnd() {
     this.$bus.$emit('loading', false)
+    window.removeEventListener('beforeunload', Playlist.onBeforeUnload)
 
     if (this.playlistTracks.length) {
       this.setNavbar()
