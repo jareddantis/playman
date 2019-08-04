@@ -1,9 +1,12 @@
 .playlist {
-  transition: filter 200ms ease;
+  transition: transform 200ms ease;
+  will-change: transform;
   cursor: pointer;
 
-  &:hover {
+  &:active {
     filter: brightness(0.8);
+    transform: scale(0.98) translateZ(0);
+    transition: transform 50ms ease;
   }
 
   .playlist-art {
