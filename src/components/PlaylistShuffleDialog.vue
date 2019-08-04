@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog">
+  <v-dialog max-width="600" v-model="showDialog">
     <v-card>
       <v-card-title>
         <span class="headline">Randomize this playlist?</span>
