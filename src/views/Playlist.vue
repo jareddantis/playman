@@ -18,7 +18,8 @@
     <div class="tracks">
       <p v-if="loading">{{ loadingMsg }}</p>
       <RecycleScroller class="scroller" v-slot="{ item }" v-else
-                       :items="playlistTracks" :item-size="60"
+                       :items="playlistTracks"
+                       :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
                        key-field="key" :page-mode="true">
         <PlaylistTrack v-on:track-toggled="onTrackToggled"
                        :key="item.key" :track="item" :checked="item.checked"></PlaylistTrack>

@@ -39,4 +39,25 @@
     grid-row: row-info;
     color: #B0B0B0;
   }
+
+  @media screen and (min-width: 1264px) {
+    grid-template-columns: [col-control] 2.5rem [col-name] 1fr [col-artist] 1fr [col-album] 1fr;
+    grid-template-rows: 1fr;
+
+    .track-control, .track-name, .track-info {
+      grid-row: unset;
+    }
+    .track-info {
+      grid-column: unset;
+    }
+    .track-name {
+      grid-column: col-name;
+    }
+    .artist {
+      grid-column: col-artist;
+    }
+    .album {
+      grid-column: col-album;
+    }
+  }
 }

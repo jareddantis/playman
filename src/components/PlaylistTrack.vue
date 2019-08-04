@@ -6,15 +6,17 @@
                   :color="isChecked ? '#E5A3A0' : '#F5F5F5'"></v-checkbox>
     </div>
     <p class="track-name">{{ track.name }}</p>
-    <p class="track-info">{{ track.artist }} &bullet; {{ track.album }}</p>
+    <p v-show="$vuetify.breakpoint.mdAndDown" class="track-info">{{ track.artist }} &bullet; {{ track.album }}</p>
+    <p class="track-info artist" v-show="!$vuetify.breakpoint.mdAndDown">{{ track.artist }}</p>
+    <p class="track-info album" v-show="!$vuetify.breakpoint.mdAndDown">{{ track.album }}</p>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Prop} from 'vue-property-decorator'
+  import {Component, Prop} from 'vue-property-decorator'
 
-@Component
+  @Component
 export default class PlaylistTrack extends Vue {
   @Prop({ required: true }) public readonly track: any
   public isChecked: boolean = false
