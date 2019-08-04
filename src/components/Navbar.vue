@@ -59,15 +59,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Component} from 'vue-property-decorator'
-  import EmptyBar from '@/components/actionbar/EmptyBar.vue'
-  import PlaylistBar from '@/components/actionbar/PlaylistBar.vue'
-  import PlaylistsBar from '@/components/actionbar/PlaylistsBar.vue'
-  import PlaylistsEditBar from '@/components/actionbar/PlaylistsEditBar.vue'
-  import TracksBar from '@/components/actionbar/TracksBar.vue'
+import {mapState} from 'vuex'
+import {Component} from 'vue-property-decorator'
+import EmptyBar from '@/components/actionbar/EmptyBar.vue'
+import PlaylistBar from '@/components/actionbar/PlaylistBar.vue'
+import PlaylistsBar from '@/components/actionbar/PlaylistsBar.vue'
+import PlaylistsEditBar from '@/components/actionbar/PlaylistsEditBar.vue'
+import TracksBar from '@/components/actionbar/TracksBar.vue'
 
-  @Component({
+@Component({
   components: {
     EmptyBar, PlaylistBar, PlaylistsBar,
     PlaylistsEditBar, TracksBar,
@@ -81,7 +81,6 @@ export default class Navbar extends Vue {
   private previousBackButton: boolean = false
   private cancelButton: boolean = false
   private currentActionBar: string = 'PlaylistsBar'
-  private previousActionBar: string = ''
   private loading: boolean = true
   private viewName: string = ''
   private showViewName: boolean = false
@@ -90,35 +89,36 @@ export default class Navbar extends Vue {
     this.$bus.$on('change-navbar', (payload: any) => {
       const {
         actionBar = 'keep',
-        backButton = this.backButton,
-        cancelButton = this.cancelButton,
+        backButton, cancelButton,
         name = this.viewName,
       } = payload
-
-      if (cancelButton) {
-        this.showViewName = false
-        this.cancelButton = true
-        this.backButton = false
-
-        // Back up navbar state
-        this.previousBackButton = this.backButton
-        this.previousActionBar = this.currentActionBar
-        this.currentActionBar = ''
-      } else {
-        this.showViewName = true
-        this.viewName = name
-      }
 
       // Retain current action bar if not specified
       if (actionBar !== 'keep') {
         this.currentActionBar = `${actionBar}Bar`
       }
 
-      // Only one left action is displayed at a time.
-      // Cancel button takes precedence (as above)
-      this.backButton = backButton
-      if (backButton) {
-        this.cancelButton = false
+      if (payload.hasOwnProperty('cancelButton')) {
+        // Back up navbar state
+        this.previousBackButton = this.backButton
+
+        // Show cancel button, hide back button and view name
+        this.cancelButton = cancelButton
+        this.backButton = !cancelButton
+        this.showViewName = !cancelButton
+      } else {
+        // Only one left action is displayed at a time.
+        // Cancel button takes precedence (as above)
+        if (payload.hasOwnProperty('backButton')) {
+          this.backButton = backButton
+          if (backButton) {
+            this.cancelButton = false
+          }
+        }
+
+        // Show current view name
+        this.showViewName = true
+        this.viewName = name
       }
     })
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
@@ -128,7 +128,6 @@ export default class Navbar extends Vue {
     this.$bus.$emit('cancel-batch-edit')
 
     // Restore previous navbar state
-    this.currentActionBar = this.previousActionBar
     this.backButton = this.previousBackButton
     this.showViewName = true
     this.cancelButton = false
