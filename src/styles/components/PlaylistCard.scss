@@ -1,12 +1,24 @@
 .playlist {
-  transition: transform 200ms ease;
+  transition: all 200ms ease;
   will-change: transform;
   cursor: pointer;
+  text-decoration: none;
+
+  &:active, &[selection] {
+    filter: brightness(0.8);
+  }
 
   &:active {
-    filter: brightness(0.8);
     transform: scale(0.98) translateZ(0);
-    transition: transform 50ms ease;
+    transition: all 50ms ease;
+  }
+
+  &[selected] {
+    filter: none !important;
+
+    .v-image {
+      border: 2px solid #E5A3A0;
+    }
   }
 
   .playlist-art {

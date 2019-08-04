@@ -1,7 +1,8 @@
 <template>
   <div class="action-bar">
-    <v-btn text small icon color="white">
-      <v-icon>select_all</v-icon>
+    <v-btn text small icon color="white"
+           @click="emitBatchEdit">
+      <v-icon>edit</v-icon>
     </v-btn>
     <v-btn text small icon color="white">
       <v-icon>more_vert</v-icon>
@@ -14,8 +15,15 @@
   import { Component } from 'vue-property-decorator'
 
   @Component
-  export default class HomeBar extends Vue {
-
+  export default class PlaylistsBar extends Vue {
+    public emitBatchEdit() {
+      this.$bus.$emit('playlists-select')
+      this.$bus.$emit('change-navbar', {
+        name: '',
+        actionBar: 'PlaylistsEdit',
+        cancelButton: true,
+      })
+    }
   }
 </script>
 

@@ -1,10 +1,6 @@
 <template>
   <div id="playlists">
-    <router-link v-for="playlist in playlists"
-                 :key="playlist.id" class="playlist-link"
-                 :to="'/playlists/' + playlist.id">
-      <PlaylistCard :playlist="playlist"></PlaylistCard>
-    </router-link>
+    <PlaylistCard v-for="playlist in playlists" :key="playlist.id" :playlist="playlist"></PlaylistCard>
   </div>
 </template>
 
@@ -24,7 +20,7 @@
     public mounted() {
       // Update navbar title
       this.$bus.$emit('change-navbar', {
-        actionBar: 'Home',
+        actionBar: 'Playlists',
         backButton: false,
         name: 'Playlists',
       })
