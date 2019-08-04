@@ -11,7 +11,7 @@
           </v-layout>
         </template>
 
-        <v-overlay :value="selected" absolute>
+        <v-overlay absolute :value="selected" :opacity="0.75">
           <v-icon large color="#E5A3A0">done</v-icon>
         </v-overlay>
       </v-img>
@@ -25,39 +25,39 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-  import { Component, Prop } from 'vue-property-decorator'
+import Vue from 'vue'
+import {Component, Prop} from 'vue-property-decorator'
 
-  @Component
-  export default class PlaylistCard extends Vue {
-    @Prop({ required: true }) public readonly playlist: any
-    public inSelectionMode: boolean = false
-    public selected: boolean = false
+@Component
+export default class PlaylistCard extends Vue {
+  @Prop({ required: true }) public readonly playlist: any
+  public inSelectionMode: boolean = false
+  public selected: boolean = false
 
-    public created() {
-      this.$bus.$on('select-all-playlists', () => this.selected = true)
-      this.$bus.$on('playlists-select', () => {
-        this.inSelectionMode = true
-        this.selected = false
-      })
-      this.$bus.$on('cancel-batch-edit', () => {
-        this.inSelectionMode = false
-        this.selected = false
-      })
-    }
+  public created() {
+    this.$bus.$on('select-all-playlists', () => this.selected = true)
+    this.$bus.$on('playlists-select', () => {
+      this.inSelectionMode = true
+      this.selected = false
+    })
+    this.$bus.$on('cancel-batch-edit', () => {
+      this.inSelectionMode = false
+      this.selected = false
+    })
+  }
 
-    public clickHandler() {
-      if (this.inSelectionMode) {
-        this.selected = !this.selected
-      } else {
-        this.$router.push('/playlists/' + this.playlist.id)
-      }
-    }
-
-    get image(): string {
-      return this.playlist.images.length ? this.playlist.images[0].url : require('../assets/gradient.jpeg')
+  public clickHandler() {
+    if (this.inSelectionMode) {
+      this.selected = !this.selected
+    } else {
+      this.$router.push('/playlists/' + this.playlist.id)
     }
   }
+
+  get image(): string {
+    return this.playlist.images.length ? this.playlist.images[0].url : require('../assets/gradient.jpeg')
+  }
+}
 </script>
 
 <style lang="scss" scoped>
