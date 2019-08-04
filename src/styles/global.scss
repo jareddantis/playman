@@ -1,5 +1,8 @@
-$body-width: calc(100vw - 6rem);
-$body-width-small: calc(100vw - 4rem);
+$body-width: calc(100vw - 3rem);
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -26,7 +29,7 @@ h1, h2, h3, p, td, span, input, select, option, li, .v-application {
 }
 
 .material-icons {
-  font-family: 'Material Icons Outlined';
+  font-family: 'Material Icons Outlined', fantasy;
   font-weight: normal;
   font-style: normal;
   font-size: 24px;

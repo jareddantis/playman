@@ -4,7 +4,7 @@
   left: 0;
   z-index: 5;
   width: 100vw;
-  padding: 2rem 3rem;
+  padding: 1.5rem;
   background: linear-gradient(180deg, rgba(18, 23, 56, 100) 70%, rgba(18, 23, 56, 0) 100%) no-repeat;
   display: flex;
   flex-direction: row;
@@ -17,20 +17,22 @@
   }
 
   .view {
-    overflow: hidden;
+    .actions.left {
+      margin-right: 1rem;
 
-    button {
-      margin: 0 1rem 0 0;
+      button {
+        margin: 0;
+      }
     }
 
-    h1 {
+    .text-truncate h1 {
       font-weight: 300;
-      font-size: 2rem;
+      font-size: 1.75rem;
       margin: 0;
     }
   }
 
-  .actions {
+  .actions.right {
     justify-content: flex-end;
 
     img {
@@ -41,9 +43,5 @@
       border: 2px solid #f5f5f5;
       cursor: pointer;
     }
-  }
-
-  @media screen and (max-width: 600px) {
-    padding: 2rem;
   }
 }

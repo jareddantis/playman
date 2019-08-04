@@ -1,34 +1,36 @@
 <template>
   <div id="navbar">
-<!--    Loading bar -->
+    <!--    Loading bar -->
     <v-progress-linear
       :active="loading"
       indeterminate absolute top
       color="white"></v-progress-linear>
 
-<!--    Navbar content -->
     <div class="view">
-<!--      Navigate to previous page -->
-      <v-btn text small icon color="white"
-             v-show="backButton" @click="$router.back()">
-        <v-icon>arrow_back</v-icon>
-      </v-btn>
-<!--      Cancel batch edit -->
-      <v-btn text small icon color="white"
-             v-show="cancelButton" @click="cancelBatchEdit">
-        <v-icon>clear</v-icon>
-      </v-btn>
+      <div class="actions left" v-show="cancelButton || backButton">
+        <!--      Navigate to previous page -->
+        <v-btn text small icon color="white"
+               v-show="backButton" @click="$router.back()">
+          <v-icon>arrow_back</v-icon>
+        </v-btn>
+        <!--      Cancel batch edit -->
+        <v-btn text small icon color="white"
+               v-show="cancelButton" @click="cancelBatchEdit">
+          <v-icon>clear</v-icon>
+        </v-btn>
+      </div>
 
-<!--      Current view name -->
-      <h1 v-html="viewName" v-show="showViewName" class="text-truncate"></h1>
+      <!--      Current view name -->
+      <div class="text-truncate">
+        <h1 v-html="viewName" v-show="showViewName"></h1>
+      </div>
     </div>
-    <div class="actions">
-<!--      View actions -->
-      <transition name="component-fade" mode="out-in">
-        <component :is="currentActionBar"></component>
-      </transition>
 
-<!--      User menu -->
+    <div class="actions right">
+      <!--      View actions -->
+      <component :is="currentActionBar"></component>
+
+      <!--      User menu -->
       <v-menu offset-y nudge-bottom="10">
         <template v-slot:activator="{ on }">
           <img v-on="on" v-show="!cancelButton" :src="avatarUri" :alt="username" />
@@ -57,15 +59,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapState } from 'vuex'
-import { Component } from 'vue-property-decorator'
-import EmptyBar from '@/components/actionbar/EmptyBar.vue'
-import PlaylistBar from '@/components/actionbar/PlaylistBar.vue'
-import PlaylistsBar from '@/components/actionbar/PlaylistsBar.vue'
-import PlaylistsEditBar from '@/components/actionbar/PlaylistsEditBar.vue'
-import TracksBar from '@/components/actionbar/TracksBar.vue'
+  import {mapState} from 'vuex'
+  import {Component} from 'vue-property-decorator'
+  import EmptyBar from '@/components/actionbar/EmptyBar.vue'
+  import PlaylistBar from '@/components/actionbar/PlaylistBar.vue'
+  import PlaylistsBar from '@/components/actionbar/PlaylistsBar.vue'
+  import PlaylistsEditBar from '@/components/actionbar/PlaylistsEditBar.vue'
+  import TracksBar from '@/components/actionbar/TracksBar.vue'
 
-@Component({
+  @Component({
   components: {
     EmptyBar, PlaylistBar, PlaylistsBar,
     PlaylistsEditBar, TracksBar,
@@ -114,8 +116,8 @@ export default class Navbar extends Vue {
 
       // Only one left action is displayed at a time.
       // Cancel button takes precedence (as above)
+      this.backButton = backButton
       if (backButton) {
-        this.backButton = true
         this.cancelButton = false
       }
     })

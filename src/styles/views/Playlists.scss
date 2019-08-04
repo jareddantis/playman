@@ -13,13 +13,12 @@
   }
 
   @media screen and (max-width: 768px) {
-    width: $body-width-small;
     margin-bottom: 2rem;
-    grid-template-columns: repeat(auto-fit, calc(#{$body-width-small} / 2 - 2rem));
+    grid-template-columns: repeat(auto-fit, calc(#{$body-width} / 2 - 2rem));
     grid-gap: 2rem;
   }
 
   @media screen and (max-width: 600px) {
-    grid-template-columns: $body-width-small;
+    grid-template-columns: $body-width;
   }
 }
