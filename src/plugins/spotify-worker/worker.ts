@@ -63,6 +63,23 @@ const ops = {
     // Reduce tracks array into Spotify URIs
     return result.map((track) => `spotify:track:${track.id}`)
   },
+
+  shufflePlaylistTracks(tracks: any[]) {
+    // Modern Fisher-Yates shuffle algorithm
+    // from https://stackoverflow.com/a/6274381/3350320
+    let j
+    let x
+    let i
+    for (i = tracks.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1))
+      x = tracks[i]
+      tracks[i] = tracks[j]
+      tracks[j] = x
+    }
+
+    // Reduce tracks array into Spotify URIs
+    return tracks.map((track) => `spotify:track:${track.id}`)
+  },
 }
 
 registerPromiseWorker((message) => {
@@ -76,6 +93,8 @@ registerPromiseWorker((message) => {
         return ops.filterUserPlaylists(data.playlists, data.username)
       case 'reorder_playlist_tracks':
         return ops.reorderPlaylistTracks(data.tracks, data.tracksToReorder, data.placeTracksAfter)
+      case 'shuffle_playlist_tracks':
+        return ops.shufflePlaylistTracks(data.tracks)
     }
   }
 })

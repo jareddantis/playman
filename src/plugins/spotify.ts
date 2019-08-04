@@ -229,6 +229,21 @@ export default class Spotify {
     })
   }
 
+  public async shufflePlaylist(id: string, snapshot: string, tracks: [],
+                               resolve: () => void, reject: (arg0: any) => void) {
+    // Same concept as this.reorderPlaylistTracks,
+    // but instead of taking a list of tracks to move to a specified start point,
+    // we completely randomize the track order.
+    new Promise((resolve1, reject1) => this.deleteAllPlaylistTracks(id, snapshot, resolve1, reject1))
+      .then(() => {
+        Worker.send({
+          type: 'shuffle_playlist_tracks',
+          data: {tracks},
+        }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
+      })
+      .catch((error) => reject(new Error(error)))
+  }
+
   private generateStateToken() {
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let result = ''

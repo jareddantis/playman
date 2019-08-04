@@ -28,6 +28,8 @@
 
     <!-- Playlist details edit dialog -->
     <PlaylistEditDialog/>
+    <!-- Playlist shuffle confirm dialog -->
+    <PlaylistShuffleDialog v-on:confirm="shuffle"/>
   </div>
 </template>
 
@@ -36,9 +38,10 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
 import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
 
 @Component({
-  components: {PlaylistEditDialog, PlaylistTrack},
+  components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog},
 })
 export default class Playlist extends Vue {
 
@@ -50,7 +53,7 @@ export default class Playlist extends Vue {
   public isCollaborative: boolean = false
   public isPublic: boolean = true
   public loading: boolean = true
-  public loadingMsg: string = 'Loading playlist, hang tight...'
+  public loadingMsg: string = ''
   public playlistArt: string = ''
   public playlistDesc: string = ''
   public playlistName: string = ''
@@ -59,6 +62,7 @@ export default class Playlist extends Vue {
   private snapshotId: string = ''
 
   public mounted() {
+    this.loadingMsg = 'Loading playlist, hang tight...'
     this.setNavbar()
     this.getPlaylist()
 
@@ -107,6 +111,20 @@ export default class Playlist extends Vue {
 
     // Update action bar
     this.setNavbar(this.checkedTracks.length ? 'Tracks' : 'Playlist')
+  }
+
+  public shuffle() {
+    this.loadingMsg = 'Shuffling playlist...'
+    this.loadStart()
+
+    this.$store.dispatch('shufflePlaylist', {
+      id: this.id,
+      snapshot: this.snapshotId,
+      tracks: this.playlistTracks,
+    }).then((newSnapshot) => {
+      this.snapshotId = newSnapshot
+      return this.getPlaylist()
+    })
   }
 
   private loadStart() {
@@ -202,7 +220,8 @@ export default class Playlist extends Vue {
       tracks: this.playlistTracks,
       tracksToReorder: this.checkedTracks,
       placeTracksAfter,
-    }).then(() => {
+    }).then((newSnapshot) => {
+      this.snapshotId = newSnapshot
       this.checkedTracks = []
       return this.getPlaylist()
     })

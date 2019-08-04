@@ -125,6 +125,11 @@ const store = new Vuex.Store({
         api.reorderPlaylistTracks(id, snapshot, tracks, tracksToReorder, placeTracksAfter, resolve, reject)
       })
     },
+    async shufflePlaylist(context, {id, snapshot, tracks}) {
+      return new Promise((resolve, reject) => {
+        api.shufflePlaylist(id, snapshot, tracks, resolve, reject)
+      })
+    },
     async updatePlaylists({state}) {
       return new Promise((resolve, reject) => {
         api.getUserPlaylists(state.username, [], resolve, reject)
