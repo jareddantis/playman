@@ -21,8 +21,8 @@
                        :items="playlistTracks"
                        :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
                        key-field="key" :page-mode="true">
-        <PlaylistTrack v-on:track-toggled="onTrackToggled"
-                       :key="item.key" :track="item" :checked="item.checked"></PlaylistTrack>
+        <PlaylistTrack v-on:track-toggled="onTrackToggled" :key="item.key"
+                       :track="item" :checked="item.checked" :cutting="inCuttingMode"></PlaylistTrack>
       </RecycleScroller>
     </div>
 
@@ -33,11 +33,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component} from 'vue-property-decorator'
-import PlaylistTrack from '@/components/PlaylistTrack.vue'
-import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+  import {Component} from 'vue-property-decorator'
+  import PlaylistTrack from '@/components/PlaylistTrack.vue'
+  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 
-@Component({
+  @Component({
   components: { PlaylistEditDialog, PlaylistTrack },
 })
 export default class Playlist extends Vue {
@@ -45,10 +45,12 @@ export default class Playlist extends Vue {
   get id(): string {
     return this.$route.params.id
   }
+
+    public inCuttingMode: boolean = false
   public isCollaborative: boolean = false
   public isPublic: boolean = true
   public loading: boolean = true
-  public loadingMsg: string = 'Loading tracks, hang tight...'
+    public loadingMsg: string = 'Loading playlist, hang tight...'
   public playlistArt: string = ''
   public playlistDesc: string = ''
   public playlistName: string = ''
@@ -61,7 +63,25 @@ export default class Playlist extends Vue {
     this.getPlaylist()
 
     // Navbar actions
-    this.$bus.$on('cancel-batch-edit', () => this.setNavbar())
+    this.$bus.$on('cut-tracks', () => {
+      this.inCuttingMode = true
+
+      // Hide action bar
+      this.$bus.$emit('change-navbar', {actionBar: 'Empty'})
+    })
+    this.$bus.$on('paste-tracks', (pasteAfter: number) => {
+      this.inCuttingMode = false
+      this.setNavbar()
+      this.reorderTracks(pasteAfter)
+    })
+    this.$bus.$on('cancel-batch-edit', () => {
+      if (this.inCuttingMode) {
+        this.inCuttingMode = false
+        this.setNavbar('Tracks')
+      } else {
+        this.setNavbar()
+      }
+    })
     this.$bus.$on('delete-tracks', () => this.deleteTracks())
     this.$bus.$on('edit-playlist-details', () => {
       this.$bus.$emit('show-playlist-details-dialog', {
@@ -171,6 +191,22 @@ export default class Playlist extends Vue {
         .catch((error) => reject(error))
     })
   }
+
+    private async reorderTracks(placeTracksAfter: number) {
+      this.loadingMsg = 'Saving reordered tracks...'
+      this.loadStart()
+
+      this.$store.dispatch('reorderPlaylistTracks', {
+        id: this.id,
+        snapshot: this.snapshotId,
+        tracks: this.playlistTracks,
+        tracksToReorder: this.checkedTracks,
+        placeTracksAfter,
+      }).then(() => {
+        this.checkedTracks = []
+        return this.getPlaylist()
+      })
+    }
 
   private setNavbar(actionBar?: string) {
     this.$bus.$emit('change-navbar', {

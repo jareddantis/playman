@@ -5,6 +5,7 @@ import Worker from './spotify-worker'
 
 export default class Spotify {
   private readonly client!: SpotifyWebApi
+  private readonly environment: string = process.env.NODE_ENV
   private readonly throttler!: PromiseThrottle
   private expiry: number = 0
   private refreshToken: string = ''
@@ -49,8 +50,22 @@ export default class Spotify {
   }
 
   get redirectUri(): string {
-    return process.env.NODE_ENV === 'production' ? 'https://setlist.jared.gq/callback'
-      : 'http://localhost:8080/callback'
+    return `http${this.environment === 'production' ? 's://setlist.jared.gq' : '://localhost:8080'}/callback`
+  }
+
+  public async addTracksToPlaylist(id: string, tracks: any[],
+                                   resolve: () => void, reject: (arg0: any) => void) {
+    this.reauth().then(() => {
+      this.throttler.add(() => {
+        return this.client.addTracksToPlaylist(id, tracks.splice(0, 100))
+      }).then(() => {
+        if (tracks.length) {
+          this.addTracksToPlaylist(id, tracks, resolve, reject)
+        } else {
+          resolve()
+        }
+      })
+    })
   }
 
   public async changePlaylistDetails(id: string, details: any) {
@@ -177,6 +192,23 @@ export default class Spotify {
           }
         }).catch((error: any) => reject(new Error(error)))
     })
+  }
+
+  public async reorderPlaylistTracks(id: string, snapshot: string, tracks: any[], tracksToReorder: number[],
+                                     placeTracksAfter: number, resolve: () => void, reject: (arg0: any) => void) {
+    // We can only add 100 tracks to the replace endpoint per request,
+    // which means that it would be better to just delete everything first
+    // and add the new reordered tracks in batches of 100.
+    new Promise((resolve1, reject1) => this.deleteAllPlaylistTracks(id, snapshot, resolve1, reject1))
+      .then(() => {
+        // Now that the playlist is empty,
+        // we can now build and send the new ordered list of tracks.
+        Worker.send({
+          type: 'reorder_playlist_tracks',
+          data: {tracks, tracksToReorder, placeTracksAfter},
+        }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
+      })
+      .catch((error) => reject(new Error(error)))
   }
 
   public async setTokens(access: string, refresh: string, expiry: number) {

@@ -1,5 +1,12 @@
 <template>
-  <div :class="isChecked ? 'track selected' : 'track'">
+  <div class="track target" v-if="cutting" :disabled="isChecked"
+       @click="$bus.$emit('paste-tracks', track.index)">
+    <div class="target-icon">
+      <v-icon>subdirectory_arrow_right</v-icon>
+    </div>
+    <p class="target-text">Play after <span class="font-weight-bold">{{ track.name }}</span></p>
+  </div>
+  <div class="track item" :selected="isChecked" v-else>
     <div class="track-control">
       <v-checkbox hide-details :disabled="isDisabled"
                   v-model="isChecked" @change="onToggle"
@@ -14,11 +21,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Prop} from 'vue-property-decorator'
+  import {Component, Prop} from 'vue-property-decorator'
 
-@Component
+  @Component
 export default class PlaylistTrack extends Vue {
   @Prop({ required: true }) public readonly track: any
+    @Prop({required: true}) public readonly cutting: boolean | undefined
   public isChecked: boolean = false
   public isDisabled: boolean = false
 
@@ -28,9 +36,13 @@ export default class PlaylistTrack extends Vue {
 
     // Disable while loading
     this.$bus.$on('loading', (isLoading: boolean) => this.isDisabled = isLoading)
+
+    // Batch edit actions
     this.$bus.$on('cancel-batch-edit', () => {
-      this.isChecked = false
-      this.onToggle()
+      if (!this.cutting) {
+        this.isChecked = false
+        this.onToggle()
+      }
     })
   }
 

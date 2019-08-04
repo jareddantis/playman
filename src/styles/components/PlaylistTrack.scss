@@ -1,11 +1,14 @@
 .track {
   display: grid;
-  grid-template-columns: [col-control] 2.5rem [col-meta] 1fr;
-  grid-template-rows: [row-name] 1.5rem [row-info] 1.5rem;
   grid-column-gap: 0.5rem;
   align-items: center;
+}
 
-  &.selected p {
+.track.item {
+  grid-template-columns: [col-control] 2.5rem [col-meta] 1fr;
+  grid-template-rows: [row-name] 1.5rem [row-info] 1.5rem;
+
+  &[selected] p {
     color: #E5A3A0 !important;
   }
 
@@ -58,6 +61,31 @@
     }
     .album {
       grid-column: col-album;
+    }
+  }
+}
+
+.track.target {
+  grid-template-columns: [col-icon] 2.5rem [col-text] 1fr;
+  grid-template-rows: 1fr;
+  cursor: pointer;
+
+  &[disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .target-icon {
+    grid-column: col-icon;
+  }
+
+  .target-text {
+    grid-column: col-text;
+    color: #B0B0B0;
+    margin-bottom: 0;
+
+    span {
+      color: #f5f5f5;
     }
   }
 }
