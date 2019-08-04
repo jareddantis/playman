@@ -16,6 +16,7 @@ const persistence = new VuexPersist({
     avatarUri: state.avatarUri,
   }),
 })
+
 function getInitialState(): { [key: string]: any } {
   return {
     // User auth
@@ -39,7 +40,7 @@ function getInitialState(): { [key: string]: any } {
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
-  plugins: [ persistence.plugin ],
+  plugins: [persistence.plugin],
   state: getInitialState(),
   mutations: {
     reset: (state: any) => {
@@ -56,15 +57,15 @@ const store = new Vuex.Store({
     setUsername: (state, username) => state.username = username,
   },
   getters: {
-    isLoggedIn: (state: any) =>  state.isLoggedIn,
+    isLoggedIn: (state: any) => state.isLoggedIn,
     authUri: () => api.authUri,
     redirectUri: () => api.redirectUri,
   },
   actions: {
-    async authenticate({ state, commit, dispatch }) {
+    async authenticate({state, commit, dispatch}) {
       return new Promise((resolve, reject) => {
         if (!api.authenticated) {
-          const { accessToken, refreshToken, expiry } = state as any
+          const {accessToken, refreshToken, expiry} = state as any
 
           if (accessToken === '' || refreshToken === '' || expiry === 0) {
             reject(new Error('Not authenticated'))
@@ -91,7 +92,7 @@ const store = new Vuex.Store({
         }
       })
     },
-    async deletePlaylistTracks(context, { id, snapshot, tracks }) {
+    async deletePlaylistTracks(context, {id, snapshot, tracks}) {
       return new Promise((resolve, reject) => {
         if (tracks[0] === 'all') {
           api.deleteAllPlaylistTracks(id, snapshot, resolve, reject)
@@ -100,14 +101,14 @@ const store = new Vuex.Store({
         }
       })
     },
-    async changePlaylistDetails(context, { id, details }) {
+    async changePlaylistDetails(context, {id, details}) {
       return new Promise((resolve, reject) => {
         api.changePlaylistDetails(id, details)
           .then(() => resolve())
           .catch((error: any) => reject(error))
       })
     },
-    async getPlaylist({ state }, id) {
+    async getPlaylist({state}, id) {
       return new Promise((resolve, reject) => {
         api.getPlaylist(id)
           .then((response: any) => resolve(response.body))
@@ -124,12 +125,12 @@ const store = new Vuex.Store({
         api.reorderPlaylistTracks(id, snapshot, tracks, tracksToReorder, placeTracksAfter, resolve, reject)
       })
     },
-    async updatePlaylists({ state }) {
+    async updatePlaylists({state}) {
       return new Promise((resolve, reject) => {
         api.getUserPlaylists(state.username, [], resolve, reject)
       })
     },
-    async updateUserMeta({ commit }) {
+    async updateUserMeta({commit}) {
       return new Promise((resolve, reject) => {
         // Store user avatar and username
         api.getMe().then((response: any) => {

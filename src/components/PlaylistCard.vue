@@ -1,18 +1,18 @@
 <template>
-  <div class="playlist" :selection="inSelectionMode"
-       :selected="selected" @click="clickHandler">
+  <div :selected="selected" :selection="inSelectionMode"
+       @click="clickHandler" class="playlist">
     <div class="playlist-art">
-      <v-img :lazy-src="require('../assets/gradient.jpeg')"
-             :src="image" :alt="playlist.id">
+      <v-img :alt="playlist.id"
+             :lazy-src="require('../assets/gradient.jpeg')" :src="image">
         <template v-slot:placeholder>
-          <v-layout fill-height align-center justify-center ma-0>
-            <v-progress-circular indeterminate
-                                 color="grey lighten-5"></v-progress-circular>
+          <v-layout align-center fill-height justify-center ma-0>
+            <v-progress-circular color="grey lighten-5"
+                                 indeterminate></v-progress-circular>
           </v-layout>
         </template>
 
-        <v-overlay absolute :value="selected" :opacity="0.75">
-          <v-icon large color="#E5A3A0">done</v-icon>
+        <v-overlay :opacity="0.75" :value="selected" absolute>
+          <v-icon color="#E5A3A0" large>done</v-icon>
         </v-overlay>
       </v-img>
     </div>
@@ -30,7 +30,7 @@ import {Component, Prop} from 'vue-property-decorator'
 
 @Component
 export default class PlaylistCard extends Vue {
-  @Prop({ required: true }) public readonly playlist: any
+  @Prop({required: true}) public readonly playlist: any
   public inSelectionMode: boolean = false
   public selected: boolean = false
 

@@ -1,19 +1,19 @@
 <template>
-  <div class="track target" v-if="cutting" :disabled="isChecked"
-       @click="$bus.$emit('paste-tracks', track.index)">
+  <div :disabled="isChecked" @click="$bus.$emit('paste-tracks', track.index)" class="track target"
+       v-if="cutting">
     <div class="target-icon">
       <v-icon>subdirectory_arrow_right</v-icon>
     </div>
     <p class="target-text">Play after <span class="font-weight-bold">{{ track.name }}</span></p>
   </div>
-  <div class="track item" :selected="isChecked" v-else>
+  <div :selected="isChecked" class="track item" v-else>
     <div class="track-control">
-      <v-checkbox hide-details :disabled="isDisabled"
-                  v-model="isChecked" @change="onToggle"
-                  :color="isChecked ? '#E5A3A0' : '#F5F5F5'"></v-checkbox>
+      <v-checkbox :color="isChecked ? '#E5A3A0' : '#F5F5F5'" :disabled="isDisabled"
+                  @change="onToggle" hide-details
+                  v-model="isChecked"></v-checkbox>
     </div>
     <p class="track-name">{{ track.name }}</p>
-    <p v-show="$vuetify.breakpoint.mdAndDown" class="track-info">{{ track.artist }} &bullet; {{ track.album }}</p>
+    <p class="track-info" v-show="$vuetify.breakpoint.mdAndDown">{{ track.artist }} &bullet; {{ track.album }}</p>
     <p class="track-info artist" v-show="!$vuetify.breakpoint.mdAndDown">{{ track.artist }}</p>
     <p class="track-info album" v-show="!$vuetify.breakpoint.mdAndDown">{{ track.album }}</p>
   </div>
@@ -21,12 +21,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {Component, Prop} from 'vue-property-decorator'
+import {Component, Prop} from 'vue-property-decorator'
 
-  @Component
+@Component
 export default class PlaylistTrack extends Vue {
-  @Prop({ required: true }) public readonly track: any
-    @Prop({required: true}) public readonly cutting: boolean | undefined
+  @Prop({required: true}) public readonly track: any
+  @Prop({required: true}) public readonly cutting: boolean | undefined
   public isChecked: boolean = false
   public isDisabled: boolean = false
 

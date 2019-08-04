@@ -1,18 +1,19 @@
 <template>
-<!--  Landing and login screen -->
+  <!--  Landing and login screen -->
   <div class="login">
     <h1>Welcome to Setlist</h1>
     <p>Manage your Spotify playlists in a cinch.</p>
-    <v-btn rounded dark
+    <v-btn :loading="isLoggingIn" @click="login"
            color="#1DB954"
-           :loading="isLoggingIn"
-           @click="login">Login with Spotify</v-btn>
+           dark
+           rounded>Login with Spotify
+    </v-btn>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 
 @Component
 export default class Landing extends Vue {

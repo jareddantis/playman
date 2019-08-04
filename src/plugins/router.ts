@@ -22,13 +22,13 @@ const router = new Router({
       path: '/playlists',
       name: 'playlists',
       component: () => import(/* webpackChunkName: "playlists" */ '../views/Playlists.vue'),
-      meta: { requiresAuth: true },
+      meta: {requiresAuth: true},
     },
     {
       path: '/playlists/:id',
       name: 'playlist',
       component: () => import(/* webpackChunkName: "playlist" */ '../views/Playlist.vue'),
-      meta: { requiresAuth: true },
+      meta: {requiresAuth: true},
     },
     {
       path: '/about',
@@ -47,7 +47,7 @@ router.beforeEach((to, from, next) => {
       // otherwise continue as normal
       store.dispatch('authenticate')
         .then(() => next())
-        .catch(() => next({ path: '/', replace: true }))
+        .catch(() => next({path: '/', replace: true}))
     } else {
       // No need to authenticate, just continue as normal
       next()

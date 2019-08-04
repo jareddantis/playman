@@ -4,8 +4,8 @@ const ops = {
   decodePlaylistTracks(tracks: any[]): any[] {
     const decoded = []
 
-    for (const [ index, item ] of tracks.entries()) {
-      const { track } = item
+    for (const [index, item] of tracks.entries()) {
+      const {track} = item
       decoded.push({
         album: track.album.name,
         artist: track.artists.length === 1 ? track.artists[0].name : this.generateArtists(track.artists),
@@ -67,7 +67,7 @@ const ops = {
 
 registerPromiseWorker((message) => {
   if (message.type === 'message') {
-    const { type, data } = message.content
+    const {type, data} = message.content
 
     switch (type) {
       case 'decode_playlist_tracks':

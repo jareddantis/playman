@@ -5,12 +5,12 @@
 
     <v-content class="app-content">
       <!-- Router view -->
-      <router-view :key="$route.fullPath" />
+      <router-view :key="$route.fullPath"/>
 
       <!-- Offline snackbar -->
-      <v-snackbar bottom multi-line
-                  v-model="offline" :timeout="0"
-                  color="red darken-2">
+      <v-snackbar :timeout="0" bottom
+                  color="red darken-2" multi-line
+                  v-model="offline">
         <p class="snackbar-text">Can't communicate with Spotify API.<br>
           Please check your connection or try again later.</p>
       </v-snackbar>
@@ -19,26 +19,26 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-  import { Component } from 'vue-property-decorator'
-  import { mapState } from 'vuex'
-  import Navbar from '@/components/Navbar.vue'
+import Vue from 'vue'
+import {Component} from 'vue-property-decorator'
+import {mapState} from 'vuex'
+import Navbar from '@/components/Navbar.vue'
 
-  @Component({
-    components: { Navbar },
-    computed: mapState([
-      'avatarUri',
-      'isLoggedIn',
-      'offline',
-      'username',
-    ]),
-  })
-  export default class App extends Vue {
-    public avatarUri!: string
-    public isLoggedIn!: boolean
-    public offline!: boolean
-    public username!: string
-  }
+@Component({
+  components: {Navbar},
+  computed: mapState([
+    'avatarUri',
+    'isLoggedIn',
+    'offline',
+    'username',
+  ]),
+})
+export default class App extends Vue {
+  public avatarUri!: string
+  public isLoggedIn!: boolean
+  public offline!: boolean
+  public username!: string
+}
 </script>
 
 <style lang="scss" scoped>

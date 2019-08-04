@@ -1,11 +1,11 @@
 <template>
   <div class="action-bar">
-    <v-btn text small icon color="white"
-           @click="$bus.$emit('cut-tracks')">
+    <v-btn @click="$bus.$emit('cut-tracks')" color="white" icon small
+           text>
       <v-icon>cut</v-icon>
     </v-btn>
-    <v-btn text small icon color="white"
-           @click="$bus.$emit('delete-tracks')">
+    <v-btn @click="$bus.$emit('delete-tracks')" color="white" icon small
+           text>
       <v-icon>delete</v-icon>
     </v-btn>
   </div>
@@ -16,7 +16,8 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 
 @Component
-export default class TracksBar extends Vue {}
+export default class TracksBar extends Vue {
+}
 </script>
 
 <style lang="scss" scoped>

@@ -3,19 +3,19 @@
     <!--    Loading bar -->
     <v-progress-linear
       :active="loading"
-      indeterminate absolute top
-      color="white"></v-progress-linear>
+      absolute color="white" indeterminate
+      top></v-progress-linear>
 
     <div class="view">
       <div class="actions left" v-show="cancelButton || backButton">
         <!--      Navigate to previous page -->
-        <v-btn text small icon color="white"
-               v-show="backButton" @click="$router.back()">
+        <v-btn @click="$router.back()" color="white" icon small
+               text v-show="backButton">
           <v-icon>arrow_back</v-icon>
         </v-btn>
         <!--      Cancel batch edit -->
-        <v-btn text small icon color="white"
-               v-show="cancelButton" @click="$bus.$emit('cancel-batch-edit')">
+        <v-btn @click="$bus.$emit('cancel-batch-edit')" color="white" icon small
+               text v-show="cancelButton">
           <v-icon>clear</v-icon>
         </v-btn>
       </div>
@@ -31,11 +31,11 @@
       <component :is="currentActionBar"></component>
 
       <!--      User menu -->
-      <v-menu offset-y nudge-bottom="10">
+      <v-menu nudge-bottom="10" offset-y>
         <template v-slot:activator="{ on }">
-          <img v-on="on" v-show="!cancelButton" :src="avatarUri" :alt="username" />
+          <img :alt="username" :src="avatarUri" v-on="on" v-show="!cancelButton"/>
         </template>
-        <v-list dense dark>
+        <v-list dark dense>
           <v-list-item-group>
             <v-list-item>
               <v-list-item-content>

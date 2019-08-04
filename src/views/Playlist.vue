@@ -5,40 +5,40 @@
     </div>
 
     <div class="meta" v-else>
-      <v-img :lazy-src="require('../assets/gradient.jpeg')"
-             :src="playlistArt" :alt="playlistName">
+      <v-img :alt="playlistName"
+             :lazy-src="require('../assets/gradient.jpeg')" :src="playlistArt">
         <template v-slot:placeholder>
-          <v-layout fill-height align-center justify-center ma-0>
-            <v-progress-circular indeterminate
-                                 color="grey lighten-5"></v-progress-circular>
+          <v-layout align-center fill-height justify-center ma-0>
+            <v-progress-circular color="grey lighten-5"
+                                 indeterminate></v-progress-circular>
           </v-layout>
         </template>
       </v-img>
     </div>
     <div class="tracks">
       <p v-if="loading">{{ loadingMsg }}</p>
-      <RecycleScroller class="scroller" v-slot="{ item }" v-else
-                       :items="playlistTracks"
-                       :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
-                       key-field="key" :page-mode="true">
-        <PlaylistTrack v-on:track-toggled="onTrackToggled" :key="item.key"
-                       :track="item" :checked="item.checked" :cutting="inCuttingMode"></PlaylistTrack>
+      <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60" :items="playlistTracks" :page-mode="true"
+                       class="scroller"
+                       key-field="key"
+                       v-else v-slot="{ item }">
+        <PlaylistTrack :checked="item.checked" :cutting="inCuttingMode"
+                       :key="item.key" :track="item" v-on:track-toggled="onTrackToggled"></PlaylistTrack>
       </RecycleScroller>
     </div>
 
     <!-- Playlist details edit dialog -->
-    <PlaylistEditDialog />
+    <PlaylistEditDialog/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-  import {Component} from 'vue-property-decorator'
-  import PlaylistTrack from '@/components/PlaylistTrack.vue'
-  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+import {Component} from 'vue-property-decorator'
+import PlaylistTrack from '@/components/PlaylistTrack.vue'
+import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 
-  @Component({
-  components: { PlaylistEditDialog, PlaylistTrack },
+@Component({
+  components: {PlaylistEditDialog, PlaylistTrack},
 })
 export default class Playlist extends Vue {
 
@@ -46,11 +46,11 @@ export default class Playlist extends Vue {
     return this.$route.params.id
   }
 
-    public inCuttingMode: boolean = false
+  public inCuttingMode: boolean = false
   public isCollaborative: boolean = false
   public isPublic: boolean = true
   public loading: boolean = true
-    public loadingMsg: string = 'Loading playlist, hang tight...'
+  public loadingMsg: string = 'Loading playlist, hang tight...'
   public playlistArt: string = ''
   public playlistDesc: string = ''
   public playlistName: string = ''
@@ -96,7 +96,7 @@ export default class Playlist extends Vue {
   }
 
   public onTrackToggled(payload: any) {
-    const { index, state } = payload
+    const {index, state} = payload
 
     this.playlistTracks[index].checked = state
     if (state) {
@@ -192,21 +192,21 @@ export default class Playlist extends Vue {
     })
   }
 
-    private async reorderTracks(placeTracksAfter: number) {
-      this.loadingMsg = 'Saving reordered tracks...'
-      this.loadStart()
+  private async reorderTracks(placeTracksAfter: number) {
+    this.loadingMsg = 'Saving reordered tracks...'
+    this.loadStart()
 
-      this.$store.dispatch('reorderPlaylistTracks', {
-        id: this.id,
-        snapshot: this.snapshotId,
-        tracks: this.playlistTracks,
-        tracksToReorder: this.checkedTracks,
-        placeTracksAfter,
-      }).then(() => {
-        this.checkedTracks = []
-        return this.getPlaylist()
-      })
-    }
+    this.$store.dispatch('reorderPlaylistTracks', {
+      id: this.id,
+      snapshot: this.snapshotId,
+      tracks: this.playlistTracks,
+      tracksToReorder: this.checkedTracks,
+      placeTracksAfter,
+    }).then(() => {
+      this.checkedTracks = []
+      return this.getPlaylist()
+    })
+  }
 
   private setNavbar(actionBar?: string) {
     this.$bus.$emit('change-navbar', {

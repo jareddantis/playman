@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog" max-width="600">
+  <v-dialog max-width="600" v-model="showDialog">
     <v-card>
       <v-card-title>
         <span class="headline">Edit playlist details</span>
@@ -7,30 +7,30 @@
       <v-card-text>
         <div class="editor">
           <div class="art">
-            <img :src="art" :alt="name">
+            <img :alt="name" :src="art">
             <div class="switches">
-              <v-switch hide-details inset v-model="isCollab" label="Collaborative"
-                        :disabled="isPublic || loading"></v-switch>
-              <v-switch hide-details inset v-model="isPublic" label="Public"
-                        @change="toggleCollab" :disabled="loading"></v-switch>
+              <v-switch :disabled="isPublic || loading" hide-details inset label="Collaborative"
+                        v-model="isCollab"></v-switch>
+              <v-switch :disabled="loading" @change="toggleCollab" hide-details inset
+                        label="Public" v-model="isPublic"></v-switch>
             </div>
           </div>
           <div class="details">
-            <v-text-field outlined hide-details :disabled="loading"
-                          label="Name" v-model="name"></v-text-field>
-            <v-textarea outlined hide-details :disabled="loading"
-                        label="Description" v-model="desc"></v-textarea>
-            <v-file-input v-model="files" outlined small-chips :disabled="loading"
-                          prepend-icon="" prepend-inner-icon="image" :rules="rules"
-                          placeholder="Choose cover art..." accept=".jpg,.jpeg,image/jpeg"
-                          @change="onArtChanged" ref="artinput"></v-file-input>
+            <v-text-field :disabled="loading" hide-details label="Name"
+                          outlined v-model="name"></v-text-field>
+            <v-textarea :disabled="loading" hide-details label="Description"
+                        outlined v-model="desc"></v-textarea>
+            <v-file-input :disabled="loading" :rules="rules" @change="onArtChanged" accept=".jpg,.jpeg,image/jpeg"
+                          outlined placeholder="Choose cover art..." prepend-icon=""
+                          prepend-inner-icon="image" ref="artinput"
+                          small-chips v-model="files"></v-file-input>
           </div>
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-btn text @click="showDialog = false" :disabled="loading">cancel</v-btn>
+        <v-btn :disabled="loading" @click="showDialog = false" text>cancel</v-btn>
         <v-spacer></v-spacer>
-        <v-btn text @click="save" :loading="loading">save</v-btn>
+        <v-btn :loading="loading" @click="save" text>save</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -70,11 +70,21 @@ export default class PlaylistEditDialog extends Vue {
   public save() {
     // Only send what's changed
     let details: any = {}
-    if (this.hasChanged('art')) { details = { ...details, art: this.art }}
-    if (this.hasChanged('desc')) { details = { ...details, description: this.desc }}
-    if (this.hasChanged('isCollab')) { details = { ...details, collaborative: this.isCollab }}
-    if (this.hasChanged('isPublic')) { details = { ...details, public: this.isPublic }}
-    if (this.hasChanged('name')) { details = { ...details, name: this.name }}
+    if (this.hasChanged('art')) {
+      details = {...details, art: this.art}
+    }
+    if (this.hasChanged('desc')) {
+      details = {...details, description: this.desc}
+    }
+    if (this.hasChanged('isCollab')) {
+      details = {...details, collaborative: this.isCollab}
+    }
+    if (this.hasChanged('isPublic')) {
+      details = {...details, public: this.isPublic}
+    }
+    if (this.hasChanged('name')) {
+      details = {...details, name: this.name}
+    }
 
     // We can only set collaborative = true on non-public playlists
     if (details.hasOwnProperty('public') && details.public) {
@@ -83,10 +93,10 @@ export default class PlaylistEditDialog extends Vue {
 
     if (Object.keys(details).length) {
       this.loading = true
-      this.$store.dispatch('changePlaylistDetails', { id: this.id, details })
+      this.$store.dispatch('changePlaylistDetails', {id: this.id, details})
         .then(() => {
           this.showDialog = false
-          this.$bus.$emit('change-navbar', { name: this.name })
+          this.$bus.$emit('change-navbar', {name: this.name})
         })
         .finally(() => this.loading = false)
     } else {
@@ -114,16 +124,45 @@ export default class PlaylistEditDialog extends Vue {
   /**
    * Getters and setters
    */
-  get art() { return this.hasChanged('art') ? this.editDetails.art : this.origDetails.art }
-  set art(art: string) { this.$set(this.editDetails, 'art', art) }
-  get desc() { return this.editDetails.desc }
-  set desc(desc: string) { this.$set(this.editDetails, 'desc', desc) }
-  get isCollab() { return this.editDetails.isCollab }
-  set isCollab(mode: boolean) { this.$set(this.editDetails, 'isCollab', mode) }
-  get isPublic() { return this.editDetails.isPublic }
-  set isPublic(mode: boolean) { this.$set(this.editDetails, 'isPublic', mode) }
-  get name() { return this.editDetails.name }
-  set name(name: string) { this.$set(this.editDetails, 'name', name) }
+  get art() {
+    return this.hasChanged('art') ? this.editDetails.art : this.origDetails.art
+  }
+
+  set art(art: string) {
+    this.$set(this.editDetails, 'art', art)
+  }
+
+  get desc() {
+    return this.editDetails.desc
+  }
+
+  set desc(desc: string) {
+    this.$set(this.editDetails, 'desc', desc)
+  }
+
+  get isCollab() {
+    return this.editDetails.isCollab
+  }
+
+  set isCollab(mode: boolean) {
+    this.$set(this.editDetails, 'isCollab', mode)
+  }
+
+  get isPublic() {
+    return this.editDetails.isPublic
+  }
+
+  set isPublic(mode: boolean) {
+    this.$set(this.editDetails, 'isPublic', mode)
+  }
+
+  get name() {
+    return this.editDetails.name
+  }
+
+  set name(name: string) {
+    this.$set(this.editDetails, 'name', name)
+  }
 
   private hasChanged(key: string): boolean {
     return this.editDetails[key] !== this.origDetails[key]

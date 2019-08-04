@@ -266,7 +266,7 @@ export default class Spotify {
           .catch((error: any) => reject(new Error(error)))
       } else {
         // Token is still valid
-        resolve({ expired: false })
+        resolve({expired: false})
       }
     })
   }
