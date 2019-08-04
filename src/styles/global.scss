@@ -52,17 +52,6 @@ button {
   outline: none;
 }
 
-// Component transitions
-.component-fade-enter, .component-fade-leave {
-  will-change: opacity;
-}
-.component-fade-enter-active, .component-fade-leave-active {
-  transition: opacity 150ms ease;
-}
-.component-fade-enter, .component-fade-leave-to {
-  opacity: 0;
-}
-
 // vue-virtual-scroller
 .vue-recycle-scroller__item-wrapper {
   overflow: visible !important;
