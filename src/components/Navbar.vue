@@ -88,8 +88,7 @@ export default class Navbar extends Vue {
     this.$bus.$on('change-navbar', (payload: any) => {
       const {
         actionBar = 'keep',
-        backButton, cancelButton,
-        name = this.viewName,
+        backButton, cancelButton, name,
       } = payload
 
       // Retain current action bar if not specified
@@ -113,8 +112,12 @@ export default class Navbar extends Vue {
         }
 
         // Show current view name
-        this.showViewName = true
-        this.viewName = name
+        if (payload.hasOwnProperty('name')) {
+          this.showViewName = true
+          this.viewName = name
+        } else {
+          this.showViewName = false
+        }
       }
     })
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
