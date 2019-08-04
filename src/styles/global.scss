@@ -58,7 +58,7 @@ button {
 }
 
 // Dialogs
-.v-dialog > .v-card.theme--dark {
+.v-list.theme--dark, .v-card.theme--dark {
   background: linear-gradient(150deg, #352B4F 15%, #4A355A 90%) no-repeat;
   border-color: unset;
 }

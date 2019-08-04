@@ -35,7 +35,7 @@
         <template v-slot:activator="{ on }">
           <img v-on="on" v-show="!cancelButton" :src="avatarUri" :alt="username" />
         </template>
-        <v-list dense>
+        <v-list dense dark>
           <v-list-item-group>
             <v-list-item>
               <v-list-item-content>
