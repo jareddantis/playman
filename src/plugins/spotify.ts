@@ -54,17 +54,19 @@ export default class Spotify {
   }
 
   public async addTracksToPlaylist(id: string, tracks: any[],
-                                   resolve: () => void, reject: (arg0: any) => void) {
+                                   resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     this.reauth().then(() => {
       this.throttler.add(() => {
         return this.client.addTracksToPlaylist(id, tracks.splice(0, 100))
-      }).then(() => {
+      }).then((response: any) => {
+        const snapshotId = response.body.snapshot_id
+
         if (tracks.length) {
           this.addTracksToPlaylist(id, tracks, resolve, reject)
         } else {
-          resolve()
+          resolve(snapshotId)
         }
-      })
+      }).catch((error: any) => reject(new Error(error)))
     })
   }
 
