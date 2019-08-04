@@ -21,8 +21,8 @@
       </div>
 
       <!--      Current view name -->
-      <div class="text-truncate">
-        <h1 v-html="viewName" v-show="showViewName"></h1>
+      <div class="name" v-show="$vuetify.breakpoint.mdAndUp">
+        <h1 class="text-truncate" v-show="showViewName">{{ viewName }}</h1>
       </div>
     </div>
 

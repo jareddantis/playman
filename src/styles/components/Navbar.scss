@@ -17,6 +17,8 @@
   }
 
   .view {
+    justify-content: space-between;
+
     .actions.left {
       margin-right: 1rem;
 
@@ -25,7 +27,7 @@
       }
     }
 
-    .text-truncate h1 {
+    .name h1 {
       font-weight: 300;
       font-size: 1.75rem;
       margin: 0;

@@ -1,3 +1,5 @@
+@import "../global.scss";
+
 #playlist {
   display: grid;
   grid-template-columns: [meta] 16rem [tracks] 1fr;
@@ -19,17 +21,26 @@
     grid-column: tracks;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 960px) {
     grid-template-columns: 1fr;
-    grid-template-rows:  1fr;
+    grid-template-rows: [meta] 2rem [tracks] 1fr;
     grid-row-gap: 2rem;
-
-    .meta {
-      display: none;
-    }
 
     .meta, .tracks {
       grid-column: unset;
+    }
+
+    .meta {
+      grid-row: meta;
+      width: $body-width;
+
+      h1 {
+        line-height: 2rem;
+      }
+    }
+
+    .tracks {
+      grid-row: tracks;
     }
   }
 }

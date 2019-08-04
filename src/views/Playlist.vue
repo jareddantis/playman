@@ -1,6 +1,10 @@
 <template>
   <div id="playlist">
-    <div class="meta">
+    <div class="meta text-truncate" v-if="$vuetify.breakpoint.smAndDown">
+      <h1>{{ playlistName }}</h1>
+    </div>
+
+    <div class="meta" v-else>
       <v-img :lazy-src="require('../assets/gradient.jpeg')"
              :src="playlistArt" :alt="playlistName">
         <template v-slot:placeholder>
@@ -28,11 +32,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
-import PlaylistTrack from '@/components/PlaylistTrack.vue'
-import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+  import {Component} from 'vue-property-decorator'
+  import PlaylistTrack from '@/components/PlaylistTrack.vue'
+  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 
-@Component({
+  @Component({
   components: { PlaylistEditDialog, PlaylistTrack },
 })
 export default class Playlist extends Vue {
