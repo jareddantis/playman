@@ -21,7 +21,7 @@
       </div>
 
       <!--      Current view name -->
-      <div class="name" v-show="$vuetify.breakpoint.mdAndUp">
+      <div class="name" v-show="currentActionBar !== 'PlaylistBar' || $vuetify.breakpoint.mdAndUp">
         <h1 class="text-truncate" v-show="showViewName">{{ viewName }}</h1>
       </div>
     </div>
