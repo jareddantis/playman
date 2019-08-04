@@ -15,7 +15,7 @@
         </v-btn>
         <!--      Cancel batch edit -->
         <v-btn text small icon color="white"
-               v-show="cancelButton" @click="cancelBatchEdit">
+               v-show="cancelButton" @click="$bus.$emit('cancel-batch-edit')">
           <v-icon>clear</v-icon>
         </v-btn>
       </div>
@@ -78,7 +78,6 @@ export default class Navbar extends Vue {
   public avatarUri!: string
   public username!: string
   private backButton: boolean = false
-  private previousBackButton: boolean = false
   private cancelButton: boolean = false
   private currentActionBar: string = 'PlaylistsBar'
   private loading: boolean = true
@@ -99,9 +98,6 @@ export default class Navbar extends Vue {
       }
 
       if (payload.hasOwnProperty('cancelButton')) {
-        // Back up navbar state
-        this.previousBackButton = this.backButton
-
         // Show cancel button, hide back button and view name
         this.cancelButton = cancelButton
         this.backButton = !cancelButton
@@ -122,15 +118,6 @@ export default class Navbar extends Vue {
       }
     })
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
-  }
-
-  public cancelBatchEdit() {
-    this.$bus.$emit('cancel-batch-edit')
-
-    // Restore previous navbar state
-    this.backButton = this.previousBackButton
-    this.showViewName = true
-    this.cancelButton = false
   }
 
   public logout() {

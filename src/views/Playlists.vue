@@ -18,12 +18,8 @@
     public playlists!: any[]
 
     public mounted() {
-      // Update navbar title
-      this.$bus.$emit('change-navbar', {
-        actionBar: 'Playlists',
-        backButton: false,
-        name: 'Playlists',
-      })
+      // Update navbar
+      this.setNavbar()
 
       // Load playlists
       this.$bus.$emit('loading', true)
@@ -31,6 +27,17 @@
         .then((playlists) => this.$store.commit('setPlaylists', playlists))
         .catch(() => this.$store.commit('setOffline', true))
         .finally(() => this.$bus.$emit('loading', false))
+
+      // Restore navbar on cancellation of batch edit
+      this.$bus.$on('cancel-batch-edit', () => this.setNavbar())
+    }
+
+    private setNavbar() {
+      this.$bus.$emit('change-navbar', {
+        actionBar: 'Playlists',
+        backButton: false,
+        name: 'Playlists',
+      })
     }
   }
 </script>
