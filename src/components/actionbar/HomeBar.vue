@@ -1,8 +1,7 @@
 <template>
   <div class="action-bar">
-    <v-btn text small icon color="white"
-           @click="$bus.$emit('edit-playlist-details')">
-      <v-icon>edit</v-icon>
+    <v-btn text small icon color="white">
+      <v-icon>select_all</v-icon>
     </v-btn>
     <v-btn text small icon color="white">
       <v-icon>more_vert</v-icon>
@@ -15,9 +14,11 @@
   import { Component } from 'vue-property-decorator'
 
   @Component
-  export default class PlaylistBar extends Vue {}
+  export default class HomeBar extends Vue {
+
+  }
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/components/ActionBar';
+  @import '../../styles/components/ActionBar';
 </style>

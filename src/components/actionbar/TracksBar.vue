@@ -19,5 +19,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/components/ActionBar';
+  @import '../../styles/components/ActionBar';
 </style>

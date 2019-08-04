@@ -46,10 +46,10 @@
 import Vue from 'vue'
 import { mapState } from 'vuex'
 import { Component } from 'vue-property-decorator'
-import EmptyBar from '@/components/EmptyBar.vue'
-import HomeBar from '@/components/HomeBar.vue'
-import PlaylistBar from '@/components/PlaylistBar.vue'
-import TracksBar from '@/components/TracksBar.vue'
+import EmptyBar from '@/components/actionbar/EmptyBar.vue'
+import HomeBar from '@/components/actionbar/HomeBar.vue'
+import PlaylistBar from '@/components/actionbar/PlaylistBar.vue'
+import TracksBar from '@/components/actionbar/TracksBar.vue'
 
 @Component({
   components: { HomeBar, EmptyBar, PlaylistBar, TracksBar },
