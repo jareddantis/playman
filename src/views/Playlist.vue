@@ -33,11 +33,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {Component} from 'vue-property-decorator'
-  import PlaylistTrack from '@/components/PlaylistTrack.vue'
-  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+import {Component} from 'vue-property-decorator'
+import PlaylistTrack from '@/components/PlaylistTrack.vue'
+import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 
-  @Component({
+@Component({
   components: { PlaylistEditDialog, PlaylistTrack },
 })
 export default class Playlist extends Vue {
@@ -61,6 +61,7 @@ export default class Playlist extends Vue {
     this.getPlaylist()
 
     // Navbar actions
+    this.$bus.$on('cancel-batch-edit', () => this.setNavbar())
     this.$bus.$on('delete-tracks', () => this.deleteTracks())
     this.$bus.$on('edit-playlist-details', () => {
       this.$bus.$emit('show-playlist-details-dialog', {
@@ -85,15 +86,7 @@ export default class Playlist extends Vue {
     }
 
     // Update action bar
-    if (this.checkedTracks.length) {
-      this.$bus.$emit('change-navbar', {
-        actionBar: 'Tracks',
-        backButton: false,
-        name: '&nbsp;',
-      })
-    } else {
-      this.setNavbar('Playlist')
-    }
+    this.setNavbar(this.checkedTracks.length ? 'Tracks' : 'Playlist')
   }
 
   private loadStart() {
@@ -179,10 +172,11 @@ export default class Playlist extends Vue {
     })
   }
 
-  private setNavbar(actionBar: string = 'Playlist') {
+  private setNavbar(actionBar?: string) {
     this.$bus.$emit('change-navbar', {
-      actionBar,
+      actionBar: !!actionBar ? actionBar : 'Playlist',
       backButton: true,
+      cancelButton: actionBar === 'Tracks',
       name: this.playlistName,
     })
   }

@@ -14,9 +14,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {Component, Prop} from 'vue-property-decorator'
+import {Component, Prop} from 'vue-property-decorator'
 
-  @Component
+@Component
 export default class PlaylistTrack extends Vue {
   @Prop({ required: true }) public readonly track: any
   public isChecked: boolean = false
@@ -28,6 +28,10 @@ export default class PlaylistTrack extends Vue {
 
     // Disable while loading
     this.$bus.$on('loading', (isLoading: boolean) => this.isDisabled = isLoading)
+    this.$bus.$on('cancel-batch-edit', () => {
+      this.isChecked = false
+      this.onToggle()
+    })
   }
 
   public onToggle() {
