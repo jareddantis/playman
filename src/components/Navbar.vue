@@ -32,22 +32,17 @@
         <template v-slot:activator="{ on }">
           <img :alt="username" :src="avatarUri" v-on="on" v-show="!actionBar.cancelButton"/>
         </template>
-        <v-list dark dense>
-          <v-list-item-group>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>Logged in as <span class="font-weight-bold">{{ username }}</span></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item @click="logout">
-              <v-list-item-icon>
-                <v-icon>exit_to_app</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Sign out</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
+        <v-list two-line dark>
+          <v-list-item @click="logout">
+            <v-list-item-avatar>
+              <v-icon>exit_to_app</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>Sign out</v-list-item-title>
+              <v-list-item-subtitle>Signed in as
+                <span class="font-weight-bold">{{ username }}</span></v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-menu>
     </div>
