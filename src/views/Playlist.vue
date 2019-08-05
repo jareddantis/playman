@@ -1,15 +1,11 @@
 <template>
   <div id="playlist">
-    <div class="meta text-truncate" v-if="$vuetify.breakpoint.smAndDown">
-      <h1>
-        {{ currentPlaylist.name }}
-        <span>({{ currentPlaylistTracks.length }} song{{ currentPlaylistTracks.length === 1 ? '' : 's'}})</span>
-      </h1>
-    </div>
-
-    <div class="meta" v-else>
+    <!-- Playlist metadata -->
+    <div class="meta">
+      <!-- Playlist cover image -->
       <v-img :alt="currentPlaylist.name"
-             :lazy-src="require('../assets/gradient.jpeg')" :src="art">
+             :lazy-src="require('../assets/gradient.jpeg')" :src="art"
+             v-show="$vuetify.breakpoint.mdAndUp">
         <template v-slot:placeholder>
           <v-layout align-center fill-height justify-center ma-0>
             <v-progress-circular color="grey lighten-5"
@@ -17,7 +13,15 @@
           </v-layout>
         </template>
       </v-img>
+
+      <!-- Selected tracks -->
+      <h1 v-if="inSelectionMode" class="text-truncate selection-mode">{{ checkedTracks.length }} selected</h1>
+
+      <!-- Playlist name -->
+      <h1 v-else class="text-truncate">{{ currentPlaylist.name }}</h1>
     </div>
+
+    <!-- Playlist tracks -->
     <div class="tracks">
       <p v-if="loading">{{ loadingMsg }}</p>
       <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
@@ -39,15 +43,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapState} from 'vuex'
-import {Mutation} from 'vuex-class'
-import {Component} from 'vue-property-decorator'
-import PlaylistTrack from '@/components/PlaylistTrack.vue'
-import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
-import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
-import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
+  import {mapState} from 'vuex'
+  import {Mutation} from 'vuex-class'
+  import {Component} from 'vue-property-decorator'
+  import PlaylistTrack from '@/components/PlaylistTrack.vue'
+  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+  import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
+  import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
 
-@Component({
+  @Component({
   components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog, TrackDeleteDialog},
   computed: mapState([
     'checkedTracks',
@@ -58,7 +62,17 @@ import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
 })
 export default class Playlist extends Vue {
   get art(): string {
-    return this.currentPlaylist.art.length ? this.currentPlaylist.art[0].url : require('../assets/gradient.jpeg')
+    if (!!this.currentPlaylist.art) {
+      return this.currentPlaylist.art.length ? this.currentPlaylist.art[0].url : require('../assets/gradient.jpeg')
+    }
+    return require('../assets/gradient.jpeg')
+  }
+
+  get inSelectionMode(): boolean {
+    if (!!this.checkedTracks) {
+      return this.checkedTracks.length > 0
+    }
+    return false
   }
 
   public static onBeforeUnload(event: Event) {

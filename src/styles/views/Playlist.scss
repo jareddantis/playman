@@ -15,6 +15,14 @@
       border-radius: 4px;
       margin-bottom: 1rem;
     }
+
+    h1 {
+      line-height: 2rem;
+
+      &.selection-mode {
+        color: #E5A3A0;
+      }
+    }
   }
 
   .tracks {
@@ -34,10 +42,6 @@
       grid-row: meta;
       width: $body-width;
       position: relative;
-
-      h1 {
-        line-height: 2rem;
-      }
     }
 
     .tracks {
