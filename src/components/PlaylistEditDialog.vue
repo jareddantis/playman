@@ -38,10 +38,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Component} from 'vue-property-decorator'
+import {mapState} from 'vuex'
+import {Component} from 'vue-property-decorator'
 
-  @Component({
+@Component({
   computed: mapState(['currentPlaylist']),
 })
 export default class PlaylistEditDialog extends Vue {

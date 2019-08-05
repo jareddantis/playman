@@ -45,15 +45,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Mutation} from 'vuex-class'
-  import {Component} from 'vue-property-decorator'
-  import PlaylistTrack from '@/components/PlaylistTrack.vue'
-  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
-  import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
-  import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
+import {mapState} from 'vuex'
+import {Mutation} from 'vuex-class'
+import {Component} from 'vue-property-decorator'
+import PlaylistTrack from '@/components/PlaylistTrack.vue'
+import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
+import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
 
-  @Component({
+@Component({
   components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog, TrackDeleteDialog},
   computed: mapState([
     'checkedTracks',
