@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="600" v-model="showDialog">
+  <v-dialog max-width="600" v-model="showDialog" scrollable>
     <v-card>
       <v-card-title>
         <span class="headline">Edit playlist details</span>
@@ -38,10 +38,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapState} from 'vuex'
-import {Component} from 'vue-property-decorator'
+  import {mapState} from 'vuex'
+  import {Component} from 'vue-property-decorator'
 
-@Component({
+  @Component({
   computed: mapState(['currentPlaylist']),
 })
 export default class PlaylistEditDialog extends Vue {
