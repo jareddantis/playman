@@ -1,6 +1,6 @@
 <template>
-  <div :disabled="isChecked" @click="$bus.$emit('paste-tracks', track.index)" class="track target"
-       v-if="cutting">
+  <div :disabled="isChecked" @click="$bus.$emit('paste-tracks', track.index)"
+       class="track target" v-if="isReordering">
     <div class="target-icon">
       <v-icon>subdirectory_arrow_right</v-icon>
     </div>
@@ -21,12 +21,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component, Prop} from 'vue-property-decorator'
+  import {mapState} from 'vuex'
+  import {Component, Prop} from 'vue-property-decorator'
 
-@Component
+  @Component({
+  computed: mapState(['isReordering']),
+})
 export default class PlaylistTrack extends Vue {
   @Prop({required: true}) public readonly track: any
-  @Prop({required: true}) public readonly cutting: boolean | undefined
+  public isReordering!: boolean
   public isChecked: boolean = false
   public isDisabled: boolean = false
 
@@ -39,7 +42,7 @@ export default class PlaylistTrack extends Vue {
 
     // Batch edit actions
     this.$bus.$on('cancel-batch-edit', () => {
-      if (!this.cutting) {
+      if (!this.isReordering) {
         this.isChecked = false
         this.onToggle()
       }

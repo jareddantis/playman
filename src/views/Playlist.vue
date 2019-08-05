@@ -22,11 +22,9 @@
       <p v-if="loading">{{ loadingMsg }}</p>
       <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
                        :items="currentPlaylistTracks" :page-mode="true"
-                       class="scroller"
-                       key-field="key"
-                       v-else v-slot="{ item }">
-        <PlaylistTrack :checked="item.checked" :cutting="inCuttingMode"
-                       :key="item.key" :track="item" v-on:track-toggled="onTrackToggled"></PlaylistTrack>
+                       class="scroller" key-field="key" v-else v-slot="{ item }">
+        <PlaylistTrack :checked="item.checked" :key="item.key" :track="item"
+                       v-on:track-toggled="onTrackToggled"></PlaylistTrack>
       </RecycleScroller>
     </div>
 
@@ -39,16 +37,21 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapState} from 'vuex'
-import {Mutation} from 'vuex-class'
-import {Component} from 'vue-property-decorator'
-import PlaylistTrack from '@/components/PlaylistTrack.vue'
-import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
-import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
+  import {mapState} from 'vuex'
+  import {Mutation} from 'vuex-class'
+  import {Component} from 'vue-property-decorator'
+  import PlaylistTrack from '@/components/PlaylistTrack.vue'
+  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+  import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
 
-@Component({
+  @Component({
   components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog},
-  computed: mapState(['checkedTracks', 'currentPlaylist', 'currentPlaylistTracks']),
+  computed: mapState([
+    'checkedTracks',
+    'currentPlaylist',
+    'currentPlaylistTracks',
+    'isReordering',
+  ]),
 })
 export default class Playlist extends Vue {
 
@@ -63,7 +66,7 @@ export default class Playlist extends Vue {
   public checkedTracks!: any
   public currentPlaylist!: any
   public currentPlaylistTracks!: any[]
-  public inCuttingMode: boolean = false
+  public isReordering!: boolean
   public loading: boolean = true
   public loadingMsg: string = ''
   @Mutation('setIsReordering') private setIsReordering!: (isReordering: boolean) => void
@@ -80,11 +83,7 @@ export default class Playlist extends Vue {
       this.setIsReordering(false)
       this.reorderTracks(pasteAfter)
     })
-    this.$bus.$on('cancel-batch-edit', () => {
-      if (this.inCuttingMode) {
-        this.inCuttingMode = false
-      }
-    })
+    this.$bus.$on('cancel-batch-edit', () => this.setIsReordering(false))
     this.$bus.$on('delete-tracks', () => this.deleteTracks())
     this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialog'))
   }
