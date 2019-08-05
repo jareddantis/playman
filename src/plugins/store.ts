@@ -130,7 +130,7 @@ const store = new Vuex.Store({
             .then(() => resolve())
             .catch((error) => reject(error))
         } else {
-          api.deletePlaylistTracks(id, currentPlaylistTracks, snapshot, resolve, reject)
+          api.deletePlaylistTracks(id, snapshot, checkedTracks, resolve, reject)
         }
       })
     },

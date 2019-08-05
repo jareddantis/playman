@@ -32,20 +32,23 @@
     <PlaylistEditDialog/>
     <!-- Playlist shuffle confirm dialog -->
     <PlaylistShuffleDialog v-on:confirm="shuffle"/>
+    <!-- Playlist track delete confirm dialog -->
+    <TrackDeleteDialog v-on:confirm="deleteTracks"/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Mutation} from 'vuex-class'
-  import {Component} from 'vue-property-decorator'
-  import PlaylistTrack from '@/components/PlaylistTrack.vue'
-  import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
-  import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
+import {mapState} from 'vuex'
+import {Mutation} from 'vuex-class'
+import {Component} from 'vue-property-decorator'
+import PlaylistTrack from '@/components/PlaylistTrack.vue'
+import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
+import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
+import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
 
-  @Component({
-  components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog},
+@Component({
+  components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog, TrackDeleteDialog},
   computed: mapState([
     'checkedTracks',
     'currentPlaylist',
@@ -54,7 +57,6 @@ import Vue from 'vue'
   ]),
 })
 export default class Playlist extends Vue {
-
   get art(): string {
     return this.currentPlaylist.art.length ? this.currentPlaylist.art[0].url : require('../assets/gradient.jpeg')
   }
@@ -84,7 +86,6 @@ export default class Playlist extends Vue {
       this.reorderTracks(pasteAfter)
     })
     this.$bus.$on('cancel-batch-edit', () => this.setIsReordering(false))
-    this.$bus.$on('delete-tracks', () => this.deleteTracks())
     this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialog'))
   }
 
@@ -97,8 +98,15 @@ export default class Playlist extends Vue {
     this.$store.commit('setTrackChecked', { index, isChecked: state })
   }
 
+  public deleteTracks() {
+    this.loadingMsg = 'Deleting selected songs from playlist...'
+    this.loadStart()
+    this.$store.dispatch('deletePlaylistTracks')
+      .then(() => this.getPlaylist())
+  }
+
   public shuffle() {
-    this.loadingMsg = 'Shuffling playlist...'
+    this.loadingMsg = 'Randomizing playlist...'
     this.loadStart()
     this.$store.dispatch('shufflePlaylist').then(() => this.getPlaylist())
   }
@@ -116,12 +124,6 @@ export default class Playlist extends Vue {
     if (this.currentPlaylistTracks.length) {
       this.loading = false
     }
-  }
-
-  private async deleteTracks() {
-    this.loadStart()
-    this.$store.dispatch('deletePlaylistTracks')
-      .then(() => this.loadEnd())
   }
 
   private async getPlaylist() {
