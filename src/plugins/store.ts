@@ -120,12 +120,11 @@ const store = new Vuex.Store({
           .catch((error: any) => reject(error))
       })
     },
-    async deletePlaylistTracks({state, commit}) {
+    async deletePlaylistTracks({state}) {
       return new Promise((resolve, reject) => {
         const { checkedTracks, currentPlaylistTracks } = state
         const { id, snapshot } = state.currentPlaylist
 
-        commit('emptyCheckedTracks')
         if (checkedTracks.length === currentPlaylistTracks.length) {
           api.deleteAllPlaylistTracks(id)
             .then(() => resolve())
@@ -137,6 +136,7 @@ const store = new Vuex.Store({
     },
     async getPlaylist({state, commit}, id) {
       return api.getPlaylist(id).then((playlist: any) => {
+        commit('emptyCheckedTracks')
         commit('setPlaylist', playlist.details)
         commit('setPlaylistTracks', playlist.tracks)
       })
