@@ -16,10 +16,10 @@
         </v-img>
 
         <!-- Selected tracks -->
-        <h1 v-if="inSelectionMode" class="text-truncate selection-mode">{{ checkedTracks.length }} selected</h1>
+        <h1 v-show="inSelectionMode" class="text-truncate selection-mode">{{ checkedTracks.length }} selected</h1>
 
         <!-- Playlist name -->
-        <h1 v-else class="text-truncate">{{ currentPlaylist.name }}</h1>
+        <h1 v-show="!inSelectionMode && !loading" class="text-truncate">{{ currentPlaylist.name }}</h1>
       </div>
 
       <!-- Playlist tracks -->
