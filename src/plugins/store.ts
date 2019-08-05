@@ -125,19 +125,14 @@ const store = new Vuex.Store({
         const { checkedTracks, currentPlaylistTracks } = state
         const { id, snapshot } = state.currentPlaylist
 
+        commit('emptyCheckedTracks')
         if (checkedTracks.length === currentPlaylistTracks.length) {
-          commit('setPlaylistTracks', [])
           api.deleteAllPlaylistTracks(id)
             .then(() => resolve())
             .catch((error) => reject(error))
         } else {
-          commit('setPlaylistTracks', currentPlaylistTracks.filter((track: any) => {
-            return !currentPlaylistTracks.includes(track.index)
-          }))
           api.deletePlaylistTracks(id, currentPlaylistTracks, snapshot, resolve, reject)
         }
-
-        commit('emptyCheckedTracks')
       })
     },
     async getPlaylist({state, commit}, id) {

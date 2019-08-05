@@ -21,10 +21,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Component, Prop} from 'vue-property-decorator'
+import {mapState} from 'vuex'
+import {Component, Prop} from 'vue-property-decorator'
 
-  @Component({
+@Component({
   computed: mapState(['isReordering']),
 })
 export default class PlaylistTrack extends Vue {

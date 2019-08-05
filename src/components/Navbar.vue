@@ -57,11 +57,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Component} from 'vue-property-decorator'
-  import components from '@/components/actionbar'
+import {mapState} from 'vuex'
+import {Component} from 'vue-property-decorator'
+import components from '@/components/actionbar'
 
-  @Component({
+@Component({
   components,
   computed: mapState([
     'avatarUri',
