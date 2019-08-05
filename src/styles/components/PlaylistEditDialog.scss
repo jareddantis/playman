@@ -6,7 +6,7 @@
   display: grid;
   grid-template-columns: [art] 12rem [details] 1fr;
   grid-template-rows: 1fr;
-  grid-column-gap: 1rem;
+  grid-gap: 1rem;
 
   .art, .details {
     display: flex;
@@ -37,6 +37,30 @@
 
     .v-text-field {
       margin-bottom: 1rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: [art] 1fr [details] 1fr;
+    align-items: center;
+    justify-items: center;
+
+    .art, .details {
+      grid-column: unset;
+    }
+
+    .art {
+      grid-row: art;
+
+      img {
+        width: 10rem;
+      }
+    }
+
+    .details {
+      grid-row: details;
+      width: 100%;
     }
   }
 }
