@@ -21,9 +21,17 @@ const ops = {
   },
 
   filterUserPlaylists(playlists: any[], username: string): any[] {
-    return playlists.filter((playlist: any) => {
-      return playlist.owner.id === username
-    })
+    const filteredPlaylists: any[] = []
+
+    for (const playlist of playlists) {
+      if (playlist.owner.id === username) {
+        playlist.checked = false
+        playlist.index = filteredPlaylists.length
+        filteredPlaylists.push(playlist)
+      }
+    }
+
+    return filteredPlaylists
   },
 
   generateArtists(artists: any[]): string {
