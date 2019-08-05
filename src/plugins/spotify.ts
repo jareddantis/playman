@@ -53,26 +53,15 @@ export default class Spotify {
     return `http${this.environment === 'production' ? 's://setlist.jared.gq' : '://localhost:8080'}/callback`
   }
 
-  public async addTracksToPlaylist(id: string, tracks: any[],
-                                   resolve: (arg0: any) => void, reject: (arg0: any) => void) {
-    this.reauth().then(() => {
-      this.throttler.add(() => {
-        return this.client.addTracksToPlaylist(id, tracks.splice(0, 100))
-      }).then((response: any) => {
-        const snapshotId = response.body.snapshot_id
-
-        if (tracks.length) {
-          this.addTracksToPlaylist(id, tracks, resolve, reject)
-        } else {
-          resolve(snapshotId)
-        }
-      }).catch((error: any) => reject(new Error(error)))
-    })
-  }
-
+  /**
+   * Changes playlist metadata and cover image.
+   *
+   * @param id - Playlist ID
+   * @param details - New playlist metadata and cover image. All fields optional.
+   */
   public async changePlaylistDetails(id: string, details: any) {
-    this.reauth().then(() => {
-      return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      this.reauth().then(() => {
         // Check if there is any cover art to commit
         if (details.hasOwnProperty('art')) {
           const art = details.art.split(',')[1]
@@ -100,17 +89,33 @@ export default class Spotify {
     })
   }
 
-  public async deleteAllPlaylistTracks(id: string, snapshot: string,
-                                       resolve: (arg0: any) => void, reject: (arg0: any) => void) {
-    this.reauth().then(() => {
-      this.throttler.add(() => {
-        return this.client.replaceTracksInPlaylist(id, [])
-      }).then((response: any) => resolve(response.body.snapshot_id))
-        .catch((error: any) => reject(new Error(error)))
+  /**
+   * Removes all tracks from a playlist.
+   *
+   * @param id - Playlist ID
+   */
+  public async deleteAllPlaylistTracks(id: string) {
+    return new Promise((resolve, reject) => {
+      this.reauth().then(() => {
+        this.throttler.add(() => {
+          return this.client.replaceTracksInPlaylist(id, [])
+        }).then((response: any) => resolve(response.body.snapshot_id))
+          .catch((error: any) => reject(new Error(error)))
+      })
     })
   }
 
-  public async deletePlaylistTracks(id: string, tracks: any[], snapshot: string,
+  /**
+   * Removes a set of tracks from a playlist.
+   * Recursive function (API endpoint accepts max 100 tracks per request).
+   *
+   * @param id - Playlist ID
+   * @param snapshot - Playlist snapshot ID
+   * @param tracks - Playlist tracks
+   * @param resolve - Promise resolve() to be called after tracks have been removed
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  public async deletePlaylistTracks(id: string, snapshot: string, tracks: any[],
                                     resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     this.reauth().then(() => {
       this.throttler.add(() => {
@@ -119,7 +124,7 @@ export default class Spotify {
         const snapshotId = response.body.snapshot_id
 
         if (tracks.length) {
-          this.deletePlaylistTracks(id, tracks, snapshotId, resolve, reject)
+          this.deletePlaylistTracks(id, snapshotId, tracks, resolve, reject)
         } else {
           resolve(snapshotId)
         }
@@ -128,6 +133,9 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Retrieves details about the user currently logged in.
+   */
   public async getMe() {
     return new Promise((resolve, reject) => {
       this.reauth().then(() => {
@@ -138,39 +146,48 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Retrieves details about a playlist.
+   * Returns details along with the playlist's tracks, retrieved by this.getPlaylistTracks().
+   *
+   * @param id - Playlist ID
+   */
   public async getPlaylist(id: string) {
     return new Promise((resolve, reject) => {
       this.reauth().then(() => {
         this.throttler.add(() => this.client.getPlaylist(id))
-          .then((playlist: any) => resolve(playlist))
-          .catch((error: any) => reject(new Error(error)))
+          .then((response: any) => {
+            new Promise((resolve1, reject1) => {
+              return this.getPlaylistTracks(id, [], 0, resolve1, reject1)
+            }).then((tracks: any) => {
+              const { body } = response
+              resolve({
+                details: {
+                  art: body.images,
+                  name: body.name,
+                  desc: body.description,
+                  id,
+                  isCollab: body.collaborative,
+                  isPublic: body.public === true,
+                  snapshot: body.snapshot_id,
+                },
+                tracks,
+              })
+            }).catch((error: any) => reject(new Error(error)))
+          }).catch((error: any) => reject(new Error(error)))
       })
     })
   }
 
-  public async getPlaylistTracks(id: string, initial: any[], offset: number,
-                                 resolve: (arg0: any) => void, reject: (arg0: any) => void) {
-    const limit = 100
-
-    this.reauth().then(() => {
-      this.throttler.add(() => this.client.getPlaylistTracks(id, {offset, limit}))
-        .then((response: any) => {
-          const results = initial.concat(response.body.items)
-
-          // Check if we have everything
-          if (response.body.next === null) {
-            // We have everything! Now let's simplify the received data
-            // into something we can easily consume
-            Worker.send({type: 'decode_playlist_tracks', data: results})
-              .then((reply) => resolve(reply))
-          } else {
-            // Retrieve next page
-            this.getPlaylistTracks(id, results, offset + limit, resolve, reject)
-          }
-        }).catch((error: any) => reject(new Error(error)))
-    })
-  }
-
+  /**
+   * Gets a list of playlists that the current user owns.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param username - Username of currently logged in user
+   * @param initial - Initial list to feed the recursive function with
+   * @param resolve - Promise resolve() to be called after all playlists have been retrieved
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
   public async getUserPlaylists(username: string, initial: any[],
                                 resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     this.reauth().then(() => {
@@ -196,23 +213,40 @@ export default class Spotify {
     })
   }
 
-  public async reorderPlaylistTracks(id: string, snapshot: string, tracks: any[], tracksToReorder: number[],
-                                     placeTracksAfter: number, resolve: () => void, reject: (arg0: any) => void) {
-    // We can only add 100 tracks to the replace endpoint per request,
-    // which means that it would be better to just delete everything first
-    // and add the new reordered tracks in batches of 100.
-    new Promise((resolve1, reject1) => this.deleteAllPlaylistTracks(id, snapshot, resolve1, reject1))
-      .then(() => {
+  /**
+   * Removes a set of tracks from a playlist, consolidates them,
+   * and reinserts them as one continuous set at a specified point in the playlist.
+   *
+   * @param id - Playlist ID
+   * @param snapshot - Playlist snapshot ID (necessary for emptying current playlist; see comments in function)
+   * @param tracks - Playlist tracks
+   * @param tracksToReorder - Playlist track *indices* to reorder
+   * @param placeTracksAfter - Playlist track *index* after which tracksToReorder will be inserted
+   */
+  public async reorderPlaylistTracks(id: string, snapshot: string, tracks: any[],
+                                     tracksToReorder: number[], placeTracksAfter: number) {
+    return new Promise((resolve, reject) => {
+      // We can only add 100 tracks to the replace endpoint per request,
+      // which means that it would be better to just delete everything first
+      // and add the new reordered tracks in batches of 100.
+      this.deleteAllPlaylistTracks(id).then(() => {
         // Now that the playlist is empty,
         // we can now build and send the new ordered list of tracks.
         Worker.send({
           type: 'reorder_playlist_tracks',
           data: {tracks, tracksToReorder, placeTracksAfter},
         }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
-      })
-      .catch((error) => reject(new Error(error)))
+      }).catch((error) => reject(new Error(error)))
+    })
   }
 
+  /**
+   * Stores the authorization tokens necessary for communicating with the Spotify API.
+   *
+   * @param access - OAuth access token
+   * @param refresh - OAuth refresh token
+   * @param expiry - OAuth access token expiration (in ms since epoch)
+   */
   public async setTokens(access: string, refresh: string, expiry: number) {
     return new Promise((resolve, reject) => {
       this.refreshToken = refresh
@@ -229,19 +263,51 @@ export default class Spotify {
     })
   }
 
-  public async shufflePlaylist(id: string, snapshot: string, tracks: [],
-                               resolve: () => void, reject: (arg0: any) => void) {
-    // Same concept as this.reorderPlaylistTracks,
-    // but instead of taking a list of tracks to move to a specified start point,
-    // we completely randomize the track order.
-    new Promise((resolve1, reject1) => this.deleteAllPlaylistTracks(id, snapshot, resolve1, reject1))
-      .then(() => {
+  /**
+   * Randomizes playlist tracks using the modern Fisher-Yates shuffle algorithm.
+   *
+   * @param id - Playlist ID
+   * @param snapshot - Playlist snapshot ID (necessary for emptying current playlist; see this.reorderPlaylistTracks())
+   * @param tracks - Playlist tracks
+   */
+  public async shufflePlaylist(id: string, snapshot: string, tracks: any[]) {
+    return new Promise((resolve, reject) => {
+      // Same concept as this.reorderPlaylistTracks,
+      // but instead of taking a list of tracks to move to a specified start point,
+      // we completely randomize the track order.
+      this.deleteAllPlaylistTracks(id).then(() => {
         Worker.send({
           type: 'shuffle_playlist_tracks',
           data: {tracks},
         }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
-      })
-      .catch((error) => reject(new Error(error)))
+      }).catch((error) => reject(new Error(error)))
+    })
+  }
+
+  /**
+   * Adds a set of tracks to a playlist.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param id - Playlist ID
+   * @param initial - Initial list to feed the recursive function with
+   * @param resolve - Promise resolve() to be called after all playlists have been retrieved
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  private async addTracksToPlaylist(id: string, initial: any[],
+                                    resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    this.reauth().then(() => {
+      this.throttler.add(() => {
+        return this.client.addTracksToPlaylist(id, initial.splice(0, 100))
+      }).then((response: any) => {
+        const snapshotId = response.body.snapshot_id
+
+        if (initial.length) {
+          this.addTracksToPlaylist(id, initial, resolve, reject)
+        } else {
+          resolve(snapshotId)
+        }
+      }).catch((error: any) => reject(new Error(error)))
+    })
   }
 
   private generateStateToken() {
@@ -255,6 +321,42 @@ export default class Spotify {
     this.stateToken = result
   }
 
+  /**
+   * Gets a list of tracks present in a playlist.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param id - Playlist ID
+   * @param initial - Initial list to feed the recursive function with
+   * @param offset - Index of track from which to query the next 100 tracks
+   * @param resolve - Promise resolve() to be called after all tracks have been retrieved
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  private async getPlaylistTracks(id: string, initial: any[], offset: number,
+                                  resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    const limit = 100
+
+    this.reauth().then(() => {
+      this.throttler.add(() => this.client.getPlaylistTracks(id, {offset, limit}))
+        .then((response: any) => {
+          const results = initial.concat(response.body.items)
+
+          // Check if we have everything
+          if (response.body.next === null) {
+            // We have everything! Now let's simplify the received data
+            // into something we can easily consume
+            Worker.send({type: 'decode_playlist_tracks', data: results})
+              .then((reply) => resolve(reply))
+          } else {
+            // Retrieve next page
+            this.getPlaylistTracks(id, results, offset + limit, resolve, reject)
+          }
+        }).catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  /**
+   * Refreshes the Spotify API token.
+   */
   private async reauth() {
     return new Promise((resolve, reject) => {
       if (new Date().getTime() >= this.expiry) {

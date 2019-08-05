@@ -32,6 +32,11 @@ function getInitialState(): { [key: string]: any } {
     // User data
     playlists: [],
 
+    // Playlist currently viewing
+    currentPlaylist: {},
+    currentPlaylistTracks: [],
+    checkedTracks: [],
+
     // Connection status
     offline: false,
   }
@@ -43,6 +48,7 @@ const store = new Vuex.Store({
   plugins: [persistence.plugin],
   state: getInitialState(),
   mutations: {
+    emptyCheckedTracks: (state) => state.checkedTracks = [],
     reset: (state: any) => {
       const initialState = getInitialState()
       Object.keys(initialState).forEach((key) => {
@@ -51,8 +57,18 @@ const store = new Vuex.Store({
     },
     setLoggedIn: (state: any, loginStatus) => state.isLoggedIn = loginStatus,
     setOffline: (state, offline) => state.offline = offline,
+    setPlaylist: (state, playlist) => state.currentPlaylist = Object.assign({}, state.currentPlaylist, playlist),
     setPlaylists: (state, playlists) => state.playlists = playlists,
+    setPlaylistTracks: (state, tracks) => state.currentPlaylistTracks = tracks,
     setTokens: (state, authData) => Object.assign(state, authData),
+    setTrackChecked: (state, { index, isChecked }) => {
+      state.currentPlaylistTracks[index].checked = isChecked
+      if (isChecked) {
+        state.checkedTracks.push(index)
+      } else {
+        state.checkedTracks.splice(state.checkedTracks.indexOf(index), 1)
+      }
+    },
     setUserAvatar: (state, uri) => state.avatarUri = uri,
     setUsername: (state, username) => state.username = username,
   },
@@ -92,43 +108,47 @@ const store = new Vuex.Store({
         }
       })
     },
-    async deletePlaylistTracks(context, {id, snapshot, tracks}) {
+    async changePlaylistDetails({ state }, details) {
       return new Promise((resolve, reject) => {
-        if (tracks[0] === 'all') {
-          api.deleteAllPlaylistTracks(id, snapshot, resolve, reject)
-        } else {
-          api.deletePlaylistTracks(id, tracks, snapshot, resolve, reject)
-        }
-      })
-    },
-    async changePlaylistDetails(context, {id, details}) {
-      return new Promise((resolve, reject) => {
-        api.changePlaylistDetails(id, details)
+        api.changePlaylistDetails(state.currentPlaylist.id, details)
           .then(() => resolve())
           .catch((error: any) => reject(error))
       })
     },
-    async getPlaylist({state}, id) {
+    async deletePlaylistTracks({state, commit}) {
       return new Promise((resolve, reject) => {
-        api.getPlaylist(id)
-          .then((response: any) => resolve(response.body))
-          .catch((error) => reject(error))
+        const { checkedTracks, currentPlaylistTracks } = state
+        const { id, snapshot } = state.currentPlaylist
+
+        if (checkedTracks.length === currentPlaylistTracks.length) {
+          commit('setPlaylistTracks', [])
+          api.deleteAllPlaylistTracks(id)
+            .then(() => resolve())
+            .catch((error) => reject(error))
+        } else {
+          commit('setPlaylistTracks', currentPlaylistTracks.filter((track: any) => {
+            return !currentPlaylistTracks.includes(track.index)
+          }))
+          api.deletePlaylistTracks(id, currentPlaylistTracks, snapshot, resolve, reject)
+        }
+
+        commit('emptyCheckedTracks')
       })
     },
-    async getPlaylistTracks(context, id) {
-      return new Promise((resolve, reject) => {
-        api.getPlaylistTracks(id, [], 0, resolve, reject)
+    async getPlaylist({state, commit}, id) {
+      return api.getPlaylist(id).then((playlist: any) => {
+        commit('setPlaylist', playlist.details)
+        commit('setPlaylistTracks', playlist.tracks)
       })
     },
-    async reorderPlaylistTracks(context, {id, snapshot, tracks, tracksToReorder, placeTracksAfter}) {
-      return new Promise((resolve, reject) => {
-        api.reorderPlaylistTracks(id, snapshot, tracks, tracksToReorder, placeTracksAfter, resolve, reject)
-      })
+    async reorderPlaylistTracks({state}, placeTracksAfter) {
+      const { checkedTracks, currentPlaylistTracks } = state
+      const { id, snapshot } = state.currentPlaylist
+      return api.reorderPlaylistTracks(id, snapshot, currentPlaylistTracks, checkedTracks, placeTracksAfter)
     },
-    async shufflePlaylist(context, {id, snapshot, tracks}) {
-      return new Promise((resolve, reject) => {
-        api.shufflePlaylist(id, snapshot, tracks, resolve, reject)
-      })
+    async shufflePlaylist({state}) {
+      const { id, snapshot } = state.currentPlaylist
+      return api.shufflePlaylist(id, snapshot, state.currentPlaylistTracks)
     },
     async updatePlaylists({state}) {
       return new Promise((resolve, reject) => {

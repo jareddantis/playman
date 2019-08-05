@@ -1,12 +1,15 @@
 <template>
   <div id="playlist">
     <div class="meta text-truncate" v-if="$vuetify.breakpoint.smAndDown">
-      <h1>{{ playlistName }}</h1>
+      <h1>
+        {{ currentPlaylist.name }}
+        <span>({{ currentPlaylistTracks.length }} song{{ currentPlaylistTracks.length === 1 ? '' : 's'}})</span>
+      </h1>
     </div>
 
     <div class="meta" v-else>
-      <v-img :alt="playlistName"
-             :lazy-src="require('../assets/gradient.jpeg')" :src="playlistArt">
+      <v-img :alt="currentPlaylist.name"
+             :lazy-src="require('../assets/gradient.jpeg')" :src="art">
         <template v-slot:placeholder>
           <v-layout align-center fill-height justify-center ma-0>
             <v-progress-circular color="grey lighten-5"
@@ -17,7 +20,8 @@
     </div>
     <div class="tracks">
       <p v-if="loading">{{ loadingMsg }}</p>
-      <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60" :items="playlistTracks" :page-mode="true"
+      <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
+                       :items="currentPlaylistTracks" :page-mode="true"
                        class="scroller"
                        key-field="key"
                        v-else v-slot="{ item }">
@@ -35,6 +39,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {mapState} from 'vuex'
 import {Component} from 'vue-property-decorator'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
 import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
@@ -42,11 +47,12 @@ import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
 
 @Component({
   components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog},
+  computed: mapState(['checkedTracks', 'currentPlaylist', 'currentPlaylistTracks']),
 })
 export default class Playlist extends Vue {
 
-  get id(): string {
-    return this.$route.params.id
+  get art(): string {
+    return this.currentPlaylist.art.length ? this.currentPlaylist.art[0].url : require('../assets/gradient.jpeg')
   }
 
   public static onBeforeUnload(event: Event) {
@@ -54,19 +60,14 @@ export default class Playlist extends Vue {
     event.returnValue = true
   }
 
+  public checkedTracks!: any
+  public currentPlaylist!: any
+  public currentPlaylistTracks!: any[]
   public inCuttingMode: boolean = false
-  public isCollaborative: boolean = false
-  public isPublic: boolean = true
   public loading: boolean = true
   public loadingMsg: string = ''
-  public playlistArt: string = ''
-  public playlistDesc: string = ''
-  public playlistName: string = ''
-  public playlistTracks: any[] = []
-  private checkedTracks: number[] = []
-  private snapshotId: string = ''
 
-  public mounted() {
+  public created() {
     this.loadingMsg = 'Loading playlist, hang tight...'
     this.setNavbar()
     this.getPlaylist()
@@ -92,44 +93,23 @@ export default class Playlist extends Vue {
       }
     })
     this.$bus.$on('delete-tracks', () => this.deleteTracks())
-    this.$bus.$on('edit-playlist-details', () => {
-      this.$bus.$emit('show-playlist-details-dialog', {
-        art: this.playlistArt,
-        desc: this.playlistDesc,
-        id: this.id,
-        isCollab: this.isCollaborative,
-        isPublic: this.isPublic,
-        name: this.playlistName,
-      })
-    })
+    this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialog'))
+  }
+
+  public beforeDestroy() {
+    this.$store.commit('emptyCheckedTracks')
   }
 
   public onTrackToggled(payload: any) {
     const {index, state} = payload
-
-    this.playlistTracks[index].checked = state
-    if (state) {
-      this.checkedTracks.push(index)
-    } else {
-      this.checkedTracks.splice(this.checkedTracks.indexOf(index), 1)
-    }
-
-    // Update action bar
+    this.$store.commit('setTrackChecked', { index, isChecked: state })
     this.setNavbar(this.checkedTracks.length ? 'Tracks' : 'Playlist')
   }
 
   public shuffle() {
     this.loadingMsg = 'Shuffling playlist...'
     this.loadStart()
-
-    this.$store.dispatch('shufflePlaylist', {
-      id: this.id,
-      snapshot: this.snapshotId,
-      tracks: this.playlistTracks,
-    }).then((newSnapshot) => {
-      this.snapshotId = newSnapshot
-      return this.getPlaylist()
-    })
+    this.$store.dispatch('shufflePlaylist').then(() => this.getPlaylist())
   }
 
   private loadStart() {
@@ -142,7 +122,7 @@ export default class Playlist extends Vue {
     this.$bus.$emit('loading', false)
     window.removeEventListener('beforeunload', Playlist.onBeforeUnload)
 
-    if (this.playlistTracks.length) {
+    if (this.currentPlaylistTracks.length) {
       this.setNavbar()
       this.loading = false
     } else {
@@ -151,87 +131,28 @@ export default class Playlist extends Vue {
   }
 
   private async deleteTracks() {
-    // Loading
     this.loadStart()
-
-    // Check if we're deleting all tracks
-    const willDeleteAll = this.checkedTracks.length === this.playlistTracks.length
-
-    return new Promise((resolve, reject) => {
-      this.$store.dispatch('deletePlaylistTracks', {
-        id: this.id,
-        snapshot: this.snapshotId,
-        tracks: willDeleteAll ? ['all'] : this.checkedTracks,
-      }).then((snapshot) => {
-        // Save snapshot ID
-        this.snapshotId = snapshot
-
-        // Remove checked tracks locally
-        if (willDeleteAll) {
-          this.checkedTracks = []
-          this.playlistTracks = []
-        } else {
-          this.playlistTracks = this.playlistTracks.filter((track) => !this.checkedTracks.includes(track.index))
-        }
-
-        // Done
-        this.loadEnd()
-        resolve()
-      }).catch((error) => reject(error))
-    })
+    this.$store.dispatch('deletePlaylistTracks')
+      .then(() => this.loadEnd())
   }
 
   private async getPlaylist() {
-    // Loading...
     this.loadStart()
-
-    return new Promise((resolve, reject) => {
-      // Load playlist details
-      this.$store.dispatch('getPlaylist', this.id)
-        .then((playlist) => {
-          this.isCollaborative = playlist.collaborative
-          this.isPublic = playlist.public
-          this.playlistDesc = playlist.description
-          this.playlistName = playlist.name
-          this.snapshotId = playlist.snapshot_id
-
-          if (playlist.images.length) {
-            this.playlistArt = playlist.images[0].url
-
-            // Load playlist tracks
-            this.$store.dispatch('getPlaylistTracks', this.id)
-              .then((tracks) => {
-                this.playlistTracks = tracks
-                this.loadEnd()
-                resolve()
-              })
-              .catch((error) => reject(error))
-          } else {
-            this.playlistArt = require('../assets/gradient.jpeg')
-            this.loadingMsg = 'This playlist has no tracks.'
-            this.loadEnd()
-            resolve()
-          }
-        })
-        .catch((error) => reject(error))
-    })
+    this.$store.dispatch('getPlaylist', this.$route.params.id)
+      .then(() => {
+        this.loadEnd()
+        if (!this.currentPlaylist.art.length) {
+          this.loadingMsg = 'This playlist has no tracks.'
+        }
+      })
   }
 
   private async reorderTracks(placeTracksAfter: number) {
     this.loadingMsg = 'Saving reordered tracks...'
     this.loadStart()
 
-    this.$store.dispatch('reorderPlaylistTracks', {
-      id: this.id,
-      snapshot: this.snapshotId,
-      tracks: this.playlistTracks,
-      tracksToReorder: this.checkedTracks,
-      placeTracksAfter,
-    }).then((newSnapshot) => {
-      this.snapshotId = newSnapshot
-      this.checkedTracks = []
-      return this.getPlaylist()
-    })
+    return this.$store.dispatch('reorderPlaylistTracks', placeTracksAfter)
+      .then(() => this.getPlaylist())
   }
 
   private setNavbar(actionBar?: string) {
@@ -239,7 +160,7 @@ export default class Playlist extends Vue {
       actionBar: !!actionBar ? actionBar : 'Playlist',
       backButton: true,
       cancelButton: actionBar === 'Tracks',
-      name: this.playlistName,
+      name: this.currentPlaylist.name,
     })
   }
 }

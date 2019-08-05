@@ -38,22 +38,22 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {mapState} from 'vuex'
 import {Component} from 'vue-property-decorator'
 
-@Component
+@Component({
+  computed: mapState(['currentPlaylist']),
+})
 export default class PlaylistEditDialog extends Vue {
-  private loading = false
-  private files: File | null = null
-  private id = ''
-  private showDialog = false
+  private currentPlaylist!: any
   private editDetails: any = {}
-  private origDetails: any = {}
+  private files: File | null = null
+  private loading = false
+  private showDialog = false
 
   public mounted() {
-    this.$bus.$on('show-playlist-details-dialog', (payload: any) => {
-      this.id = payload.id
-      this.editDetails = Object.assign({}, payload)
-      this.origDetails = Object.assign({}, payload)
+    this.$bus.$on('show-playlist-details-dialog', () => {
+      this.editDetails = Object.assign({}, this.currentPlaylist)
       this.showDialog = true
     })
   }
@@ -63,7 +63,7 @@ export default class PlaylistEditDialog extends Vue {
       const imageFile = this.files as File
       this.art = await this.toBase64(imageFile) as string
     } else {
-      this.art = this.origDetails.art
+      this.art = this.currentPlaylist.art[0].url
     }
   }
 
@@ -93,7 +93,7 @@ export default class PlaylistEditDialog extends Vue {
 
     if (Object.keys(details).length) {
       this.loading = true
-      this.$store.dispatch('changePlaylistDetails', {id: this.id, details})
+      this.$store.dispatch('changePlaylistDetails', details)
         .then(() => {
           this.showDialog = false
           this.$bus.$emit('change-navbar', {name: this.name})
@@ -125,7 +125,8 @@ export default class PlaylistEditDialog extends Vue {
    * Getters and setters
    */
   get art() {
-    return this.hasChanged('art') ? this.editDetails.art : this.origDetails.art
+    return this.hasChanged('art') ? this.editDetails.art
+      : (!!this.currentPlaylist.art ? this.currentPlaylist.art[0].url : require('../assets/gradient.jpeg'))
   }
 
   set art(art: string) {
@@ -165,7 +166,7 @@ export default class PlaylistEditDialog extends Vue {
   }
 
   private hasChanged(key: string): boolean {
-    return this.editDetails[key] !== this.origDetails[key]
+    return this.editDetails[key] !== this.currentPlaylist[key]
   }
 
   private toBase64(file: File) {
