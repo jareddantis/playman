@@ -20,8 +20,7 @@
         </v-btn>
       </div>
 
-      <img v-show="$route.name === 'Playlists' || $route.name === 'Home'"
-           :src="require('../assets/logo.svg')" alt="Playman">
+      <img v-show="showLogo" :src="require('../assets/logo.svg')" alt="Playman">
     </div>
 
     <div class="actions right">
@@ -57,11 +56,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Component} from 'vue-property-decorator'
-  import components from '@/components/actionbar'
+import {mapState} from 'vuex'
+import {Component} from 'vue-property-decorator'
+import components from '@/components/actionbar'
 
-  @Component({
+@Component({
   components,
   computed: mapState([
     'avatarUri',
@@ -102,6 +101,10 @@ export default class Navbar extends Vue {
       default:
         return {name: 'EmptyBar', backButton: false, cancelButton: false}
     }
+  }
+
+  get showLogo(): boolean {
+    return (this.$route.name === 'Playlists' && !this.isBatchEditing) || this.$route.name === 'Home'
   }
 
   public created() {
