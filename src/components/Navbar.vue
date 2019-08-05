@@ -9,13 +9,13 @@
     <div class="view">
       <div class="actions left" v-show="actionBar.cancelButton || actionBar.backButton">
         <!--      Navigate to previous page -->
-        <v-btn @click="$router.back()" color="white" icon small
-               text v-show="actionBar.backButton">
+        <v-btn @click="$router.back()" color="white" :disabled="loading"
+               icon small text v-show="actionBar.backButton">
           <v-icon>arrow_back</v-icon>
         </v-btn>
         <!--      Cancel batch edit -->
-        <v-btn @click="$bus.$emit('cancel-batch-edit')" color="white" icon small
-               text v-show="actionBar.cancelButton">
+        <v-btn @click="$bus.$emit('cancel-batch-edit')" color="white" :disabled="loading"
+               icon small text v-show="actionBar.cancelButton">
           <v-icon>clear</v-icon>
         </v-btn>
       </div>
@@ -26,10 +26,10 @@
 
     <div class="actions right">
       <!--      View actions -->
-      <component class="action-bar" :is="actionBar.name"></component>
+      <component class="action-bar" :is="actionBar.name" v-show="!loading"></component>
 
       <!--      User menu -->
-      <v-menu nudge-bottom="10" offset-y>
+      <v-menu nudge-bottom="10" offset-y :disabled="loading">
         <template v-slot:activator="{ on }">
           <img :alt="username" :src="avatarUri" v-on="on" v-show="!actionBar.cancelButton"/>
         </template>
@@ -57,11 +57,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapState} from 'vuex'
-import {Component} from 'vue-property-decorator'
-import components from '@/components/actionbar'
+  import {mapState} from 'vuex'
+  import {Component} from 'vue-property-decorator'
+  import components from '@/components/actionbar'
 
-@Component({
+  @Component({
   components,
   computed: mapState([
     'avatarUri',
