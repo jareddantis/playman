@@ -4,7 +4,7 @@
     <div class="target-icon">
       <v-icon>subdirectory_arrow_right</v-icon>
     </div>
-    <p class="target-text">Play after <span class="font-weight-bold">{{ track.name }}</span></p>
+    <p class="target-text text-truncate">Play after <span class="font-weight-bold">{{ track.name }}</span></p>
   </div>
   <div :selected="isChecked" class="track item" v-else>
     <div class="track-control">
@@ -21,10 +21,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapState} from 'vuex'
-import {Component, Prop} from 'vue-property-decorator'
+  import {mapState} from 'vuex'
+  import {Component, Prop} from 'vue-property-decorator'
 
-@Component({
+  @Component({
   computed: mapState(['isReordering']),
 })
 export default class PlaylistTrack extends Vue {
