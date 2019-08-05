@@ -155,6 +155,11 @@ const store = new Vuex.Store({
         api.getUserPlaylists(state.username, [], resolve, reject)
       })
     },
+    async unsetPlaylist({commit}) {
+      commit('emptyCheckedTracks')
+      commit('setPlaylist', {})
+      commit('setPlaylistTracks', [])
+    },
     async updateUserMeta({commit}) {
       return new Promise((resolve, reject) => {
         // Store user avatar and username

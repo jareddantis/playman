@@ -69,7 +69,6 @@ export default class Playlist extends Vue {
 
   public created() {
     this.loadingMsg = 'Loading playlist, hang tight...'
-    this.setNavbar()
     this.getPlaylist()
 
     // Navbar actions
@@ -97,7 +96,7 @@ export default class Playlist extends Vue {
   }
 
   public beforeDestroy() {
-    this.$store.commit('emptyCheckedTracks')
+    this.$store.dispatch('unsetPlaylist')
   }
 
   public onTrackToggled(payload: any) {
@@ -137,13 +136,17 @@ export default class Playlist extends Vue {
   }
 
   private async getPlaylist() {
-    this.loadStart()
-    this.$store.dispatch('getPlaylist', this.$route.params.id)
+    this.$store.dispatch('unsetPlaylist')
       .then(() => {
-        this.loadEnd()
-        if (!this.currentPlaylist.art.length) {
-          this.loadingMsg = 'This playlist has no tracks.'
-        }
+        this.loadStart()
+        this.$store.dispatch('getPlaylist', this.$route.params.id)
+          .then(() => {
+            this.loadEnd()
+            this.setNavbar()
+            if (!this.currentPlaylist.art.length) {
+              this.loadingMsg = 'This playlist has no tracks.'
+            }
+          })
       })
   }
 
