@@ -115,14 +115,14 @@ export default class Playlist extends Vue {
   }
 
   public deleteTracks() {
-    this.loadingMsg = 'Deleting selected songs from playlist...'
+    this.loadingMsg = `Deleting selected songs from ${this.currentPlaylist.name}...`
     this.loadStart()
     this.$store.dispatch('deletePlaylistTracks')
       .then(() => this.getPlaylist())
   }
 
   public shuffle() {
-    this.loadingMsg = 'Randomizing playlist...'
+    this.loadingMsg = `Randomizing ${this.currentPlaylist.name}...`
     this.loadStart()
     this.$store.dispatch('shufflePlaylist').then(() => this.getPlaylist())
   }
@@ -157,7 +157,7 @@ export default class Playlist extends Vue {
   }
 
   private async reorderTracks(placeTracksAfter: number) {
-    this.loadingMsg = 'Saving reordered tracks...'
+    this.loadingMsg = `Saving reordered tracks to ${this.currentPlaylist.name}...`
     this.loadStart()
 
     return this.$store.dispatch('reorderPlaylistTracks', placeTracksAfter)
