@@ -59,7 +59,6 @@ import components from '@/components/actionbar'
   components,
   computed: mapState([
     'avatarUri',
-    'checkedPlaylists',
     'checkedTracks',
     'isBatchEditing',
     'isReordering',
@@ -69,7 +68,6 @@ import components from '@/components/actionbar'
 export default class Navbar extends Vue {
   public avatarUri!: string
   public username!: string
-  private checkedPlaylists!: any
   private checkedTracks!: any
   private isBatchEditing!: boolean
   private isReordering!: boolean
@@ -78,9 +76,7 @@ export default class Navbar extends Vue {
   get actionBar(): any {
     switch (this.$route.name) {
       case 'Playlists':
-        if (this.checkedPlaylists.length) {
-          return {name: 'EmptyBar', backButton: false, cancelButton: true}
-        } else if (this.isBatchEditing) {
+        if (this.isBatchEditing) {
           return {name: 'PlaylistsEditBar', backButton: false, cancelButton: true}
         } else {
           return {name: 'PlaylistsBar', backButton: false, cancelButton: false}

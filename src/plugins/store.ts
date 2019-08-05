@@ -51,6 +51,7 @@ const store = new Vuex.Store({
   plugins: [persistence.plugin],
   state: getInitialState(),
   mutations: {
+    emptyCheckedPlaylists: (state) => state.checkedPlaylists = [],
     emptyCheckedTracks: (state) => state.checkedTracks = [],
     reset: (state: any) => {
       const initialState = getInitialState()
@@ -63,6 +64,18 @@ const store = new Vuex.Store({
     setLoggedIn: (state, loginStatus) => state.isLoggedIn = loginStatus,
     setOffline: (state, offline) => state.offline = offline,
     setPlaylist: (state, playlist) => state.currentPlaylist = Object.assign({}, state.currentPlaylist, playlist),
+    setPlaylistChecked(state, {index, isChecked}) {
+      const {id} = state.playlists[index]
+      state.playlists[index].checked = isChecked
+
+      if (isChecked) {
+        if (!state.checkedPlaylists.includes(id)) {
+          state.checkedPlaylists.push(id)
+        }
+      } else {
+        state.checkedPlaylists = state.checkedPlaylists.filter((playlist: string) => playlist !== id)
+      }
+    },
     setPlaylists: (state, playlists) => state.playlists = playlists,
     setPlaylistTracks: (state, tracks) => state.currentPlaylistTracks = tracks,
     setTokens: (state, authData) => Object.assign(state, authData),
@@ -149,6 +162,15 @@ const store = new Vuex.Store({
     async shufflePlaylist({state}) {
       const { id, snapshot } = state.currentPlaylist
       return api.shufflePlaylist(id, snapshot, state.currentPlaylistTracks)
+    },
+    async toggleAllPlaylists({state, commit}, isChecked) {
+      commit('emptyCheckedPlaylists')
+      commit('setPlaylists', state.playlists.map((playlist: any) => {
+        if (isChecked) {
+          state.checkedPlaylists.push(playlist.id)
+        }
+        return Object.assign(playlist, {checked: isChecked})
+      }))
     },
     async updatePlaylists({state}) {
       return new Promise((resolve, reject) => {

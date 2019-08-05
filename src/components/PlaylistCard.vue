@@ -1,5 +1,5 @@
 <template>
-  <div :selected="selected" :selection="isBatchEditing"
+  <div :selected="playlist.checked" :selection="isBatchEditing"
        @click="clickHandler" class="playlist">
     <div class="playlist-art">
       <v-img :alt="playlist.id"
@@ -11,7 +11,7 @@
           </v-layout>
         </template>
 
-        <v-overlay :opacity="0.75" :value="selected" absolute>
+        <v-overlay :opacity="0.75" :value="playlist.checked" absolute>
           <v-icon color="#E5A3A0" large>done</v-icon>
         </v-overlay>
       </v-img>
@@ -27,7 +27,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import {mapState} from 'vuex'
-import {Mutation} from 'vuex-class'
 import {Component, Prop} from 'vue-property-decorator'
 
 @Component({
@@ -36,31 +35,20 @@ import {Component, Prop} from 'vue-property-decorator'
 export default class PlaylistCard extends Vue {
   @Prop({required: true}) public readonly playlist: any
   public isBatchEditing!: boolean
-  public selected: boolean = false
-  @Mutation('setIsBatchEditing') private setIsBatchEditing!: (isEditing: boolean) => void
 
-  public created() {
-    this.$bus.$on('select-all-playlists', () => this.selected = true)
-    this.$bus.$on('playlists-select', () => {
-      this.setIsBatchEditing(true)
-      this.selected = false
-    })
-    this.$bus.$on('cancel-batch-edit', () => {
-      this.setIsBatchEditing(false)
-      this.selected = false
-    })
+  get image(): string {
+    return this.playlist.images.length ? this.playlist.images[0].url : require('../assets/gradient.jpeg')
   }
 
   public clickHandler() {
     if (this.isBatchEditing) {
-      this.selected = !this.selected
+      this.$emit('playlist-toggled', {
+        index: this.playlist.index,
+        isChecked: this.playlist.checked,
+      })
     } else {
       this.$router.push('/playlists/' + this.playlist.id)
     }
-  }
-
-  get image(): string {
-    return this.playlist.images.length ? this.playlist.images[0].url : require('../assets/gradient.jpeg')
   }
 }
 </script>
