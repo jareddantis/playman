@@ -1,4 +1,4 @@
-# setlist
+# playman
 
 ## Project setup
 ```

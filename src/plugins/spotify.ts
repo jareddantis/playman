@@ -50,7 +50,7 @@ export default class Spotify {
   }
 
   get redirectUri(): string {
-    return `http${this.environment === 'production' ? 's://setlist.jared.gq' : '://localhost:8080'}/callback`
+    return `http${this.environment === 'production' ? 's://playman.jared.gq' : '://localhost:8080'}/callback`
   }
 
   /**

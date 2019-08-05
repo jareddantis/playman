@@ -1,13 +1,12 @@
 <template>
   <!--  Landing and login screen -->
   <div class="login">
-    <h1>Welcome to Setlist</h1>
-    <p>Manage your Spotify playlists in a cinch.</p>
+    <h1>Welcome to Playman</h1>
+    <p>Manage your Spotify playlists in a jiffy.</p>
     <v-btn :loading="isLoggingIn" @click="login"
            color="#1DB954"
            dark
-           rounded>Login with Spotify
-    </v-btn>
+           rounded>Login with Spotify</v-btn>
   </div>
 </template>
 

@@ -5,7 +5,7 @@ import Spotify from './spotify'
 
 const api = new Spotify()
 const persistence = new VuexPersist({
-  key: 'setlist',
+  key: 'playman',
   storage: window.localStorage,
   reducer: (state: any) => ({
     accessToken: state.accessToken,

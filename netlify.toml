@@ -10,5 +10,5 @@
 
 [[redirects]]
   from = "https://epic-perlman-fd3a96.netlify.com/*"
-  to = "https://setlist.jared.gq/:splat"
+  to = "https://playman.jared.gq/:splat"
   status = 301

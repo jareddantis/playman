@@ -1,5 +1,5 @@
 {
-  "name": "setlist",
+  "name": "playman",
   "version": "0.1.0",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -64,7 +64,7 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
-  "homepage": "https://setlist.jared.gq",
+  "homepage": "https://playman.jared.gq",
   "license": "AGPL-3.0-only",
   "lint-staged": {
     "*.ts": [
@@ -76,5 +76,5 @@
       "git add"
     ]
   },
-  "repository": "https://github.com/jareddantis/setlist"
+  "repository": "https://github.com/jareddantis/playman"
 }

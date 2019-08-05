@@ -100,7 +100,7 @@ module.exports = {
       new HtmlWebpackPlugin({
         filename: 'index.html',
         template: path.resolve(__dirname, '../src/index.prd.html'),
-        title: 'Setlist',
+        title: 'Playman',
         meta: {
           'viewport': 'width=device-width, initial-scale=1, shrink-to-fit=no',
           'charset': 'utf-8',
@@ -108,12 +108,12 @@ module.exports = {
           // SEO
           'author': 'Jared Dantis',
           'description': 'Manage your Spotify playlists in a jiffy!',
-          'application-name': 'Setlist',
+          'application-name': 'Playman',
 
           // Twitter card
           'twitter:card': 'summary',
           'twitter:site': '@jareddantis',
-          'twitter:title': 'Setlist',
+          'twitter:title': 'Playman',
           'twitter:description': 'Manage your Spotify playlists in a jiffy!',
           'twitter:image': '/favicon/android-chrome-512x512.png',
 
@@ -121,7 +121,7 @@ module.exports = {
           'msapplication-TileColor': '#37474F',
           'msapplication-config': '/favicon/browserconfig.xml',
           'theme-color': '#37474F',
-          'apple-mobile-web-app-title': 'Setlist',
+          'apple-mobile-web-app-title': 'Playman',
           'apple-mobile-web-app-capable': 'yes',
           'apple-mobile-web-app-status-bar-style': 'default',
         },

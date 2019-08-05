@@ -21,7 +21,7 @@
       </div>
 
       <div class="logo" v-show="$route.name === 'Playlists' || $route.name === 'Home'">
-        <img :src="require('../../assets/logo.svg')" alt="Setlist">
+        <img :src="require('../../assets/logo.svg')" alt="Playman">
       </div>
     </div>
 
