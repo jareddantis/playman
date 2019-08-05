@@ -118,9 +118,9 @@ module.exports = {
           'twitter:image': '/favicon/android-chrome-512x512.png',
 
           // PWA
-          'msapplication-TileColor': '#37474F',
+          'msapplication-TileColor': '#121738',
           'msapplication-config': '/favicon/browserconfig.xml',
-          'theme-color': '#37474F',
+          'theme-color': '#101322',
           'apple-mobile-web-app-title': 'Playman',
           'apple-mobile-web-app-capable': 'yes',
           'apple-mobile-web-app-status-bar-style': 'default',
