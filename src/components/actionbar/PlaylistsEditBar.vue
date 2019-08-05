@@ -1,5 +1,5 @@
 <template>
-  <div class="action-bar">
+  <div>
     <v-btn @click="$bus.$emit('select-all-playlists')" color="white" icon small
            text>
       <v-icon>select_all</v-icon>
@@ -12,13 +12,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component} from 'vue-property-decorator'
+  import {Component} from 'vue-property-decorator'
 
-@Component
+  @Component
 export default class PlaylistsEditBar extends Vue {
 }
 </script>
-
-<style lang="scss" scoped>
-  @import '../../styles/components/ActionBar';
-</style>

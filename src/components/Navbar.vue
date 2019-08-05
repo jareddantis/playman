@@ -26,7 +26,7 @@
 
     <div class="actions right">
       <!--      View actions -->
-      <component :is="actionBar.name"></component>
+      <component class="action-bar" :is="actionBar.name"></component>
 
       <!--      User menu -->
       <v-menu nudge-bottom="10" offset-y>
