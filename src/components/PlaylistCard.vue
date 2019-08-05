@@ -1,5 +1,5 @@
 <template>
-  <div :selected="selected" :selection="inSelectionMode"
+  <div :selected="selected" :selection="isBatchEditing"
        @click="clickHandler" class="playlist">
     <div class="playlist-art">
       <v-img :alt="playlist.id"
