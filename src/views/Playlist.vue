@@ -1,35 +1,37 @@
 <template>
-  <div id="playlist">
-    <!-- Playlist metadata -->
-    <div class="meta">
-      <!-- Playlist cover image -->
-      <v-img :alt="currentPlaylist.name"
-             :lazy-src="require('../assets/gradient.jpeg')" :src="art"
-             v-show="$vuetify.breakpoint.mdAndUp">
-        <template v-slot:placeholder>
-          <v-layout align-center fill-height justify-center ma-0>
-            <v-progress-circular color="grey lighten-5"
-                                 indeterminate></v-progress-circular>
-          </v-layout>
-        </template>
-      </v-img>
+  <div>
+    <div id="playlist">
+      <!-- Playlist metadata -->
+      <div class="meta">
+        <!-- Playlist cover image -->
+        <v-img :alt="currentPlaylist.name"
+               :lazy-src="require('../assets/gradient.jpeg')" :src="art"
+               v-show="$vuetify.breakpoint.mdAndUp">
+          <template v-slot:placeholder>
+            <v-layout align-center fill-height justify-center ma-0>
+              <v-progress-circular color="grey lighten-5"
+                                   indeterminate></v-progress-circular>
+            </v-layout>
+          </template>
+        </v-img>
 
-      <!-- Selected tracks -->
-      <h1 v-if="inSelectionMode" class="text-truncate selection-mode">{{ checkedTracks.length }} selected</h1>
+        <!-- Selected tracks -->
+        <h1 v-if="inSelectionMode" class="text-truncate selection-mode">{{ checkedTracks.length }} selected</h1>
 
-      <!-- Playlist name -->
-      <h1 v-else class="text-truncate">{{ currentPlaylist.name }}</h1>
-    </div>
+        <!-- Playlist name -->
+        <h1 v-else class="text-truncate">{{ currentPlaylist.name }}</h1>
+      </div>
 
-    <!-- Playlist tracks -->
-    <div class="tracks">
-      <p v-if="loading">{{ loadingMsg }}</p>
-      <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
-                       :items="currentPlaylistTracks" :page-mode="true"
-                       class="scroller" key-field="key" v-else v-slot="{ item }">
-        <PlaylistTrack :checked="item.checked" :key="item.key" :track="item"
-                       v-on:track-toggled="onTrackToggled"></PlaylistTrack>
-      </RecycleScroller>
+      <!-- Playlist tracks -->
+      <div class="tracks">
+        <p class="loader font-weight-bold" v-if="loading">{{ loadingMsg }}</p>
+        <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
+                         :items="currentPlaylistTracks" :page-mode="true"
+                         class="scroller" key-field="key" v-else v-slot="{ item }">
+          <PlaylistTrack :checked="item.checked" :key="item.key" :track="item"
+                         v-on:track-toggled="onTrackToggled"></PlaylistTrack>
+        </RecycleScroller>
+      </div>
     </div>
 
     <!-- Playlist details edit dialog -->
