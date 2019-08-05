@@ -4,9 +4,6 @@
            color="white" icon small text>
       <v-icon>edit</v-icon>
     </v-btn>
-    <v-btn color="white" icon small text>
-      <v-icon>more_vert</v-icon>
-    </v-btn>
   </div>
 </template>
 
