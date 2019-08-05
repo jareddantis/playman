@@ -40,6 +40,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {mapState} from 'vuex'
+import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
 import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
@@ -59,13 +60,13 @@ export default class Playlist extends Vue {
     event.preventDefault()
     event.returnValue = true
   }
-
   public checkedTracks!: any
   public currentPlaylist!: any
   public currentPlaylistTracks!: any[]
   public inCuttingMode: boolean = false
   public loading: boolean = true
   public loadingMsg: string = ''
+  @Mutation('setIsReordering') private setIsReordering!: (isReordering: boolean) => void
 
   public created() {
     this.loadingMsg = 'Loading playlist, hang tight...'
@@ -73,22 +74,15 @@ export default class Playlist extends Vue {
 
     // Navbar actions
     this.$bus.$on('cut-tracks', () => {
-      this.inCuttingMode = true
-
-      // Hide action bar
-      this.$bus.$emit('change-navbar', {actionBar: 'Empty'})
+      this.setIsReordering(true)
     })
     this.$bus.$on('paste-tracks', (pasteAfter: number) => {
-      this.inCuttingMode = false
-      this.setNavbar()
+      this.setIsReordering(false)
       this.reorderTracks(pasteAfter)
     })
     this.$bus.$on('cancel-batch-edit', () => {
       if (this.inCuttingMode) {
         this.inCuttingMode = false
-        this.setNavbar('Tracks')
-      } else {
-        this.setNavbar()
       }
     })
     this.$bus.$on('delete-tracks', () => this.deleteTracks())
@@ -102,7 +96,6 @@ export default class Playlist extends Vue {
   public onTrackToggled(payload: any) {
     const {index, state} = payload
     this.$store.commit('setTrackChecked', { index, isChecked: state })
-    this.setNavbar(this.checkedTracks.length ? 'Tracks' : 'Playlist')
   }
 
   public shuffle() {
@@ -122,10 +115,7 @@ export default class Playlist extends Vue {
     window.removeEventListener('beforeunload', Playlist.onBeforeUnload)
 
     if (this.currentPlaylistTracks.length) {
-      this.setNavbar()
       this.loading = false
-    } else {
-      this.setNavbar('Empty')
     }
   }
 
@@ -142,7 +132,6 @@ export default class Playlist extends Vue {
         this.$store.dispatch('getPlaylist', this.$route.params.id)
           .then(() => {
             this.loadEnd()
-            this.setNavbar()
             if (!this.currentPlaylist.art.length) {
               this.loadingMsg = 'This playlist has no tracks.'
             }
@@ -156,15 +145,6 @@ export default class Playlist extends Vue {
 
     return this.$store.dispatch('reorderPlaylistTracks', placeTracksAfter)
       .then(() => this.getPlaylist())
-  }
-
-  private setNavbar(actionBar?: string) {
-    this.$bus.$emit('change-navbar', {
-      actionBar: !!actionBar ? actionBar : 'Playlist',
-      backButton: true,
-      cancelButton: actionBar === 'Tracks',
-      name: this.currentPlaylist.name,
-    })
   }
 }
 </script>

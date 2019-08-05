@@ -29,13 +29,16 @@ function getInitialState(): { [key: string]: any } {
     username: '',
     avatarUri: '',
 
-    // User data
-    playlists: [],
-
     // Playlist currently viewing
     currentPlaylist: {},
     currentPlaylistTracks: [],
     checkedTracks: [],
+    isReordering: false,
+
+    // All playlists
+    playlists: [],
+    checkedPlaylists: [],
+    isBatchEditing: false,
 
     // Connection status
     offline: false,
@@ -55,7 +58,9 @@ const store = new Vuex.Store({
         Vue.set(state, key, initialState[key])
       })
     },
-    setLoggedIn: (state: any, loginStatus) => state.isLoggedIn = loginStatus,
+    setIsBatchEditing: (state, isEditing) => state.isBatchEditing = isEditing,
+    setIsReordering: (state, isReordering) => state.isReordering = isReordering,
+    setLoggedIn: (state, loginStatus) => state.isLoggedIn = loginStatus,
     setOffline: (state, offline) => state.offline = offline,
     setPlaylist: (state, playlist) => state.currentPlaylist = Object.assign({}, state.currentPlaylist, playlist),
     setPlaylists: (state, playlists) => state.playlists = playlists,

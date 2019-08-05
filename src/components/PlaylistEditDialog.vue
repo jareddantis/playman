@@ -96,7 +96,6 @@ export default class PlaylistEditDialog extends Vue {
       this.$store.dispatch('changePlaylistDetails', details)
         .then(() => {
           this.showDialog = false
-          this.$bus.$emit('change-navbar', {name: this.name})
         })
         .finally(() => this.loading = false)
     } else {

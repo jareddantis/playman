@@ -26,28 +26,33 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {mapState} from 'vuex'
+import {Mutation} from 'vuex-class'
 import {Component, Prop} from 'vue-property-decorator'
 
-@Component
+@Component({
+  computed: mapState(['isBatchEditing']),
+})
 export default class PlaylistCard extends Vue {
   @Prop({required: true}) public readonly playlist: any
-  public inSelectionMode: boolean = false
+  public isBatchEditing!: boolean
   public selected: boolean = false
+  @Mutation('setIsBatchEditing') private setIsBatchEditing!: (isEditing: boolean) => void
 
   public created() {
     this.$bus.$on('select-all-playlists', () => this.selected = true)
     this.$bus.$on('playlists-select', () => {
-      this.inSelectionMode = true
+      this.setIsBatchEditing(true)
       this.selected = false
     })
     this.$bus.$on('cancel-batch-edit', () => {
-      this.inSelectionMode = false
+      this.setIsBatchEditing(false)
       this.selected = false
     })
   }
 
   public clickHandler() {
-    if (this.inSelectionMode) {
+    if (this.isBatchEditing) {
       this.selected = !this.selected
     } else {
       this.$router.push('/playlists/' + this.playlist.id)

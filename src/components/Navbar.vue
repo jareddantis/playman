@@ -7,33 +7,32 @@
       top></v-progress-linear>
 
     <div class="view">
-      <div class="actions left" v-show="cancelButton || backButton">
+      <div class="actions left" v-show="actionBar.cancelButton || actionBar.backButton">
         <!--      Navigate to previous page -->
         <v-btn @click="$router.back()" color="white" icon small
-               text v-show="backButton">
+               text v-show="actionBar.backButton">
           <v-icon>arrow_back</v-icon>
         </v-btn>
         <!--      Cancel batch edit -->
         <v-btn @click="$bus.$emit('cancel-batch-edit')" color="white" icon small
-               text v-show="cancelButton">
+               text v-show="actionBar.cancelButton">
           <v-icon>clear</v-icon>
         </v-btn>
       </div>
 
-      <!--      Current view name -->
-      <div class="name" v-show="currentActionBar !== 'PlaylistBar' || $vuetify.breakpoint.mdAndUp">
-        <h1 class="text-truncate" v-show="showViewName">{{ viewName }}</h1>
+      <div class="logo" v-show="$route.name === 'Playlists' || $route.name === 'Home'">
+        <img :src="require('../../assets/logo.svg')" alt="Setlist">
       </div>
     </div>
 
     <div class="actions right">
       <!--      View actions -->
-      <component :is="currentActionBar"></component>
+      <component :is="actionBar.name"></component>
 
       <!--      User menu -->
       <v-menu nudge-bottom="10" offset-y>
         <template v-slot:activator="{ on }">
-          <img :alt="username" :src="avatarUri" v-on="on" v-show="!cancelButton"/>
+          <img :alt="username" :src="avatarUri" v-on="on" v-show="!actionBar.cancelButton"/>
         </template>
         <v-list dark dense>
           <v-list-item-group>
@@ -61,63 +60,52 @@
 import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Component} from 'vue-property-decorator'
-import EmptyBar from '@/components/actionbar/EmptyBar.vue'
-import PlaylistBar from '@/components/actionbar/PlaylistBar.vue'
-import PlaylistsBar from '@/components/actionbar/PlaylistsBar.vue'
-import PlaylistsEditBar from '@/components/actionbar/PlaylistsEditBar.vue'
-import TracksBar from '@/components/actionbar/TracksBar.vue'
+import components from '@/components/actionbar'
 
 @Component({
-  components: {
-    EmptyBar, PlaylistBar, PlaylistsBar,
-    PlaylistsEditBar, TracksBar,
-  },
-  computed: mapState(['avatarUri', 'username']),
+  components,
+  computed: mapState([
+    'avatarUri',
+    'checkedPlaylists',
+    'checkedTracks',
+    'isBatchEditing',
+    'isReordering',
+    'username',
+  ]),
 })
 export default class Navbar extends Vue {
-  public avatarUri!: string
-  public username!: string
-  private backButton: boolean = false
-  private cancelButton: boolean = false
-  private currentActionBar: string = 'PlaylistsBar'
+  private avatarUri!: string
+  private checkedPlaylists!: any
+  private checkedTracks!: any
+  private isBatchEditing!: boolean
+  private isReordering!: boolean
+  private username!: string
   private loading: boolean = true
-  private viewName: string = ''
-  private showViewName: boolean = false
+
+  get actionBar(): any {
+    switch (this.$route.name) {
+      case 'Playlists':
+        if (this.checkedPlaylists.length) {
+          return {name: 'EmptyBar', backButton: false, cancelButton: true}
+        } else if (this.isBatchEditing) {
+          return {name: 'PlaylistsEditBar', backButton: false, cancelButton: true}
+        } else {
+          return {name: 'PlaylistsBar', backButton: false, cancelButton: false}
+        }
+      case 'Playlist':
+        if (this.isReordering) {
+          return {name: 'EmptyBar', backButton: false, cancelButton: true}
+        } else if (this.checkedTracks.length) {
+          return {name: 'TracksBar', backButton: false, cancelButton: true}
+        } else {
+          return {name: 'PlaylistBar', backButton: true, cancelButton: false}
+        }
+      default:
+        return {name: 'EmptyBar', backButton: false, cancelButton: false}
+    }
+  }
 
   public created() {
-    this.$bus.$on('change-navbar', (payload: any) => {
-      const {
-        actionBar = 'keep',
-        backButton, cancelButton, name,
-      } = payload
-
-      // Update view name
-      this.viewName = name
-
-      // Retain current action bar if not specified
-      if (actionBar !== 'keep') {
-        this.currentActionBar = `${actionBar}Bar`
-      }
-
-      if (payload.hasOwnProperty('cancelButton')) {
-        // Show cancel button, hide back button and view name
-        this.cancelButton = cancelButton
-        this.backButton = !cancelButton
-        this.showViewName = !cancelButton
-      } else {
-        // Only one left action is displayed at a time.
-        // Cancel button takes precedence (as above)
-        if (payload.hasOwnProperty('backButton')) {
-          this.backButton = backButton
-          if (backButton) {
-            this.cancelButton = false
-          }
-        }
-
-        // Show current view name
-        this.showViewName = true
-      }
-    })
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
   }
 

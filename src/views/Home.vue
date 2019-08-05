@@ -16,7 +16,7 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 
 @Component
-export default class Landing extends Vue {
+export default class Home extends Vue {
   public isLoggingIn: boolean = false
 
   public login() {
