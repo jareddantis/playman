@@ -18,7 +18,17 @@
               <v-icon>shuffle</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>Randomize</v-list-item-title>
+              <v-list-item-title>Randomize selected</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+        <v-list-item-group>
+          <v-list-item @click="exportSelected">
+            <v-list-item-icon>
+              <v-icon>cloud_download</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Export selected</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -38,6 +48,10 @@ import {Component} from 'vue-property-decorator'
 export default class PlaylistsEditBar extends Vue {
   public checkedPlaylists!: string[]
   public playlists!: any
+
+  public exportSelected() {
+    this.$bus.$emit('export-playlist', {count: this.checkedPlaylists.length})
+  }
 
   public toggleSelection() {
     this.$bus.$emit(this.checkedPlaylists.length === this.playlists.length ? 'deselect-all-playlists'

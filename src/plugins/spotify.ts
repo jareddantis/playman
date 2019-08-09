@@ -5,7 +5,7 @@ import Worker from './spotify-worker'
 
 export default class Spotify {
   private readonly client!: SpotifyWebApi
-  private readonly environment: string = process.env.NODE_ENV
+  private readonly environment: string = process.env.NODE_ENV as string
   private readonly throttler!: PromiseThrottle
   private expiry: number = 0
   private refreshToken: string = ''
@@ -131,6 +131,54 @@ export default class Spotify {
       })
         .catch((error: any) => reject(new Error(error)))
     })
+  }
+
+  /**
+   * Exports a playlist's tracks as CSV data to be downloaded by the user.
+   *
+   * @param name - Playlist name
+   * @param tracks - Playlist tracks
+   */
+  public async exportPlaylist(name: string, tracks: any) {
+    return new Promise((resolve, reject) => {
+      Worker.send({type: 'csv_encode_tracks', data: {name, tracks}})
+      .then((exported: any) => resolve(exported))
+      .catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  /**
+   * Exports multiple playlists as CSV files in a ZIP to be downloaded by the user.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param username - Username of currently logged in user (used in filename)
+   * @param ids - List of playlist IDs to back up
+   * @param retrieved - Initial list to feed the recursive function with
+   * @param resolve - Promise resolve() to be called after all playlists have been exported
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  public async exportPlaylists(username: string, ids: string[], retrieved: any[],
+                               resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    if (ids.length) {
+      const id = ids.splice(0, 1)[0]
+      this.getPlaylist(id).then((playlist: any) => {
+        retrieved.push({
+          name: playlist.details.name,
+          id: playlist.details.id,
+          tracks: playlist.tracks,
+        })
+        this.exportPlaylists(username, ids, retrieved, resolve, reject)
+      }).catch((error: any) => reject(new Error(error)))
+    } else {
+      Worker.send({
+        type: 'csv_encode_multiple',
+        data: {
+          username,
+          playlists: retrieved,
+        },
+      }).then((exported: any) => resolve(exported))
+        .catch((error: any) => reject(new Error(error)))
+    }
   }
 
   /**

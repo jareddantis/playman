@@ -147,7 +147,15 @@ const store = new Vuex.Store({
         }
       })
     },
-    async getPlaylist({state, commit}, id) {
+    async exportPlaylist({state}) {
+      return api.exportPlaylist(state.currentPlaylist.name, state.currentPlaylistTracks)
+    },
+    async exportPlaylists({state}) {
+      return new Promise((resolve, reject) => {
+        api.exportPlaylists(state.username, state.checkedPlaylists, [], resolve, reject)
+      })
+    },
+    async getPlaylist({commit}, id) {
       return api.getPlaylist(id).then((playlist: any) => {
         commit('emptyCheckedTracks')
         commit('setPlaylist', playlist.details)

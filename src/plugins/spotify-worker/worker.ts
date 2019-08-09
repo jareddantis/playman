@@ -1,6 +1,19 @@
+import JSZip from 'jszip'
 import registerPromiseWorker from 'promise-worker/register'
 
 const ops = {
+  currentDate(): string {
+    const now = new Date()
+    const year = now.getFullYear()
+    let month = `${now.getMonth() + 1}`
+    let day = `${now.getDay()}`
+
+    if (now.getMonth() < 9) { month = '0' + month }
+    if (now.getDay() < 10) { day = '0' + day }
+
+    return year.toString() + month + day
+  },
+
   decodePlaylistTracks(tracks: any[]): any[] {
     const decoded = []
 
@@ -18,6 +31,39 @@ const ops = {
     }
 
     return decoded
+  },
+
+  async encodeMultipleToCSV(data: any) {
+    const {username, playlists} = data
+    const zipName = `${username}-playlists-backup-${this.currentDate()}.zip`
+    const zip = new JSZip()
+
+    playlists.forEach((playlist: any) => {
+      const {name, id, tracks} = playlist
+      const {blob, filename} = this.encodeToCSV(`${name}-${id}`, tracks, false)
+      zip.file(filename, blob)
+    })
+
+    const zipBlob = await zip.generateAsync({type: 'blob'})
+    return {blob: zipBlob, filename: zipName}
+  },
+
+  encodeToCSV(playlistName: string, tracks: any, single: boolean): any {
+    let csvString = '\ufeff'
+
+    for (const track of tracks) {
+      const {id, name, artist, album} = track
+      const csvRow = [
+        `spotify:track:${id}`,
+        name, artist, album,
+      ]
+      csvString += '\n' + csvRow.join(',')
+    }
+
+    return {
+      blob: new Blob([csvString], {type: 'data:text/csv;charset=utf-8'}),
+      filename: single ? `${playlistName}-backup-${this.currentDate()}.csv` : `${playlistName}.csv`,
+    }
   },
 
   filterUserPlaylists(playlists: any[], username: string): any[] {
@@ -95,6 +141,10 @@ registerPromiseWorker((message) => {
     const {type, data} = message.content
 
     switch (type) {
+      case 'csv_encode_multiple':
+        return ops.encodeMultipleToCSV(data)
+      case 'csv_encode_tracks':
+        return ops.encodeToCSV(data.name, data.tracks, true)
       case 'decode_playlist_tracks':
         return ops.decodePlaylistTracks(data)
       case 'filter_user_playlists':

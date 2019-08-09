@@ -3,6 +3,9 @@
     <PlaylistCard :key="playlist.id" :playlist="playlist"
                   v-for="playlist in playlists"
                   v-on:playlist-toggled="onToggle"></PlaylistCard>
+
+    <!-- Playlists export dialog -->
+    <ExportDialog/>
   </div>
 </template>
 
@@ -11,10 +14,11 @@ import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
+import ExportDialog from '@/components/ExportDialog.vue'
 import PlaylistCard from '@/components/PlaylistCard.vue'
 
 @Component({
-  components: {PlaylistCard},
+  components: {ExportDialog, PlaylistCard},
   computed: mapState(['checkedPlaylists', 'playlists']),
 })
 export default class Playlists extends Vue {
@@ -31,15 +35,17 @@ export default class Playlists extends Vue {
       .finally(() => this.$bus.$emit('loading', false))
 
     // Batch playlist editing
-    this.$bus.$on('playlists-select', () => {
-      this.setIsBatchEditing(true)
-    })
     this.$bus.$on('cancel-batch-edit', () => {
       this.setIsBatchEditing(false)
       this.$store.dispatch('toggleAllPlaylists', false)
     })
-    this.$bus.$on('select-all-playlists', () => this.$store.dispatch('toggleAllPlaylists', true))
     this.$bus.$on('deselect-all-playlists', () => this.$store.dispatch('toggleAllPlaylists', false))
+    this.$bus.$on('playlists-select', () => this.setIsBatchEditing(true))
+    this.$bus.$on('select-all-playlists', () => this.$store.dispatch('toggleAllPlaylists', true))
+  }
+
+  public exportSelected() {
+    this.$bus.$emit('export-playlists', {count: this.checkedPlaylists.length})
   }
 
   public onToggle(payload: any) {

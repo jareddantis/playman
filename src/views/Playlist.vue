@@ -34,6 +34,8 @@
       </div>
     </div>
 
+    <!-- Playlists export dialog -->
+    <ExportDialog/>
     <!-- Playlist details edit dialog -->
     <PlaylistEditDialog/>
     <!-- Playlist shuffle confirm dialog -->
@@ -48,13 +50,14 @@ import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
+import ExportDialog from '@/components/ExportDialog.vue'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
 import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
 import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
 
 @Component({
-  components: {PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog, TrackDeleteDialog},
+  components: {ExportDialog, PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog, TrackDeleteDialog},
   computed: mapState([
     'checkedTracks',
     'currentPlaylist',

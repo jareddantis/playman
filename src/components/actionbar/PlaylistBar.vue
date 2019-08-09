@@ -17,7 +17,17 @@
               <v-icon>shuffle</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>Randomize</v-list-item-title>
+              <v-list-item-title>Randomize playlist</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+        <v-list-item-group>
+          <v-list-item @click="exportSelected">
+            <v-list-item-icon>
+              <v-icon>cloud_download</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Export playlist</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
@@ -32,5 +42,8 @@ import {Component} from 'vue-property-decorator'
 
 @Component
 export default class PlaylistBar extends Vue {
+  public exportSelected() {
+    this.$bus.$emit('export-playlist', {count: 1})
+  }
 }
 </script>
