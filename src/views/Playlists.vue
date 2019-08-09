@@ -5,7 +5,7 @@
                   v-on:playlist-toggled="onToggle"></PlaylistCard>
 
     <!-- Playlists export dialog -->
-    <ExportDialog/>
+    <ConfirmExportDialog/>
   </div>
 </template>
 
@@ -14,11 +14,10 @@ import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
-import ExportDialog from '@/components/ExportDialog.vue'
 import PlaylistCard from '@/components/PlaylistCard.vue'
 
 @Component({
-  components: {ExportDialog, PlaylistCard},
+  components: {PlaylistCard},
   computed: mapState(['checkedPlaylists', 'playlists']),
 })
 export default class Playlists extends Vue {

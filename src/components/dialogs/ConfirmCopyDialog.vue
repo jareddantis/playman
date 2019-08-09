@@ -18,7 +18,7 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 
 @Component
-export default class CopyTracksDialog extends Vue {
+export default class ConfirmCopyDialog extends Vue {
   public showDialog: boolean = false
   public payload: any = {}
 

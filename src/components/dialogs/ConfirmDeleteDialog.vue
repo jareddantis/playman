@@ -24,7 +24,7 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 
 @Component
-export default class DeleteConfirmDialog extends Vue {
+export default class ConfirmDeleteDialog extends Vue {
   public items: string = ''
   public showDialog: boolean = false
 
@@ -49,7 +49,3 @@ export default class DeleteConfirmDialog extends Vue {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

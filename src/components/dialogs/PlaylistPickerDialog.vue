@@ -18,7 +18,7 @@
           </v-list-item-content>
           <v-list-item-avatar>
             <v-img :alt="playlist.name" :src="getImage(playlist.images)"
-                   :lazy-src="require('../assets/gradient.jpeg')"></v-img>
+                   :lazy-src="require('../../assets/gradient.jpeg')"></v-img>
           </v-list-item-avatar>
         </v-list-item>
       </v-list>
@@ -51,7 +51,7 @@ export default class PlaylistPickerDialog extends Vue {
   }
 
   public created() {
-    this.$bus.$on('show-playlist-picker-dialog', (payload: any) => {
+    this.$bus.$on('show-playlist-picker-dialogs', (payload: any) => {
       this.source = payload.source
       this.willMove = payload.willMove
       this.showDialog = true
@@ -60,7 +60,7 @@ export default class PlaylistPickerDialog extends Vue {
   }
 
   public resolve(id: string, name: string) {
-    this.$emit('confirm', {
+    this.$emit('picked', {
       target: {
         id, name,
       },
@@ -70,7 +70,7 @@ export default class PlaylistPickerDialog extends Vue {
   }
 
   public getImage(images: any[]): string {
-    return images.length ? images[0].url : require('../assets/gradient.jpeg')
+    return images.length ? images[0].url : require('../../assets/gradient.jpeg')
   }
 
   private refreshPlaylists() {

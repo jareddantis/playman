@@ -52,7 +52,7 @@ export default class PlaylistEditDialog extends Vue {
   private showDialog = false
 
   public mounted() {
-    this.$bus.$on('show-playlist-details-dialog', () => {
+    this.$bus.$on('show-playlist-details-dialogs', () => {
       this.editDetails = Object.assign({}, this.currentPlaylist)
       this.showDialog = true
     })
@@ -125,7 +125,7 @@ export default class PlaylistEditDialog extends Vue {
    */
   get art() {
     return this.hasChanged('art') ? this.editDetails.art
-      : (!!this.currentPlaylist.art ? this.currentPlaylist.art[0].url : require('../assets/gradient.jpeg'))
+      : (!!this.currentPlaylist.art ? this.currentPlaylist.art[0].url : require('../../assets/gradient.jpeg'))
   }
 
   set art(art: string) {
@@ -180,5 +180,5 @@ export default class PlaylistEditDialog extends Vue {
 </script>
 
 <style lang="scss" scoped>
-  @import '../styles/components/PlaylistEditDialog';
+  @import '../../styles/components/PlaylistEditDialog';
 </style>

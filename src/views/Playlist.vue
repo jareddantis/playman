@@ -34,18 +34,13 @@
       </div>
     </div>
 
-    <!-- Playlists export dialog -->
-    <ExportDialog/>
-    <!-- Playlist details edit dialog -->
+    <!-- Dialogs -->
+    <ConfirmCopyDialog v-on:confirm="copyTracks"/>
+    <ConfirmDeleteDialog v-on:confirm="deleteTracks"/>
+    <ConfirmExportDialog/>
+    <ConfirmShuffleDialog v-on:confirm="shuffle"/>
     <PlaylistEditDialog/>
-    <!-- Playlist shuffle confirm dialog -->
-    <RandomizeConfirmDialog v-on:confirm="shuffle"/>
-    <!-- Playlist track delete confirm dialog -->
-    <TrackDeleteDialog v-on:confirm="deleteTracks"/>
-    <!-- Playlist target picker dialog -->
-    <PlaylistPickerDialog v-on:confirm="confirmCopyTracks"/>
-    <!-- Copy tracks dialog -->
-    <CopyTracksDialog v-on:confirm="copyTracks"/>
+    <PlaylistPickerDialog v-on:picked="confirmCopyTracks"/>
   </div>
 </template>
 
@@ -54,24 +49,10 @@ import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
-import ExportDialog from '@/components/ExportDialog.vue'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
-import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
-import RandomizeConfirmDialog from '@/components/RandomizeConfirmDialog.vue'
-import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
-import CopyTracksDialog from '@/components/CopyTracksDialog.vue'
-import PlaylistPickerDialog from '@/components/PlaylistPickerDialog.vue'
 
 @Component({
-  components: {
-    PlaylistPickerDialog,
-    CopyTracksDialog,
-    ExportDialog,
-    PlaylistEditDialog,
-    PlaylistTrack,
-    RandomizeConfirmDialog,
-    TrackDeleteDialog,
-  },
+  components: {PlaylistTrack},
   computed: mapState([
     'checkedTracks',
     'currentPlaylist',
@@ -111,7 +92,7 @@ export default class Playlist extends Vue {
     this.getPlaylist()
 
     // Navbar actions
-    this.$bus.$on('copy-tracks', (willMove: boolean) => this.$bus.$emit('show-playlist-picker-dialog', {
+    this.$bus.$on('copy-tracks', (willMove: boolean) => this.$bus.$emit('show-playlist-picker-dialogs', {
       source: this.currentPlaylist.id,
       willMove,
     }))
@@ -123,7 +104,7 @@ export default class Playlist extends Vue {
       this.reorderTracks(pasteAfter)
     })
     this.$bus.$on('cancel-batch-edit', () => this.setIsReordering(false))
-    this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialog'))
+    this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialogs'))
   }
 
   public beforeDestroy() {

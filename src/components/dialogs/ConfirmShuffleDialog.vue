@@ -21,7 +21,7 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 
 @Component
-export default class RandomizeConfirmDialog extends Vue {
+export default class ConfirmShuffleDialog extends Vue {
   public showDialog: boolean = false
 
   public created() {

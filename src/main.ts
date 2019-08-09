@@ -6,6 +6,7 @@ import store from './plugins/store'
 import vuetify from './plugins/vuetify'
 import './registerServiceWorker'
 import './styles/global.scss'
+import './components/dialogs'
 import VirtualScroller from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 

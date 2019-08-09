@@ -25,7 +25,7 @@ import {Component} from 'vue-property-decorator'
 import {saveAs} from 'file-saver'
 
 @Component
-export default class ExportDialog extends Vue {
+export default class ConfirmExportDialog extends Vue {
   public items: string = ''
   public loading = false
   public showDialog: boolean = false
