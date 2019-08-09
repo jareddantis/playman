@@ -162,6 +162,7 @@ export default class Playlist extends Vue {
   private loadEnd() {
     this.$bus.$emit('loading', false)
     window.removeEventListener('beforeunload', Playlist.onBeforeUnload)
+    document.title = `${this.currentPlaylist.name} | Playman`
 
     if (this.currentPlaylistTracks.length) {
       this.loading = false

@@ -27,10 +27,7 @@ export default class Playlists extends Vue {
 
   public created() {
     // Load playlists
-    this.$bus.$emit('loading', true)
-    this.$store.dispatch('updatePlaylists')
-      .catch(() => this.$store.commit('setOffline', true))
-      .finally(() => this.$bus.$emit('loading', false))
+    this.refreshPlaylists()
 
     // Batch playlist editing
     this.$bus.$on('cancel-batch-edit', () => {
@@ -51,6 +48,14 @@ export default class Playlists extends Vue {
       index: payload.index,
       isChecked: !payload.isChecked,
     })
+  }
+
+  private refreshPlaylists() {
+    document.title = 'Playlists | Playman'
+    this.$bus.$emit('loading', true)
+    this.$store.dispatch('updatePlaylists')
+      .catch(() => this.$store.commit('setOffline', true))
+      .finally(() => this.$bus.$emit('loading', false))
   }
 }
 </script>
