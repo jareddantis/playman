@@ -39,7 +39,7 @@
     <!-- Playlist details edit dialog -->
     <PlaylistEditDialog/>
     <!-- Playlist shuffle confirm dialog -->
-    <PlaylistShuffleDialog v-on:confirm="shuffle"/>
+    <RandomizeConfirmDialog v-on:confirm="shuffle"/>
     <!-- Playlist track delete confirm dialog -->
     <TrackDeleteDialog v-on:confirm="deleteTracks"/>
     <!-- Playlist target picker dialog -->
@@ -57,7 +57,7 @@ import {Component} from 'vue-property-decorator'
 import ExportDialog from '@/components/ExportDialog.vue'
 import PlaylistTrack from '@/components/PlaylistTrack.vue'
 import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
-import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
+import RandomizeConfirmDialog from '@/components/RandomizeConfirmDialog.vue'
 import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
 import CopyTracksDialog from '@/components/CopyTracksDialog.vue'
 import PlaylistPickerDialog from '@/components/PlaylistPickerDialog.vue'
@@ -69,7 +69,7 @@ import PlaylistPickerDialog from '@/components/PlaylistPickerDialog.vue'
     ExportDialog,
     PlaylistEditDialog,
     PlaylistTrack,
-    PlaylistShuffleDialog,
+    RandomizeConfirmDialog,
     TrackDeleteDialog,
   },
   computed: mapState([

@@ -5,7 +5,7 @@
         <span class="headline">Randomize this playlist?</span>
       </v-card-title>
       <v-card-text>
-        <p class="body-1 font-weight-bold">This process is irreversible unless you make a backup first.</p>
+        <p class="body-1">This process is irreversible unless you make a backup first.</p>
       </v-card-text>
       <v-card-actions>
         <v-btn @click="showDialog = false" text>cancel</v-btn>
@@ -21,7 +21,7 @@ import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 
 @Component
-export default class PlaylistShuffleDialog extends Vue {
+export default class RandomizeConfirmDialog extends Vue {
   public showDialog: boolean = false
 
   public created() {
