@@ -42,6 +42,10 @@
     <PlaylistShuffleDialog v-on:confirm="shuffle"/>
     <!-- Playlist track delete confirm dialog -->
     <TrackDeleteDialog v-on:confirm="deleteTracks"/>
+    <!-- Playlist target picker dialog -->
+    <PlaylistPickerDialog v-on:confirm="confirmCopyTracks"/>
+    <!-- Copy tracks dialog -->
+    <CopyTracksDialog v-on:confirm="copyTracks"/>
   </div>
 </template>
 
@@ -55,9 +59,19 @@ import PlaylistTrack from '@/components/PlaylistTrack.vue'
 import PlaylistEditDialog from '@/components/PlaylistEditDialog.vue'
 import PlaylistShuffleDialog from '@/components/PlaylistShuffleDialog.vue'
 import TrackDeleteDialog from '@/components/DeleteConfirmDialog.vue'
+import CopyTracksDialog from '@/components/CopyTracksDialog.vue'
+import PlaylistPickerDialog from '@/components/PlaylistPickerDialog.vue'
 
 @Component({
-  components: {ExportDialog, PlaylistEditDialog, PlaylistTrack, PlaylistShuffleDialog, TrackDeleteDialog},
+  components: {
+    PlaylistPickerDialog,
+    CopyTracksDialog,
+    ExportDialog,
+    PlaylistEditDialog,
+    PlaylistTrack,
+    PlaylistShuffleDialog,
+    TrackDeleteDialog,
+  },
   computed: mapState([
     'checkedTracks',
     'currentPlaylist',
@@ -97,6 +111,10 @@ export default class Playlist extends Vue {
     this.getPlaylist()
 
     // Navbar actions
+    this.$bus.$on('copy-tracks', (willMove: boolean) => this.$bus.$emit('show-playlist-picker-dialog', {
+      source: this.currentPlaylist.id,
+      willMove,
+    }))
     this.$bus.$on('cut-tracks', () => {
       this.setIsReordering(true)
     })
@@ -110,6 +128,30 @@ export default class Playlist extends Vue {
 
   public beforeDestroy() {
     this.$store.dispatch('unsetPlaylist')
+  }
+
+  public confirmCopyTracks(payload: any) {
+    this.$bus.$emit('confirm-copy-tracks', payload)
+  }
+
+  public copyTracks(payload: any) {
+    const {target, willMove} = payload
+    const tracks: any = []
+    this.loadingMsg = `Copying songs to ${target.name}`
+    this.loadStart()
+
+    this.checkedTracks.forEach((track: number) => {
+      tracks.push(`spotify:track:${this.currentPlaylistTracks[track].id}`)
+    })
+    this.$store.dispatch('copyToPlaylist', {id: target.id, tracks})
+      .then(() => {
+        if (willMove) {
+          this.deleteTracks()
+        } else {
+          this.$bus.$emit('cancel-batch-edit')
+        }
+        this.loadEnd()
+      })
   }
 
   public onTrackToggled(payload: any) {

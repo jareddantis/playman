@@ -30,7 +30,6 @@ export default class Playlists extends Vue {
     // Load playlists
     this.$bus.$emit('loading', true)
     this.$store.dispatch('updatePlaylists')
-      .then((playlists) => this.$store.commit('setPlaylists', playlists))
       .catch(() => this.$store.commit('setOffline', true))
       .finally(() => this.$bus.$emit('loading', false))
 

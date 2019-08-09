@@ -126,11 +126,16 @@ const store = new Vuex.Store({
         }
       })
     },
-    async changePlaylistDetails({ state }, details) {
+    async changePlaylistDetails({state}, details) {
       return new Promise((resolve, reject) => {
         api.changePlaylistDetails(state.currentPlaylist.id, details)
           .then(() => resolve())
           .catch((error: any) => reject(error))
+      })
+    },
+    async copyToPlaylist({state}, {id, tracks}) {
+      return new Promise((resolve, reject) => {
+        api.addTracksToPlaylist(id, tracks, resolve, reject)
       })
     },
     async deletePlaylistTracks({state}) {
@@ -180,10 +185,10 @@ const store = new Vuex.Store({
         return Object.assign(playlist, {checked: isChecked})
       }))
     },
-    async updatePlaylists({state}) {
+    async updatePlaylists({state, commit}) {
       return new Promise((resolve, reject) => {
         api.getUserPlaylists(state.username, [], resolve, reject)
-      })
+      }).then((playlists: any) => commit('setPlaylists', playlists))
     },
     async unsetPlaylist({commit}) {
       commit('emptyCheckedTracks')

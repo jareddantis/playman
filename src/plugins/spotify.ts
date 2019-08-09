@@ -54,6 +54,32 @@ export default class Spotify {
   }
 
   /**
+   * Adds a set of tracks to a playlist.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param id - Playlist ID
+   * @param tracks - List of track IDs to add to playlist
+   * @param resolve - Promise resolve() to be called after all tracks have been added
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  public async addTracksToPlaylist(id: string, tracks: any[],
+                                   resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    this.reauth().then(() => {
+      this.throttler.add(() => {
+        return this.client.addTracksToPlaylist(id, tracks.splice(0, 100))
+      }).then((response: any) => {
+        const snapshotId = response.body.snapshot_id
+
+        if (tracks.length) {
+          this.addTracksToPlaylist(id, tracks, resolve, reject)
+        } else {
+          resolve(snapshotId)
+        }
+      }).catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  /**
    * Changes playlist metadata and cover image.
    *
    * @param id - Playlist ID
@@ -329,32 +355,6 @@ export default class Spotify {
           data: {tracks},
         }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
       }).catch((error) => reject(new Error(error)))
-    })
-  }
-
-  /**
-   * Adds a set of tracks to a playlist.
-   * Recursive function (API endpoint is paginated).
-   *
-   * @param id - Playlist ID
-   * @param initial - Initial list to feed the recursive function with
-   * @param resolve - Promise resolve() to be called after all playlists have been retrieved
-   * @param reject - Promise reject() to be called in the event of a Spotify API error
-   */
-  private async addTracksToPlaylist(id: string, initial: any[],
-                                    resolve: (arg0: any) => void, reject: (arg0: any) => void) {
-    this.reauth().then(() => {
-      this.throttler.add(() => {
-        return this.client.addTracksToPlaylist(id, initial.splice(0, 100))
-      }).then((response: any) => {
-        const snapshotId = response.body.snapshot_id
-
-        if (initial.length) {
-          this.addTracksToPlaylist(id, initial, resolve, reject)
-        } else {
-          resolve(snapshotId)
-        }
-      }).catch((error: any) => reject(new Error(error)))
     })
   }
 
