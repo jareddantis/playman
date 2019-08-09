@@ -16,10 +16,11 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, p, td, span, input, select, option, li, .v-application {
+h1, h2, h3, p, td, span, input, select, option, li, .v-application,
+.v-card .headline {
   font-family: 'Rubik', -apple-system, BlinkMacSystemFont,
                'Helvetica Neue', 'Helvetica', 'Segoe UI',
-               'Roboto', sans-serif;
+               'Roboto', sans-serif !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility !important;
