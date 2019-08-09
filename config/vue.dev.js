@@ -27,7 +27,7 @@ module.exports = {
 
     plugins: [
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, '../src/index.dev.html'),
+        template: path.resolve(__dirname, '../src/public/index.dev.html'),
         title: 'Playman',
         meta: {
           'viewport': 'width=device-width, initial-scale=1, shrink-to-fit=no',

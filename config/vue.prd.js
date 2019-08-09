@@ -99,7 +99,7 @@ module.exports = {
       // Generate index.html
       new HtmlWebpackPlugin({
         filename: 'index.html',
-        template: path.resolve(__dirname, '../src/index.prd.html'),
+        template: path.resolve(__dirname, '../src/public/index.prd.html'),
         title: 'Playman',
         meta: {
           'viewport': 'width=device-width, initial-scale=1, shrink-to-fit=no',
@@ -161,7 +161,7 @@ module.exports = {
   pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      swSrc: 'src/service-worker.js',
+      swSrc: 'src/public/sw.js',
       exclude: [
         /\.map$/,
         /manifest\.json$/,

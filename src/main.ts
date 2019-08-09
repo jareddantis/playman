@@ -1,17 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
-import eventBus from './plugins/eventBus'
+import eventBus from './plugins/event-bus'
 import router from './plugins/router'
 import store from './plugins/store'
 import vuetify from './plugins/vuetify'
-import './registerServiceWorker'
-import './styles/global.scss'
+import './plugins/service-worker'
+import './plugins/virtual-scroller'
 import './components/dialogs'
-import VirtualScroller from 'vue-virtual-scroller'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import './styles/global.scss'
 
 Vue.use(eventBus)
-Vue.use(VirtualScroller)
 Vue.config.productionTip = false
 
 new Vue({
