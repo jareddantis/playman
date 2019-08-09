@@ -1,5 +1,5 @@
 /**
- @file sw.js
+ @file service-worker.js
  @description Custom logic for the service worker.
  Handles Google Font and JS lib caching.
  @author Jared Dantis (@jareddantis)
