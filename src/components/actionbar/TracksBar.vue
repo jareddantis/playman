@@ -1,13 +1,23 @@
 <template>
   <div>
-    <v-btn @click="$bus.$emit('cut-tracks')"
-           color="white" icon small text>
-      <v-icon>cut</v-icon>
-    </v-btn>
-    <v-btn @click="$bus.$emit('delete-tracks')"
-           color="white" icon small text>
-      <v-icon>delete</v-icon>
-    </v-btn>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn @click="$bus.$emit('cut-tracks')"
+               color="white" icon small text v-on="on">
+          <v-icon>cut</v-icon>
+        </v-btn>
+      </template>
+      <span>Cut tracks</span>
+    </v-tooltip>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn @click="$bus.$emit('delete-tracks')"
+               color="white" icon small text v-on="on">
+          <v-icon>delete</v-icon>
+        </v-btn>
+      </template>
+      <span>Delete tracks</span>
+    </v-tooltip>
     <v-menu nudge-bottom="10" offset-y>
       <template v-slot:activator="{ on }">
         <v-btn color="white" icon small text v-on="on">

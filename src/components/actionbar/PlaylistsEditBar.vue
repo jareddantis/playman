@@ -1,9 +1,14 @@
 <template>
   <div>
-    <v-btn @click="toggleSelection"
-           color="white" icon small text>
-      <v-icon>select_all</v-icon>
-    </v-btn>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn @click="toggleSelection" v-on="on"
+               color="white" icon small text>
+          <v-icon>select_all</v-icon>
+        </v-btn>
+      </template>
+      <span>Select all</span>
+    </v-tooltip>
     <v-menu nudge-bottom="10" offset-y>
       <template v-slot:activator="{ on }">
         <v-btn color="white" icon small text v-on="on"

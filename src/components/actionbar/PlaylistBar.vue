@@ -1,9 +1,14 @@
 <template>
   <div>
-    <v-btn @click="$bus.$emit('edit-playlist-details')" color="white" icon small
-           text>
-      <v-icon>edit</v-icon>
-    </v-btn>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn @click="$bus.$emit('edit-playlist-details')"
+               color="white" icon small text v-on="on">
+          <v-icon>edit</v-icon>
+        </v-btn>
+      </template>
+      <span>Edit playlist details</span>
+    </v-tooltip>
     <v-menu nudge-bottom="10" offset-y>
       <template v-slot:activator="{ on }">
         <v-btn color="white" icon small text v-on="on">
