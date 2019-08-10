@@ -25,7 +25,8 @@
             <v-list-item-title>Randomize selected</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item @click="$bus.$emit('merge-playlists')">
+        <v-list-item @click="$bus.$emit('merge-playlists')"
+                     v-show="checkedPlaylists.length > 1">
           <v-list-item-icon>
             <v-icon>merge_type</v-icon>
           </v-list-item-icon>
