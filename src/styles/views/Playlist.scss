@@ -28,14 +28,6 @@
 
   .tracks {
     grid-column: tracks;
-
-    p.loader {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%);
-      text-align: center;
-    }
   }
 
   @media screen and (max-width: 960px) {
@@ -59,6 +51,14 @@
 
     .tracks {
       grid-row: tracks;
+
+      p.loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%);
+        text-align: center;
+      }
     }
   }
 }
