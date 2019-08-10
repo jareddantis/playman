@@ -3,7 +3,9 @@
   margin: 0 auto;
 
   h1 {
-    line-height: 7.5rem;
     text-align: center;
+
+    &.display-4 { line-height: 7.5rem; }
+    &.display-2 { line-height: 4rem; }
   }
 }

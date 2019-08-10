@@ -1,7 +1,8 @@
 <template>
   <!--  Landing and login screen -->
   <div class="login">
-    <h1 class="display-4">Manage your<br>Spotify playlists<br>in a jiffy.</h1>
+    <h1 :class="$vuetify.breakpoint.mdAndUp ? 'display-4' : 'display-2'">Manage your<br>
+      Spotify playlists<br>in a jiffy.</h1>
   </div>
 </template>
 
