@@ -1,7 +1,7 @@
 <template>
   <!--  Landing and login screen -->
   <div class="login">
-    <p>Manage your Spotify playlists in a jiffy.</p>
+    <h1 class="display-4">Manage your<br>Spotify playlists<br>in a jiffy.</h1>
   </div>
 </template>
 
@@ -13,3 +13,7 @@ import {Component} from 'vue-property-decorator'
 export default class Home extends Vue {
 }
 </script>
+
+<style lang="scss" scoped>
+  @import '../styles/views/Home';
+</style>

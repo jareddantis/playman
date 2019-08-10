@@ -1,7 +1,8 @@
 <template>
   <v-app>
     <!-- Navbar -->
-    <Navbar :is-logging-in="isLoggingIn" v-on:login="login"/>
+    <Navbar :is-logging-in="isLoggingIn" v-on:login="login"
+            v-show="$route.name !== 'Callback'"/>
 
     <v-content class="app-content">
       <!-- Router view -->
@@ -60,7 +61,10 @@ export default class App extends Vue {
 
         // Redirect to dashboard
         this.$store.dispatch('authenticate')
-          .then(() => this.$router.push('/playlists'))
+          .then(() => {
+            this.$bus.$emit('loading', true)
+            this.$router.push('/playlists')
+          })
       }
     })
   }
