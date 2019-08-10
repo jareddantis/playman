@@ -2,6 +2,15 @@
   <div>
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
+        <v-btn @click="$bus.$emit('import-playlist')"
+               color="white" icon small text v-on="on">
+          <v-icon>cloud_upload</v-icon>
+        </v-btn>
+      </template>
+      <span>Import playlist</span>
+    </v-tooltip>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
         <v-btn @click="$bus.$emit('playlists-select')"
                color="white" icon small text v-on="on">
           <v-icon>edit</v-icon>

@@ -6,10 +6,10 @@ const ops = {
     const now = new Date()
     const year = now.getFullYear()
     let month = `${now.getMonth() + 1}`
-    let day = `${now.getDay()}`
+    let day = `${now.getDate()}`
 
     if (now.getMonth() < 9) { month = '0' + month }
-    if (now.getDay() < 10) { day = '0' + day }
+    if (now.getDate() < 10) { day = '0' + day }
 
     return year.toString() + month + day
   },
@@ -33,14 +33,14 @@ const ops = {
     return decoded
   },
 
-  async encodeMultipleToCSV(data: any) {
+  async encodeMultipleToTSV(data: any) {
     const {username, playlists} = data
     const zipName = `${username}-playlists-backup-${this.currentDate()}.zip`
     const zip = new JSZip()
 
     playlists.forEach((playlist: any) => {
       const {name, id, tracks} = playlist
-      const {blob, filename} = this.encodeToCSV(`${name}-${id}`, tracks, false)
+      const {blob, filename} = this.encodeToTSV(`${name}-${id}`, tracks, false)
       zip.file(filename, blob)
     })
 
@@ -48,21 +48,26 @@ const ops = {
     return {blob: zipBlob, filename: zipName}
   },
 
-  encodeToCSV(playlistName: string, tracks: any, single: boolean): any {
-    let csvString = '\ufeff'
+  encodeToTSV(playlistName: string, tracks: any[], single: boolean): any {
+    let tsvString = '\ufeff'
 
-    for (const track of tracks) {
-      const {id, name, artist, album} = track
-      const csvRow = [
+    for (const [index, item] of tracks.entries()) {
+      const {id, name, artist} = item
+      const tsvRow = [
         `spotify:track:${id}`,
-        name, artist, album,
+        name.replace(/\t/g, ' '),
+        artist.replace(/\t/g, ' '),
       ]
-      csvString += '\n' + csvRow.join(',')
+      tsvString += tsvRow.join('\t')
+
+      if (index < tracks.length - 1) {
+        tsvString += '\n'
+      }
     }
 
     return {
-      blob: new Blob([csvString], {type: 'data:text/csv;charset=utf-8'}),
-      filename: single ? `${playlistName}-backup-${this.currentDate()}.csv` : `${playlistName}.csv`,
+      blob: new Blob([tsvString], {type: 'data:text/tab-separated-values;charset=utf-8'}),
+      filename: single ? `${playlistName}-backup-${this.currentDate()}.tsv` : `${playlistName}.tsv`,
     }
   },
 
@@ -147,10 +152,10 @@ registerPromiseWorker((message) => {
     const {type, data} = message.content
 
     switch (type) {
-      case 'csv_encode_multiple':
-        return ops.encodeMultipleToCSV(data)
-      case 'csv_encode_tracks':
-        return ops.encodeToCSV(data.name, data.tracks, true)
+      case 'tsv_encode_multiple':
+        return ops.encodeMultipleToTSV(data)
+      case 'tsv_encode_tracks':
+        return ops.encodeToTSV(data.name, data.tracks, true)
       case 'decode_playlist_tracks':
         return ops.decodePlaylistTracks(data)
       case 'filter_user_playlists':

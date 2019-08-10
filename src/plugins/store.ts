@@ -126,6 +126,14 @@ const store = new Vuex.Store({
         }
       })
     },
+    async createPlaylist(context, {details, tracks}) {
+      return new Promise((resolve, reject) => {
+        api.createPlaylist(details.name, tracks)
+          .then((id: any) => api.changePlaylistDetails(id, details))
+          .then(() => resolve())
+          .catch((error: any) => reject(error))
+      })
+    },
     async changePlaylistDetails({state}, details) {
       return new Promise((resolve, reject) => {
         api.changePlaylistDetails(state.currentPlaylist.id, details)

@@ -9,10 +9,11 @@
           <div class="art">
             <img :alt="name" :src="art">
             <div class="switches">
-              <v-switch :disabled="isPublic || loading" hide-details inset label="Collaborative"
-                        v-model="isCollab"></v-switch>
+              <v-switch :disabled="isPublic || loading"
+                        hide-details inset label="Collaborative"
+                        v-model="isCollab" color="white"></v-switch>
               <v-switch :disabled="loading" @change="toggleCollab" hide-details inset
-                        label="Public" v-model="isPublic"></v-switch>
+                        label="Public" v-model="isPublic" color="white"></v-switch>
             </div>
           </div>
           <div class="details">
@@ -20,9 +21,10 @@
                           outlined v-model="name"></v-text-field>
             <v-textarea :disabled="loading" hide-details label="Description"
                         outlined v-model="desc"></v-textarea>
-            <v-file-input :disabled="loading" :rules="rules" @change="onArtChanged" accept=".jpg,.jpeg,image/jpeg"
+            <v-file-input :disabled="loading" :rules="rules"
+                          @change="onArtChanged" accept=".jpg,.jpeg,image/jpeg"
                           outlined placeholder="Choose cover art..." prepend-icon=""
-                          prepend-inner-icon="image" ref="artinput"
+                          prepend-inner-icon="add_photo_alternate" ref="artinput"
                           small-chips v-model="files"></v-file-input>
           </div>
         </div>

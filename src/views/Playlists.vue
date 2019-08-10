@@ -7,6 +7,7 @@
                   v-for="playlist in visiblePlaylists"
                   v-on:toggled="onToggle"></PlaylistCard>
 
+    <PlaylistImportDialog v-on:import-complete="updatePlaylists"/>
     <ConfirmDeleteDialog v-on:confirm="deleteSelected"/>
     <ConfirmExportDialog/>
     <ConfirmMergeDialog v-on:confirm="mergeSelected"/>
@@ -20,9 +21,10 @@ import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 import PlaylistCard from '@/components/PlaylistCard.vue'
+import PlaylistImportDialog from '@/components/dialogs/PlaylistImportDialog.vue'
 
 @Component({
-  components: {PlaylistCard},
+  components: {PlaylistImportDialog, PlaylistCard},
   computed: mapState(['checkedPlaylists', 'playlists']),
 })
 export default class Playlists extends Vue {
@@ -93,6 +95,15 @@ export default class Playlists extends Vue {
     })
   }
 
+  public updatePlaylists() {
+    document.title = 'Playlists | Playman'
+    this.loadingMsg = 'Loading your playlists...'
+    this.loadStart()
+    this.$store.dispatch('updatePlaylists')
+      .then(() => this.loadEnd())
+      .catch(() => this.setOffline(true))
+  }
+
   private loadStart() {
     this.loading = true
     this.$bus.$emit('loading', true)
@@ -105,15 +116,6 @@ export default class Playlists extends Vue {
     if (!this.playlists.length) {
       this.loadingMsg = 'No playlists to show.'
     }
-  }
-
-  private updatePlaylists() {
-    document.title = 'Playlists | Playman'
-    this.loadingMsg = 'Loading your playlists...'
-    this.loadStart()
-    this.$store.dispatch('updatePlaylists')
-      .then(() => this.loadEnd())
-      .catch(() => this.setOffline(true))
   }
 }
 </script>

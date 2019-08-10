@@ -1,0 +1,46 @@
+.v-card__title + .v-card__text {
+  padding-top: 1rem !important;
+}
+
+.editor {
+  width: 100%;
+
+  .backup-picker, .details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    & > div {
+      width: 100%;
+    }
+  }
+
+  .backup-picker {
+    grid-column: file;
+  }
+
+  .details {
+    grid-column: details;
+
+    .v-text-field {
+      margin-bottom: 1rem;
+    }
+
+    .switches {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+    }
+  }
+}
+
+.loading-dialog {
+  display: flex;
+  align-items: center;
+
+  p {
+    margin-left: 2rem;
+    margin-bottom: 0;
+  }
+}

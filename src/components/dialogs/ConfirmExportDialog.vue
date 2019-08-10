@@ -5,7 +5,7 @@
         <span class="headline">Export {{ items }}?</span>
       </v-card-title>
       <v-card-text>
-        <p class="body-1">This will save your playlist tracks as CSV data, which you can open with a spreadsheet
+        <p class="body-1">This will save your playlist tracks as TSV data, which you can open with a spreadsheet
         application.</p>
         <p class="body-1">You can also import an exported playlist in Playman as a new playlist or as new tracks to
         append to an existing playlist.</p>
