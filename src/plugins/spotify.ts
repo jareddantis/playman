@@ -10,6 +10,7 @@ export default class Spotify {
   private expiry: number = 0
   private refreshToken: string = ''
   private stateToken: string = ''
+  private userId: string = ''
 
   constructor() {
     // Init state
@@ -51,6 +52,10 @@ export default class Spotify {
 
   get redirectUri(): string {
     return `http${this.environment === 'production' ? 's://playman.jared.gq' : '://localhost:8080'}/callback`
+  }
+
+  set userID(id: string) {
+    this.userId = id
   }
 
   /**
@@ -198,13 +203,12 @@ export default class Spotify {
    * Exports multiple playlists as CSV files in a ZIP to be downloaded by the user.
    * Recursive function (API endpoint is paginated).
    *
-   * @param username - Username of currently logged in user (used in filename)
    * @param ids - List of playlist IDs to back up
    * @param retrieved - Initial list to feed the recursive function with
    * @param resolve - Promise resolve() to be called after all playlists have been exported
    * @param reject - Promise reject() to be called in the event of a Spotify API error
    */
-  public async exportPlaylists(username: string, ids: string[], retrieved: any[],
+  public async exportPlaylists(ids: string[], retrieved: any[],
                                resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     if (ids.length) {
       const id = ids.splice(0, 1)[0]
@@ -214,13 +218,13 @@ export default class Spotify {
           id: playlist.details.id,
           tracks: playlist.tracks,
         })
-        this.exportPlaylists(username, ids, retrieved, resolve, reject)
+        this.exportPlaylists(ids, retrieved, resolve, reject)
       }).catch((error: any) => reject(new Error(error)))
     } else {
       Worker.send({
         type: 'csv_encode_multiple',
         data: {
-          username,
+          username: this.userId,
           playlists: retrieved,
         },
       }).then((exported: any) => resolve(exported))
@@ -278,13 +282,11 @@ export default class Spotify {
    * Gets a list of playlists that the current user owns.
    * Recursive function (API endpoint is paginated).
    *
-   * @param username - Username of currently logged in user
    * @param initial - Initial list to feed the recursive function with
    * @param resolve - Promise resolve() to be called after all playlists have been retrieved
    * @param reject - Promise reject() to be called in the event of a Spotify API error
    */
-  public async getUserPlaylists(username: string, initial: any[],
-                                resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+  public async getUserPlaylists(initial: any[], resolve: (arg0: any) => void, reject: (arg0: any) => void) {
     this.reauth().then(() => {
       this.throttler.add(() => this.client.getUserPlaylists())
         .then((response: any) => {
@@ -297,14 +299,38 @@ export default class Spotify {
               type: 'filter_user_playlists',
               data: {
                 playlists,
-                username,
+                username: this.userId,
               },
             }).then((results) => resolve(results))
           } else {
             // Retrieve next page
-            this.getUserPlaylists(username, playlists, resolve, reject)
+            this.getUserPlaylists(playlists, resolve, reject)
           }
         }).catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  public async mergePlaylists(ids: string[]) {
+    return new Promise(async (resolve, reject) => {
+      // Merge playlist tracks...
+      let tracks: string[] = []
+      for (const id of ids) {
+        const newTracks: string[] = await new Promise((resolve1, reject1) => {
+          this.getPlaylistTracks(id, [], 0, resolve1, reject1)
+        })
+        tracks = tracks.concat(newTracks)
+      }
+
+      // ...then get the Spotify URI for each track...
+      Worker.send({
+        type: 'get_track_uris',
+        data: tracks,
+      }).then((uris) => {
+        // ...then create a playlist
+        this.createPlaylist('New Merged Playlist', uris as string[])
+          .then(() => resolve())
+          .catch((error: any) => reject(error))
+      }).catch((error: any) => reject(error))
     })
   }
 
@@ -376,6 +402,22 @@ export default class Spotify {
           data: {tracks},
         }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
       }).catch((error) => reject(new Error(error)))
+    })
+  }
+
+  /**
+   * Creates a playlist from a set of tracks.
+   *
+   * @param name - Name of new playlist
+   * @param tracks - Tracks to add to new playlist
+   */
+  private async createPlaylist(name: string, tracks: string[]) {
+    return new Promise((resolve, reject) => {
+      this.reauth().then(() => {
+        this.throttler.add(() => this.client.createPlaylist(this.userId, name, {public: false}))
+          .then((response: any) => this.addTracksToPlaylist(response.body.id, tracks, resolve, reject))
+          .catch((error: any) => reject(new Error(error)))
+      })
     })
   }
 

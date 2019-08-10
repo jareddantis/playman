@@ -161,7 +161,7 @@ const store = new Vuex.Store({
     },
     async exportPlaylists({state}) {
       return new Promise((resolve, reject) => {
-        api.exportPlaylists(state.username, state.checkedPlaylists, [], resolve, reject)
+        api.exportPlaylists(state.checkedPlaylists, [], resolve, reject)
       })
     },
     async getPlaylist({commit}, id) {
@@ -170,6 +170,9 @@ const store = new Vuex.Store({
         commit('setPlaylist', playlist.details)
         commit('setPlaylistTracks', playlist.tracks)
       })
+    },
+    async mergePlaylists({state}) {
+      return api.mergePlaylists(state.checkedPlaylists)
     },
     async reorderPlaylistTracks({state}, placeTracksAfter) {
       const { checkedTracks, currentPlaylistTracks } = state
@@ -194,9 +197,9 @@ const store = new Vuex.Store({
       commit('setPlaylist', {})
       commit('setPlaylistTracks', [])
     },
-    async updatePlaylists({state, commit}) {
+    async updatePlaylists({commit}) {
       return new Promise((resolve, reject) => {
-        api.getUserPlaylists(state.username, [], resolve, reject)
+        api.getUserPlaylists([], resolve, reject)
       }).then((playlists: any) => commit('setPlaylists', playlists))
     },
     async updateUserMeta({commit}) {
@@ -206,6 +209,7 @@ const store = new Vuex.Store({
           const result = response.body as any
           commit('setUserAvatar', result.images[0].url)
           commit('setUsername', result.id)
+          api.userID = result.id
           resolve()
         }).catch((error) => reject(new Error(error)))
       })

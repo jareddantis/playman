@@ -134,6 +134,12 @@ const ops = {
     // Reduce tracks array into Spotify URIs
     return tracks.map((track) => `spotify:track:${track.id}`)
   },
+
+  tracksToUris(tracks: any[]) {
+    const uris: string[] = []
+    tracks.forEach((track: any) => uris.push(`spotify:track:${track.id}`))
+    return uris
+  },
 }
 
 registerPromiseWorker((message) => {
@@ -153,6 +159,8 @@ registerPromiseWorker((message) => {
         return ops.reorderPlaylistTracks(data.tracks, data.tracksToReorder, data.placeTracksAfter)
       case 'shuffle_playlist_tracks':
         return ops.shufflePlaylistTracks(data.tracks)
+      case 'get_track_uris':
+        return ops.tracksToUris(data)
     }
   }
 })

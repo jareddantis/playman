@@ -9,6 +9,7 @@
 
     <ConfirmDeleteDialog v-on:confirm="deleteSelected"/>
     <ConfirmExportDialog/>
+    <ConfirmMergeDialog v-on:confirm="mergeSelected"/>
   </div>
 </template>
 
@@ -60,6 +61,17 @@ export default class Playlists extends Vue {
         })
         .catch(() => this.setOffline(true))
     }
+  }
+
+  public mergeSelected() {
+    this.loadingMsg = 'Merging playlists into a new playlist...'
+    this.loadStart()
+    this.$store.dispatch('mergePlaylists')
+      .then(() => {
+        this.$bus.$emit('cancel-batch-edit')
+        this.updatePlaylists()
+      })
+      .catch(() => this.setOffline(true))
   }
 
   public onToggle(payload: any) {

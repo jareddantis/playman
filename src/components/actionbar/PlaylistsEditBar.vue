@@ -20,6 +20,14 @@
             <v-list-item-title>Randomize selected</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item @click="$bus.$emit('merge-playlists')">
+          <v-list-item-icon>
+            <v-icon>merge_type</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Merge selected</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item @click="exportSelected">
           <v-list-item-icon>
             <v-icon>cloud_download</v-icon>
