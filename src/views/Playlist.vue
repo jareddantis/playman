@@ -157,7 +157,7 @@ export default class Playlist extends Vue {
   public shuffle() {
     this.loadingMsg = `Randomizing ${this.currentPlaylist.name}...`
     this.loadStart()
-    this.$store.dispatch('shufflePlaylist').then(() => this.getPlaylist())
+    this.$store.dispatch('shufflePlaylists', false).then(() => this.getPlaylist())
   }
 
   private loadStart() {

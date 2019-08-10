@@ -16,7 +16,7 @@
         </v-btn>
       </template>
       <v-list dark dense>
-        <v-list-item @click="$bus.$emit('randomize-playlist')">
+        <v-list-item @click="$bus.$emit('randomize-playlists', false)">
           <v-list-item-icon>
             <v-icon>shuffle</v-icon>
           </v-list-item-icon>

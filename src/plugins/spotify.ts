@@ -405,6 +405,17 @@ export default class Spotify {
     })
   }
 
+  public async shufflePlaylists(ids: string[]) {
+    return new Promise(async (resolve, reject) => {
+      for (const id of ids) {
+        await this.getPlaylist(id).then((playlist: any) => {
+          this.shufflePlaylist(id, playlist.details.snapshot, playlist.tracks)
+        }).catch((error) => reject(error))
+      }
+      resolve()
+    })
+  }
+
   /**
    * Creates a playlist from a set of tracks.
    *

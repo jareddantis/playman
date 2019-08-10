@@ -10,6 +10,7 @@
     <ConfirmDeleteDialog v-on:confirm="deleteSelected"/>
     <ConfirmExportDialog/>
     <ConfirmMergeDialog v-on:confirm="mergeSelected"/>
+    <ConfirmShuffleDialog v-on:confirm="shuffleSelected"/>
   </div>
 </template>
 
@@ -67,6 +68,17 @@ export default class Playlists extends Vue {
     this.loadingMsg = 'Merging playlists into a new playlist...'
     this.loadStart()
     this.$store.dispatch('mergePlaylists')
+      .then(() => {
+        this.$bus.$emit('cancel-batch-edit')
+        this.updatePlaylists()
+      })
+      .catch(() => this.setOffline(true))
+  }
+
+  public shuffleSelected() {
+    this.loadingMsg = 'Randomizing playlists...'
+    this.loadStart()
+    this.$store.dispatch('shufflePlaylists', true)
       .then(() => {
         this.$bus.$emit('cancel-batch-edit')
         this.updatePlaylists()

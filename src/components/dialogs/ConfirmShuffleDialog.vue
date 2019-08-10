@@ -2,7 +2,7 @@
   <v-dialog max-width="600" v-model="showDialog">
     <v-card>
       <v-card-title>
-        <span class="headline">Randomize this playlist?</span>
+        <span class="headline">Randomize {{ items }}?</span>
       </v-card-title>
       <v-card-text>
         <p class="body-1">This process is irreversible unless you make a backup first.</p>
@@ -22,10 +22,18 @@ import {Component} from 'vue-property-decorator'
 
 @Component
 export default class ConfirmShuffleDialog extends Vue {
+  public multiple: boolean = false
   public showDialog: boolean = false
 
+  get items(): string {
+    return this.multiple ? 'these playlists' : 'this playlist'
+  }
+
   public created() {
-    this.$bus.$on('randomize-playlist', () => this.showDialog = true)
+    this.$bus.$on('randomize-playlists', (isMultiple: boolean) => {
+      this.multiple = isMultiple
+      this.showDialog = true
+    })
   }
 
   public confirm() {
