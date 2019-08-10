@@ -23,7 +23,7 @@
       <img v-show="showLogo" :src="require('../assets/logo.svg')" alt="Playman">
     </div>
 
-    <div class="actions right">
+    <div class="actions right" v-if="isLoggedIn">
       <!--      View actions -->
       <component class="action-bar" :is="actionBar.name" v-show="!loading"></component>
 
@@ -46,13 +46,17 @@
         </v-list>
       </v-menu>
     </div>
+    <div class="actions right" v-else>
+      <v-btn :loading="isLoggingIn" @click="$emit('login')"
+             color="#1DB954" dark rounded>Login with Spotify</v-btn>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import {mapState} from 'vuex'
-import {Component} from 'vue-property-decorator'
+import {Component, Prop} from 'vue-property-decorator'
 import components from '@/components/actionbar'
 
 @Component({
@@ -61,12 +65,15 @@ import components from '@/components/actionbar'
     'avatarUri',
     'checkedTracks',
     'isBatchEditing',
+    'isLoggedIn',
     'isReordering',
     'username',
   ]),
 })
 export default class Navbar extends Vue {
+  @Prop({default: false}) public readonly isLoggingIn: boolean | undefined
   public avatarUri!: string
+  public isLoggedIn!: boolean
   public username!: string
   private checkedTracks!: any
   private isBatchEditing!: boolean

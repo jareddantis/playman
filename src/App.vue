@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Navbar -->
-    <Navbar v-show="isLoggedIn"/>
+    <Navbar :is-logging-in="isLoggingIn" v-on:login="login"/>
 
     <v-content class="app-content">
       <!-- Router view -->
@@ -36,8 +36,34 @@ import Navbar from '@/components/Navbar.vue'
 export default class App extends Vue {
   public avatarUri!: string
   public isLoggedIn!: boolean
+  public isLoggingIn: boolean = false
   public offline!: boolean
   public username!: string
+
+  public login() {
+    this.isLoggingIn = true
+    const authWindow = window.open(this.$store.getters.authUri, 'Login with Spotify', 'width=480,height=480')
+    authWindow!.addEventListener('beforeunload', () => {
+      this.isLoggingIn = false
+      if (localStorage.getItem('spotify-login-data') !== null) {
+        const payload = JSON.parse(localStorage.getItem('spotify-login-data') as string)
+
+        // Persist tokens
+        this.$store.commit('setTokens', {
+          accessToken: payload.access_token,
+          refreshToken: payload.refresh_token,
+          expiry: payload.expires_in,
+        })
+
+        // Remove auth data from localStorage
+        localStorage.removeItem('spotify-login-data')
+
+        // Redirect to dashboard
+        this.$store.dispatch('authenticate')
+          .then(() => this.$router.push('/playlists'))
+      }
+    })
+  }
 }
 </script>
 
