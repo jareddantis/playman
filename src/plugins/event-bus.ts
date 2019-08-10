@@ -1,5 +1,7 @@
-import _Vue from 'vue'
+import Vue from 'vue'
 
-export default function eventBusPlugin(Vue: typeof _Vue): void {
-  Vue.prototype.$bus = new _Vue()
-}
+Vue.use({
+  install: (localVue: typeof Vue) => {
+    localVue.prototype.$bus = new Vue()
+  },
+})

@@ -1,3 +1,4 @@
+import './event-bus'
 import './service-worker'
 import './virtual-scroller'
 
