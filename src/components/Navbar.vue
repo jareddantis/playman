@@ -48,7 +48,7 @@
     </div>
     <div class="actions right" v-else>
       <v-btn :loading="isLoggingIn" @click="$emit('login')"
-             color="#1DB954" dark rounded>Login with Spotify</v-btn>
+             color="#1DB954" dark rounded small>Login</v-btn>
     </div>
   </div>
 </template>
@@ -78,7 +78,7 @@ export default class Navbar extends Vue {
   private checkedTracks!: any
   private isBatchEditing!: boolean
   private isReordering!: boolean
-  private loading: boolean = true
+  private loading: boolean = false
 
   get actionBar(): any {
     switch (this.$route.name) {
@@ -111,7 +111,7 @@ export default class Navbar extends Vue {
 
   public logout() {
     this.$store.commit('reset')
-    window.location.reload()
+    this.$router.push({name: 'Home'})
   }
 }
 </script>

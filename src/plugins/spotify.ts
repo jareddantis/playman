@@ -383,6 +383,11 @@ export default class Spotify {
     })
   }
 
+  public reset() {
+    this.refreshToken = ''
+    this.expiry = 0
+  }
+
   /**
    * Stores the authorization tokens necessary for communicating with the Spotify API.
    *

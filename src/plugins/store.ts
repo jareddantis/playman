@@ -54,6 +54,7 @@ const store = new Vuex.Store({
     emptyCheckedPlaylists: (state) => state.checkedPlaylists = [],
     emptyCheckedTracks: (state) => state.checkedTracks = [],
     reset: (state: any) => {
+      api.reset()
       const initialState = getInitialState()
       Object.keys(initialState).forEach((key) => {
         Vue.set(state, key, initialState[key])
