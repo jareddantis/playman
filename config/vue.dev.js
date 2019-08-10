@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -21,7 +20,6 @@ module.exports = {
   },
 
   devServer: {
-    compress: true,
     proxy: {
       '/.netlify': {
         target: 'http://localhost:9000',
