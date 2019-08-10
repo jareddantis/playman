@@ -81,3 +81,9 @@ export default class PlaylistPickerDialog extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .v-avatar > div {
+    border-radius: 3px
+  }
+</style>
