@@ -11,26 +11,30 @@
         </v-btn>
       </template>
       <v-list dark dense>
-        <v-list-item-group>
-          <v-list-item @click="$bus.$emit('randomize-playlist')">
-            <v-list-item-icon>
-              <v-icon>shuffle</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Randomize playlist</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-        <v-list-item-group>
-          <v-list-item @click="exportSelected">
-            <v-list-item-icon>
-              <v-icon>cloud_download</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Export playlist</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
+        <v-list-item @click="$bus.$emit('randomize-playlist')">
+          <v-list-item-icon>
+            <v-icon>shuffle</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Randomize playlist</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="exportSelected">
+          <v-list-item-icon>
+            <v-icon>cloud_download</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Export playlist</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item @click="$bus.$emit('delete-playlist')">
+          <v-list-item-icon>
+            <v-icon>delete</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Delete playlist</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-menu>
   </div>

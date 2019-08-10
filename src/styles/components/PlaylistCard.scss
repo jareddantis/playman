@@ -4,7 +4,7 @@
   cursor: pointer;
   text-decoration: none;
 
-  &:active, &[selection] {
+  &:active, &[selection], &[disabled] {
     filter: brightness(0.8);
   }
 
@@ -19,6 +19,11 @@
     .v-image {
       border: 2px solid #E5A3A0;
     }
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    cursor: not-allowed;
   }
 
   .playlist-art {

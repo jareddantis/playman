@@ -1,6 +1,6 @@
 <template>
   <div :selected="playlist.checked" :selection="isBatchEditing"
-       @click="clickHandler" class="playlist">
+       :disabled="disabled" @click="clickHandler" class="playlist">
     <div class="playlist-art">
       <v-img :alt="playlist.id"
              :lazy-src="require('../assets/gradient.jpeg')" :src="image">
@@ -34,6 +34,7 @@ import {Component, Prop} from 'vue-property-decorator'
 })
 export default class PlaylistCard extends Vue {
   @Prop({required: true}) public readonly playlist: any
+  @Prop({default: false}) public readonly disabled: boolean | undefined
   public isBatchEditing!: boolean
 
   get image(): string {
@@ -42,7 +43,7 @@ export default class PlaylistCard extends Vue {
 
   public clickHandler() {
     if (this.isBatchEditing) {
-      this.$emit('playlist-toggled', {
+      this.$emit('toggled', {
         index: this.playlist.index,
         isChecked: this.playlist.checked,
       })

@@ -1,10 +1,13 @@
 <template>
   <div id="playlists">
-    <PlaylistCard :key="playlist.id" :playlist="playlist"
-                  v-for="playlist in playlists"
-                  v-on:playlist-toggled="onToggle"></PlaylistCard>
+    <p v-show="loading || !playlists.length"
+       class="loader font-weight-bold">{{ loadingMsg }}</p>
+    <PlaylistCard :disabled="loading"
+                  :key="playlist.id" :playlist="playlist"
+                  v-for="playlist in visiblePlaylists"
+                  v-on:toggled="onToggle"></PlaylistCard>
 
-    <!-- Playlists export dialog -->
+    <ConfirmDeleteDialog v-on:confirm="deleteSelected"/>
     <ConfirmExportDialog/>
   </div>
 </template>
@@ -22,12 +25,19 @@ import PlaylistCard from '@/components/PlaylistCard.vue'
 })
 export default class Playlists extends Vue {
   public checkedPlaylists!: string[]
+  public loading: boolean = false
+  public loadingMsg: string = ''
   public playlists!: any[]
   @Mutation('setIsBatchEditing') private setIsBatchEditing!: (isEditing: boolean) => void
+  @Mutation('setOffline') private setOffline!: (isOffline: boolean) => void
+
+  get visiblePlaylists(): any[] {
+    return this.loading ? [] : this.playlists
+  }
 
   public created() {
     // Load playlists
-    this.refreshPlaylists()
+    this.updatePlaylists()
 
     // Batch playlist editing
     this.$bus.$on('cancel-batch-edit', () => {
@@ -39,8 +49,17 @@ export default class Playlists extends Vue {
     this.$bus.$on('select-all-playlists', () => this.$store.dispatch('toggleAllPlaylists', true))
   }
 
-  public exportSelected() {
-    this.$bus.$emit('export-playlists', {count: this.checkedPlaylists.length})
+  public deleteSelected(items: string) {
+    if (items === 'playlists') {
+      this.loadingMsg = 'Deleting playlists...'
+      this.loadStart()
+      this.$store.dispatch('deletePlaylists', true)
+        .then(() => {
+          this.$bus.$emit('cancel-batch-edit')
+          this.updatePlaylists()
+        })
+        .catch(() => this.setOffline(true))
+    }
   }
 
   public onToggle(payload: any) {
@@ -50,12 +69,27 @@ export default class Playlists extends Vue {
     })
   }
 
-  private refreshPlaylists() {
-    document.title = 'Playlists | Playman'
+  private loadStart() {
+    this.loading = true
     this.$bus.$emit('loading', true)
+  }
+
+  private loadEnd() {
+    this.$bus.$emit('loading', false)
+    this.loading = false
+
+    if (!this.playlists.length) {
+      this.loadingMsg = 'No playlists to show.'
+    }
+  }
+
+  private updatePlaylists() {
+    document.title = 'Playlists | Playman'
+    this.loadingMsg = 'Loading your playlists...'
+    this.loadStart()
     this.$store.dispatch('updatePlaylists')
-      .catch(() => this.$store.commit('setOffline', true))
-      .finally(() => this.$bus.$emit('loading', false))
+      .then(() => this.loadEnd())
+      .catch(() => this.setOffline(true))
   }
 }
 </script>

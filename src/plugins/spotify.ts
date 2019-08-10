@@ -132,6 +132,27 @@ export default class Spotify {
   }
 
   /**
+   * Deletes a list of playlists (but really just unfollows them,
+   * since that's what the official Spotify clients do, anyway...)
+   *
+   * @param ids - Playlist IDs to 'delete'
+   * @param resolve - Promise resolve() to be called after playlists have been 'deleted'
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  public async deletePlaylists(ids: string[], resolve: () => void, reject: (arg0: any) => void) {
+    if (ids.length) {
+      const id = ids.splice(0, 1)[0]
+      this.reauth().then(() => {
+        this.throttler.add(() => this.client.unfollowPlaylist(id))
+          .then(() => this.deletePlaylists(ids, resolve, reject))
+          .catch((error: any) => reject(new Error(error)))
+      })
+    } else {
+      resolve()
+    }
+  }
+
+  /**
    * Removes a set of tracks from a playlist.
    * Recursive function (API endpoint accepts max 100 tracks per request).
    *

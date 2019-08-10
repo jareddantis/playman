@@ -12,6 +12,14 @@
     text-decoration: none;
   }
 
+  p.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+  }
+
   @media screen and (max-width: 768px) {
     margin-bottom: 2rem;
     grid-template-columns: repeat(auto-fit, calc(#{$body-width} / 2 - 2rem));

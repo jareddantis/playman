@@ -36,7 +36,7 @@
 
     <!-- Dialogs -->
     <ConfirmCopyDialog v-on:confirm="copyTracks"/>
-    <ConfirmDeleteDialog v-on:confirm="deleteTracks"/>
+    <ConfirmDeleteDialog v-on:confirm="deleteHandler"/>
     <ConfirmExportDialog/>
     <ConfirmShuffleDialog v-on:confirm="shuffle"/>
     <PlaylistEditDialog/>
@@ -127,7 +127,7 @@ export default class Playlist extends Vue {
     this.$store.dispatch('copyToPlaylist', {id: target.id, tracks})
       .then(() => {
         if (willMove) {
-          this.deleteTracks()
+          this.deleteHandler('tracks')
         } else {
           this.$bus.$emit('cancel-batch-edit')
         }
@@ -140,11 +140,18 @@ export default class Playlist extends Vue {
     this.$store.commit('setTrackChecked', { index, isChecked: state })
   }
 
-  public deleteTracks() {
-    this.loadingMsg = `Deleting selected songs from ${this.currentPlaylist.name}...`
-    this.loadStart()
-    this.$store.dispatch('deletePlaylistTracks')
-      .then(() => this.getPlaylist())
+  public deleteHandler(items: string) {
+    if (items === 'tracks') {
+      this.loadingMsg = `Deleting selected songs from ${this.currentPlaylist.name}...`
+      this.loadStart()
+      this.$store.dispatch('deletePlaylistTracks')
+        .then(() => this.getPlaylist())
+    } else if (items === 'playlist') {
+      this.loadingMsg = `Deleting playlist ${this.currentPlaylist.name}...`
+      this.loadStart()
+      this.$store.dispatch('deletePlaylists', false)
+        .then(() => this.$router.push({name: 'Playlists'}))
+    }
   }
 
   public shuffle() {

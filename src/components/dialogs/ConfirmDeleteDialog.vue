@@ -2,7 +2,7 @@
   <v-dialog max-width="600" v-model="showDialog">
     <v-card>
       <v-card-title>
-        <span class="headline">Delete selected {{ items }}?</span>
+        <span class="headline">Delete {{ items }}?</span>
       </v-card-title>
       <v-card-text>
         <p v-if="items === 'songs'"
@@ -30,7 +30,7 @@ export default class ConfirmDeleteDialog extends Vue {
 
   public created() {
     this.$bus.$on('delete-tracks', () => {
-      this.items = 'songs'
+      this.items = 'tracks'
       this.showDialog = true
     })
     this.$bus.$on('delete-playlists', () => {
@@ -44,7 +44,7 @@ export default class ConfirmDeleteDialog extends Vue {
   }
 
   public confirm() {
-    this.$emit('confirm')
+    this.$emit('confirm', this.items)
     this.showDialog = false
   }
 }
