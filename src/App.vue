@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Navbar -->
-    <Navbar v-show="$route.name !== 'Callback'"/>
+    <Navbar/>
 
     <v-content class="app-content">
       <!-- Router view -->

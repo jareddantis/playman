@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h2 class="dead-center">{{ status }}</h2>
-  </div>
+  <h2>{{ status }}</h2>
 </template>
 
 <script lang="ts">
@@ -14,8 +12,6 @@ export default class Callback extends Vue {
   public status: string = 'Authenticating'
 
   public created() {
-    this.$bus.$emit('loading', true)
-
     // Parse query string
     try {
       const AUTH_CODE = this.$route.query.code
@@ -51,3 +47,13 @@ export default class Callback extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  h2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+  }
+</style>

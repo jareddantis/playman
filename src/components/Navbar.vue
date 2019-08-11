@@ -1,10 +1,9 @@
 <template>
   <nav>
     <!--    Loading bar -->
-    <v-progress-linear
-      :active="loading"
-      absolute color="white" indeterminate
-      top></v-progress-linear>
+    <v-progress-linear :active="loading" absolute
+                       color="white" indeterminate
+                       top></v-progress-linear>
 
     <div class="view">
       <div class="actions left" v-show="actionBar.cancelButton || actionBar.backButton">
@@ -23,7 +22,7 @@
       <img v-show="showLogo" :src="require('../assets/logo.svg')" alt="Playman">
     </div>
 
-    <div class="actions right" v-if="isLoggedIn">
+    <div class="actions right" v-show="isLoggedIn">
       <!--      View actions -->
       <component class="action-bar" :is="actionBar.name" v-show="!loading"></component>
 
@@ -46,7 +45,7 @@
         </v-list>
       </v-menu>
     </div>
-    <div class="actions right" v-else>
+    <div class="actions right" v-show="!isLoggedIn && $route.name !== 'Callback'">
       <v-btn :loading="isLoggingIn" @click="login"
              class="login-btn" rounded small>Sign in</v-btn>
     </div>
@@ -78,7 +77,7 @@ export default class Navbar extends Vue {
   private checkedTracks!: any
   private isBatchEditing!: boolean
   private isReordering!: boolean
-  private loading: boolean = false
+  private loading: boolean = true
 
   get actionBar(): any {
     switch (this.$route.name) {
