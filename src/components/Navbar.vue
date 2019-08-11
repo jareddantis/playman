@@ -48,7 +48,7 @@
     </div>
     <div class="actions right" v-else>
       <v-btn :loading="isLoggingIn" @click="login"
-             color="#1DB954" dark rounded small>Sign in</v-btn>
+             class="login-btn" rounded small>Sign in</v-btn>
     </div>
   </nav>
 </template>
