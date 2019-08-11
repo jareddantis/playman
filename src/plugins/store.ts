@@ -210,6 +210,12 @@ const store = new Vuex.Store({
         return Object.assign(playlist, {checked: isChecked})
       }))
     },
+    async uncheckAllTracks({state}) {
+      while (state.checkedTracks.length) {
+        const index = state.checkedTracks.splice(0, 1)
+        state.currentPlaylistTracks[index].checked = false
+      }
+    },
     async unsetPlaylist({commit}) {
       commit('emptyCheckedTracks')
       commit('setPlaylist', {})

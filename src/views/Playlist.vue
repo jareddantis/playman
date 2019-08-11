@@ -87,6 +87,7 @@ export default class Playlist extends Vue {
     event.preventDefault()
     event.returnValue = true
   }
+
   public checkedTracks!: any
   public currentPlaylist!: any
   public currentPlaylistTracks!: any[]
@@ -111,12 +112,13 @@ export default class Playlist extends Vue {
       this.setIsReordering(false)
       this.reorderTracks(pasteAfter)
     })
-    this.$bus.$on('cancel-batch-edit', () => this.setIsReordering(false))
+    this.$bus.$on('cancel-batch-edit', () => this.unselectAll())
     this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialogs'))
   }
 
   public beforeDestroy() {
     this.$store.dispatch('unsetPlaylist')
+    window.removeEventListener('keydown', this.selectAll)
   }
 
   public confirmCopyTracks(payload: any) {
@@ -162,6 +164,20 @@ export default class Playlist extends Vue {
     }
   }
 
+  public selectAll(event: KeyboardEvent) {
+    const isCmdCtrl = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? event.metaKey : event.ctrlKey
+
+    if (isCmdCtrl && event.key === 'a' && this.currentPlaylistTracks.length !== this.checkedTracks.length) {
+      event.preventDefault()
+      event.stopPropagation()
+      for (let i = 0; i < this.currentPlaylistTracks.length; i++) {
+        if (!this.currentPlaylistTracks[i].checked) {
+          this.onTrackToggled({index: i, state: true})
+        }
+      }
+    }
+  }
+
   public shiftSelect(end: number) {
     if (this.checkedTracks.length > 1) {
       let lastChecked = this.checkedTracks[this.checkedTracks.length - 2]
@@ -174,7 +190,7 @@ export default class Playlist extends Vue {
           // Check previous track up
           lastChecked--
         }
-        this.$store.commit('setTrackChecked', { index: lastChecked, isChecked: true })
+        this.onTrackToggled({index: lastChecked, state: true})
       }
     }
   }
@@ -195,11 +211,13 @@ export default class Playlist extends Vue {
     this.$bus.$emit('loading', true)
     this.loading = true
     window.addEventListener('beforeunload', Playlist.onBeforeUnload)
+    window.removeEventListener('keydown', this.selectAll)
   }
 
   private loadEnd() {
     this.$bus.$emit('loading', false)
     window.removeEventListener('beforeunload', Playlist.onBeforeUnload)
+    window.addEventListener('keydown', this.selectAll)
     document.title = `${this.currentPlaylist.name} | Playman`
 
     if (this.currentPlaylistTracks.length) {
@@ -229,6 +247,11 @@ export default class Playlist extends Vue {
 
     return this.$store.dispatch('reorderPlaylistTracks', placeTracksAfter)
       .then(() => this.getPlaylist())
+  }
+
+  private unselectAll() {
+    this.setIsReordering(false)
+    this.$store.dispatch('uncheckAllTracks')
   }
 }
 </script>
