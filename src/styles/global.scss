@@ -74,12 +74,15 @@ button {
 .v-btn--rounded {
   background: linear-gradient(150deg, #A44966 15%, #DF7462 90%);
   border-color: unset;
+
+  .v-icon {
+    display: inline-flex !important;
+    margin-right: 1rem;
+  }
 }
 .v-btn.v-size--small {
   letter-spacing: 0;
 }
 span.v-btn__content {
   font-weight: 700;
-
-  .v-icon { display: inline-flex !important; }
 }
