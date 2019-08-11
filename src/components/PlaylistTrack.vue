@@ -9,8 +9,7 @@
   <div :selected="isChecked" class="track item" v-else>
     <div class="track-control">
       <v-checkbox :color="isChecked ? '#E5A3A0' : '#F5F5F5'" :disabled="isDisabled"
-                  @change="onToggle" hide-details
-                  v-model="isChecked"></v-checkbox>
+                  hide-details @click.native="multipleSelect" v-model="isChecked"></v-checkbox>
     </div>
     <p class="track-name">{{ track.title }}</p>
     <p class="track-info" v-show="$vuetify.breakpoint.mdAndDown">{{ track.artist }} &bullet; {{ track.album }}</p>
@@ -30,13 +29,21 @@ import {Component, Prop} from 'vue-property-decorator'
 export default class PlaylistTrack extends Vue {
   @Prop({required: true}) public readonly track: any
   public isReordering!: boolean
-  public isChecked: boolean = false
   public isDisabled: boolean = false
 
-  public created() {
-    // Restore checked status
-    this.isChecked = this.track.checked
+  get isChecked(): boolean {
+    return this.track.checked
+  }
 
+  set isChecked(state: boolean) {
+    this.$emit('track-toggled', {
+      id: this.track.id,
+      index: this.track.index,
+      state,
+    })
+  }
+
+  public created() {
     // Disable while loading
     this.$bus.$on('loading', (isLoading: boolean) => this.isDisabled = isLoading)
 
@@ -49,12 +56,10 @@ export default class PlaylistTrack extends Vue {
     })
   }
 
-  public onToggle() {
-    this.$emit('track-toggled', {
-      id: this.track.id,
-      index: this.track.index,
-      state: this.isChecked,
-    })
+  public multipleSelect(event: MouseEvent) {
+    if (this.isChecked && event.shiftKey) {
+      this.$emit('multiple-select', this.track.index)
+    }
   }
 }
 </script>

@@ -33,8 +33,9 @@
         <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
                          :items="currentPlaylistTracks" :page-mode="true"
                          class="scroller" key-field="key" v-else v-slot="{ item }">
-          <PlaylistTrack :checked="item.checked" :key="item.key" :track="item"
-                         v-on:track-toggled="onTrackToggled"></PlaylistTrack>
+          <PlaylistTrack :key="item.key" :track="item"
+                         v-on:track-toggled="onTrackToggled"
+                         v-on:multiple-select="shiftSelect"></PlaylistTrack>
         </RecycleScroller>
       </div>
     </div>
@@ -158,6 +159,23 @@ export default class Playlist extends Vue {
       this.loadStart()
       this.$store.dispatch('deletePlaylists', false)
         .then(() => this.$router.push({name: 'Playlists'}))
+    }
+  }
+
+  public shiftSelect(end: number) {
+    if (this.checkedTracks.length > 1) {
+      let lastChecked = this.checkedTracks[this.checkedTracks.length - 2]
+
+      while (lastChecked !== end) {
+        if (lastChecked < end) {
+          // Check next track down
+          lastChecked++
+        } else if (lastChecked > end) {
+          // Check previous track up
+          lastChecked--
+        }
+        this.$store.commit('setTrackChecked', { index: lastChecked, isChecked: true })
+      }
     }
   }
 
