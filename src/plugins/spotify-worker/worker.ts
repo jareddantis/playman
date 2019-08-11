@@ -54,10 +54,10 @@ const ops = {
     let tsvString = '\ufeff'
 
     for (const [index, item] of tracks.entries()) {
-      const {id, name, artist} = item
+      const {id, title, artist} = item
       const tsvRow = [
         `spotify:track:${id}`,
-        name.replace(/\t/g, ' '),
+        title.replace(/\t/g, ' '),
         artist.replace(/\t/g, ' '),
       ]
       tsvString += tsvRow.join('\t')
@@ -120,9 +120,7 @@ const ops = {
     const before = tracks.slice(0, placeAfterIndex + 1)
     const after = tracks.slice(placeAfterIndex + 1)
     const result = before.concat(tracksToMove.reverse(), after)
-
-    // Reduce tracks array into Spotify URIs
-    return result.map((track) => `spotify:track:${track.id}`)
+    return this.tracksToUris(result)
   },
 
   shufflePlaylistTracks(tracks: any[]) {
