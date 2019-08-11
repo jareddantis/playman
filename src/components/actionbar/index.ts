@@ -1,9 +1,7 @@
-import EmptyBar from './EmptyBar.vue'
-import PlaylistBar from './PlaylistBar.vue'
-import PlaylistsBar from './PlaylistsBar.vue'
-import PlaylistsEditBar from './PlaylistsEditBar.vue'
-import TracksBar from './TracksBar.vue'
-
 export default {
-  EmptyBar, PlaylistBar, PlaylistsBar, PlaylistsEditBar, TracksBar,
+  EmptyBar: () => import(/* webpackChunkName: "actionbar" */ './EmptyBar.vue'),
+  PlaylistBar: () => import(/* webpackChunkName: "actionbar" */ './PlaylistBar.vue'),
+  PlaylistsBar: () => import(/* webpackChunkName: "actionbar" */ './PlaylistsBar.vue'),
+  PlaylistsEditBar: () => import(/* webpackChunkName: "actionbar" */ './PlaylistsEditBar.vue'),
+  TracksBar: () => import(/* webpackChunkName: "actionbar" */ './TracksBar.vue'),
 }
