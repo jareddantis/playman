@@ -29,8 +29,7 @@
 
       <!-- Playlist tracks -->
       <div class="tracks">
-        <p :class="$vuetify.breakpoint.mdAndUp ? 'dead-center font-weight-bold' : 'font-weight-bold'"
-           v-if="loading">{{ loadingMsg }}</p>
+        <p class="font-weight-bold" v-if="loading">{{ loadingMsg }}</p>
         <RecycleScroller :item-size="$vuetify.breakpoint.lgAndUp ? 48 : 60"
                          :items="currentPlaylistTracks" :page-mode="true"
                          class="scroller" key-field="key" v-else v-slot="{ item }">

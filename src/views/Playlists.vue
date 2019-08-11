@@ -1,11 +1,12 @@
 <template>
   <div id="playlists">
-    <p v-show="loading || !playlists.length"
-       class="dead-center font-weight-bold">{{ loadingMsg }}</p>
-    <PlaylistCard :disabled="loading"
-                  :key="playlist.id" :playlist="playlist"
-                  v-for="playlist in visiblePlaylists"
-                  v-on:toggled="onToggle"></PlaylistCard>
+    <p v-if="loading || !playlists.length" class="font-weight-bold">{{ loadingMsg }}</p>
+    <div v-else class="cards">
+      <PlaylistCard :disabled="loading"
+                    :key="playlist.id" :playlist="playlist"
+                    v-for="playlist in visiblePlaylists"
+                    v-on:toggled="onToggle"></PlaylistCard>
+    </div>
 
     <PlaylistImportDialog v-on:import-complete="updatePlaylists"/>
     <ConfirmDeleteDialog v-on:confirm="deleteSelected"/>
