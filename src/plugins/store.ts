@@ -196,6 +196,9 @@ const store = new Vuex.Store({
         return api.shufflePlaylist(id, snapshot, state.currentPlaylistTracks)
       }
     },
+    async sortPlaylist({state}, mode) {
+      return api.sortPlaylist(state.currentPlaylist.id, state.currentPlaylistTracks, mode)
+    },
     async toggleAllPlaylists({state, commit}, isChecked) {
       commit('emptyCheckedPlaylists')
       commit('setPlaylists', state.playlists.map((playlist: any) => {

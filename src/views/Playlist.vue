@@ -47,6 +47,7 @@
     <ConfirmShuffleDialog v-on:confirm="shuffle"/>
     <PlaylistEditDialog/>
     <PlaylistPickerDialog v-on:picked="confirmCopyTracks"/>
+    <SortDialog v-on:confirm="sort"/>
   </div>
 </template>
 
@@ -167,6 +168,12 @@ export default class Playlist extends Vue {
     this.$store.dispatch('shufflePlaylists', false).then(() => this.getPlaylist())
   }
 
+  public sort(mode: string) {
+    this.loadingMsg = `Sorting ${this.currentPlaylist.name} by ${mode.toLowerCase()}...`
+    this.loadStart()
+    this.$store.dispatch('sortPlaylist', mode).then(() => this.getPlaylist())
+  }
+
   private loadStart() {
     this.$bus.$emit('loading', true)
     this.loading = true
@@ -180,6 +187,8 @@ export default class Playlist extends Vue {
 
     if (this.currentPlaylistTracks.length) {
       this.loading = false
+    } else {
+      this.loadingMsg = `The playlist ${this.currentPlaylist.name} is empty.`
     }
   }
 

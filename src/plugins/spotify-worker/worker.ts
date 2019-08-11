@@ -20,13 +20,15 @@ const ops = {
     for (const [index, item] of tracks.entries()) {
       const {track} = item
       decoded.push({
+        title: track.name,
         album: track.album.name,
         artist: track.artists.length === 1 ? track.artists[0].name : this.generateArtists(track.artists),
+        discNo: track.disc_number,
+        trackNo: track.track_number,
         id: track.id,
         key: `${track.id}-${index}`,
         index,
         checked: false,
-        name: track.name,
       })
     }
 
@@ -136,11 +138,46 @@ const ops = {
       tracks[j] = x
     }
 
-    // Reduce tracks array into Spotify URIs
-    return tracks.map((track) => `spotify:track:${track.id}`)
+    return this.tracksToUris(tracks)
+  },
+
+  sortPlaylistTracks(tracks: any[], mode: string) {
+    let priority: string[]
+    switch (mode.toLowerCase()) {
+      case 'title':
+        priority = ['title', 'artist', 'album']
+        break
+      case 'artist':
+        priority = ['artist', 'album', 'trackNo']
+        break
+      case 'album':
+        priority = ['album', 'trackNo', 'artist']
+        break
+    }
+
+    tracks.sort((a, b) => {
+      let i = 0
+      let result = 0
+      while (i < priority.length && result === 0) {
+        let first = a[priority[i]]
+        let second = b[priority[i]]
+
+        if (priority[i] !== 'trackNo') {
+          first = first.toLowerCase()
+          second = second.toLowerCase()
+        }
+
+        result = first < second ? -1 : (first > second ? 1 : 0)
+        i++
+      }
+      return result
+    })
+
+    return this.tracksToUris(tracks)
   },
 
   tracksToUris(tracks: any[]) {
+    // Reduce tracks array into Spotify URIs
     const uris: string[] = []
     tracks.forEach((track: any) => uris.push(`spotify:track:${track.id}`))
     return uris
@@ -164,6 +201,8 @@ registerPromiseWorker((message) => {
         return ops.reorderPlaylistTracks(data.tracks, data.tracksToReorder, data.placeTracksAfter)
       case 'shuffle_playlist_tracks':
         return ops.shufflePlaylistTracks(data.tracks)
+      case 'sort_playlist_tracks':
+        return ops.sortPlaylistTracks(data.tracks, data.mode)
       case 'get_track_uris':
         return ops.tracksToUris(data)
     }

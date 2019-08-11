@@ -443,6 +443,18 @@ export default class Spotify {
     })
   }
 
+  public async sortPlaylist(id: string, tracks: any[], mode: string) {
+    return new Promise((resolve, reject) => {
+      Worker.send({
+        type: 'sort_playlist_tracks',
+        data: {tracks, mode},
+      }).then((result: any) => {
+        this.deleteAllPlaylistTracks(id)
+          .then(() => this.addTracksToPlaylist(id, result, resolve, reject))
+      }).catch((error) => reject(new Error(error)))
+    })
+  }
+
   private generateStateToken() {
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let result = ''

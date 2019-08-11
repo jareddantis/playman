@@ -7,3 +7,4 @@ Vue.component('ConfirmMergeDialog', () => import(/* webpackChunkName: "cmd" */'.
 Vue.component('ConfirmShuffleDialog', () => import(/* webpackChunkName: "csd" */'./ConfirmShuffleDialog.vue'))
 Vue.component('PlaylistEditDialog', () => import(/* webpackChunkName: "ped" */'./PlaylistEditDialog.vue'))
 Vue.component('PlaylistPickerDialog', () => import(/* webpackChunkName: "ppd" */'./PlaylistPickerDialog.vue'))
+Vue.component('SortDialog', () => import(/* webpackChunkName: "sd" */'./SortDialog.vue'))

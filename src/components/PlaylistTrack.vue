@@ -12,7 +12,7 @@
                   @change="onToggle" hide-details
                   v-model="isChecked"></v-checkbox>
     </div>
-    <p class="track-name">{{ track.name }}</p>
+    <p class="track-name">{{ track.title }}</p>
     <p class="track-info" v-show="$vuetify.breakpoint.mdAndDown">{{ track.artist }} &bullet; {{ track.album }}</p>
     <p class="track-info artist" v-show="!$vuetify.breakpoint.mdAndDown">{{ track.artist }}</p>
     <p class="track-info album" v-show="!$vuetify.breakpoint.mdAndDown">{{ track.album }}</p>
