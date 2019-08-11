@@ -1,8 +1,7 @@
 <template>
   <v-app>
     <!-- Navbar -->
-    <Navbar :is-logging-in="isLoggingIn" v-on:login="login"
-            v-show="$route.name !== 'Callback'"/>
+    <Navbar v-show="$route.name !== 'Callback'"/>
 
     <v-content class="app-content">
       <!-- Router view -->
@@ -12,7 +11,7 @@
       <v-snackbar :timeout="0" bottom
                   color="red darken-2" multi-line
                   v-model="offline">
-        <p class="snackbar-text">Can't communicate with Spotify API.<br>
+        <p class="snackbar-text">Error in communicating with Spotify API.<br>
           Please check your connection or try again later.</p>
       </v-snackbar>
     </v-content>
@@ -27,47 +26,10 @@ import Navbar from '@/components/Navbar.vue'
 
 @Component({
   components: {Navbar},
-  computed: mapState([
-    'avatarUri',
-    'isLoggedIn',
-    'offline',
-    'username',
-  ]),
+  computed: mapState(['offline']),
 })
 export default class App extends Vue {
-  public avatarUri!: string
-  public isLoggedIn!: boolean
-  public isLoggingIn: boolean = false
   public offline!: boolean
-  public username!: string
-
-  public login() {
-    this.isLoggingIn = true
-    const authWindow = window.open(this.$store.getters.authUri, 'Login with Spotify', 'width=480,height=480')
-    authWindow!.addEventListener('beforeunload', () => {
-      this.isLoggingIn = false
-      if (localStorage.getItem('spotify-login-data') !== null) {
-        const payload = JSON.parse(localStorage.getItem('spotify-login-data') as string)
-
-        // Persist tokens
-        this.$store.commit('setTokens', {
-          accessToken: payload.access_token,
-          refreshToken: payload.refresh_token,
-          expiry: payload.expires_in,
-        })
-
-        // Remove auth data from localStorage
-        localStorage.removeItem('spotify-login-data')
-
-        // Redirect to dashboard
-        this.$store.dispatch('authenticate')
-          .then(() => {
-            this.$bus.$emit('loading', true)
-            this.$router.push('/playlists')
-          })
-      }
-    })
-  }
 }
 </script>
 

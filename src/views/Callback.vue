@@ -14,6 +14,8 @@ export default class Callback extends Vue {
   public status: string = 'Authenticating'
 
   public created() {
+    this.$bus.$emit('loading', true)
+
     // Parse query string
     try {
       const AUTH_CODE = this.$route.query.code
@@ -30,13 +32,20 @@ export default class Callback extends Vue {
         body: qs.stringify(AUTH_PARAMS),
       }).then((response) => response.json())
         .then((result) => {
-          const expiry = parseInt(result.expires_in, 10) * 1000
-          result.expires_in = expiry + new Date().getTime()
-          localStorage.setItem('spotify-login-data', JSON.stringify(result))
-          window.close()
+          // Store tokens
+          this.$store.commit('setTokens', {
+            accessToken: result.access_token,
+            refreshToken: result.refresh_token,
+            expiry: (parseInt(result.expires_in, 10) * 1000) + new Date().getTime(),
+          })
+
+          // Redirect to dashboard
+          this.$store.dispatch('authenticate')
+            .then(() => this.$router.push('/playlists'))
         })
         .catch((err) => this.status = `Error: ${err}`)
     } catch (err) {
+      this.$bus.$emit('loading', false)
       this.status = `Error: ${err}`
     }
   }

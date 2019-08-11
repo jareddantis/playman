@@ -47,8 +47,8 @@
       </v-menu>
     </div>
     <div class="actions right" v-else>
-      <v-btn :loading="isLoggingIn" @click="$emit('login')"
-             color="#1DB954" dark rounded small>Login</v-btn>
+      <v-btn :loading="isLoggingIn" @click="login"
+             color="#1DB954" dark rounded small>Sign in</v-btn>
     </div>
   </nav>
 </template>
@@ -56,7 +56,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {mapState} from 'vuex'
-import {Component, Prop} from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 import components from '@/components/actionbar'
 
 @Component({
@@ -71,9 +71,9 @@ import components from '@/components/actionbar'
   ]),
 })
 export default class Navbar extends Vue {
-  @Prop({default: false}) public readonly isLoggingIn: boolean | undefined
   public avatarUri!: string
   public isLoggedIn!: boolean
+  public isLoggingIn: boolean = false
   public username!: string
   private checkedTracks!: any
   private isBatchEditing!: boolean
@@ -107,6 +107,11 @@ export default class Navbar extends Vue {
 
   public created() {
     this.$bus.$on('loading', (isLoading: boolean) => this.loading = isLoading)
+  }
+
+  public login() {
+    this.isLoggingIn = true
+    window.open(this.$store.getters.authUri, '_self')
   }
 
   public logout() {
