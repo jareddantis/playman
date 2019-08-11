@@ -1,11 +1,64 @@
-.login {
+.home {
   max-width: 960px;
   margin: 0 auto;
 
-  h1 {
+  .v-btn {
+    font-size: 1rem;
+  }
+
+  .main {
     text-align: center;
 
-    &.display-4 { line-height: 7.5rem; }
-    &.display-2 { line-height: 4rem; }
+    h1 {
+      margin-bottom: 2rem;
+
+      &.display-4 { line-height: 7.5rem; }
+      &.display-2 {
+        line-height: 4rem;
+        font-weight: 300;
+      }
+    }
+  }
+
+  .body {
+    margin-top: 5rem;
+
+    .v-card {
+      text-align: center;
+      background: linear-gradient(150deg, #3C315A 20%, #684E7C 90%) no-repeat;
+      border-color: unset;
+      width: 100%;
+
+      h3 {
+        margin: 1rem 0;
+      }
+    }
+
+    .v-icon {
+      font-size: 2.5rem;
+      color: #A44966;
+      background: linear-gradient(150deg, #A44966 30%, #DF7462 70%) no-repeat;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .privacy {
+      .v-icon {
+        font-size: 3.5rem;
+      }
+      .v-btn {
+        background: white;
+        color: black;
+      }
+    }
+  }
+
+  .footer {
+    margin: 4rem 0 2rem;
+    text-align: center;
+
+    p {
+      font-size: 0.9rem;
+    }
   }
 }
