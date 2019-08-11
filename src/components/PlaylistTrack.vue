@@ -4,7 +4,7 @@
     <div class="target-icon">
       <v-icon>subdirectory_arrow_right</v-icon>
     </div>
-    <p class="target-text text-truncate">Play after <span class="font-weight-bold">{{ track.name }}</span></p>
+    <p class="target-text text-truncate">Paste after <span class="font-weight-bold">{{ track.title }}</span></p>
   </div>
   <div :selected="isChecked" class="track item" v-else>
     <div class="track-control">
@@ -46,14 +46,6 @@ export default class PlaylistTrack extends Vue {
   public created() {
     // Disable while loading
     this.$bus.$on('loading', (isLoading: boolean) => this.isDisabled = isLoading)
-
-    // Batch edit actions
-    this.$bus.$on('cancel-batch-edit', () => {
-      if (!this.isReordering) {
-        this.isChecked = false
-        this.$store.commit('setTrackChecked', { index: this.track.index, isChecked: false })
-      }
-    })
   }
 
   public multipleSelect(event: MouseEvent) {
