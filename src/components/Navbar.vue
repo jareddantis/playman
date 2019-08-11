@@ -1,5 +1,5 @@
 <template>
-  <div id="navbar">
+  <nav>
     <!--    Loading bar -->
     <v-progress-linear
       :active="loading"
@@ -50,7 +50,7 @@
       <v-btn :loading="isLoggingIn" @click="$emit('login')"
              color="#1DB954" dark rounded small>Login</v-btn>
     </div>
-  </div>
+  </nav>
 </template>
 
 <script lang="ts">
