@@ -55,7 +55,7 @@ button {
 
 // Dialogs
 .v-list.theme--dark, .v-card.theme--dark {
-  background: linear-gradient(150deg, #A44966 15%, #DF7462 90%) no-repeat;
+  background: linear-gradient(150deg, #5B2E59 15%, #A44966 90%) no-repeat;
   border-color: unset;
 }
 .v-list-item__title {
@@ -63,9 +63,15 @@ button {
 }
 
 // Buttons
+.v-btn--rounded {
+  background: linear-gradient(150deg, #A44966 15%, #DF7462 90%);
+  border-color: unset;
+}
 .v-btn.v-size--small {
   letter-spacing: 0;
 }
 span.v-btn__content {
   font-weight: 700;
+
+  .v-icon { display: inline-flex !important; }
 }

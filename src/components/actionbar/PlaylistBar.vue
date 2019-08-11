@@ -16,14 +16,6 @@
         </v-btn>
       </template>
       <v-list dark dense>
-        <v-list-item @click="$bus.$emit('randomize-playlists', false)">
-          <v-list-item-icon>
-            <v-icon>shuffle</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>Randomize playlist</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
         <v-list-item @click="exportSelected">
           <v-list-item-icon>
             <v-icon>cloud_download</v-icon>

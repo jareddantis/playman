@@ -19,7 +19,12 @@
         <h1 v-show="inSelectionMode" class="text-truncate selection-mode">{{ checkedTracks.length }} selected</h1>
 
         <!-- Playlist name -->
-        <h1 v-show="!inSelectionMode && !loading" class="text-truncate">{{ currentPlaylist.name }}</h1>
+        <div class="name" v-show="!inSelectionMode && !loading">
+          <h1 class="text-truncate">{{ currentPlaylist.name }}</h1>
+          <v-btn @click="$bus.$emit('randomize-playlists', false)" rounded x-large>
+            <v-icon left>shuffle</v-icon> Randomize
+          </v-btn>
+        </div>
       </div>
 
       <!-- Playlist tracks -->
