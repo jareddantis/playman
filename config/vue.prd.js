@@ -5,7 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const StyleExtHtmlWebpackPlugin = require('style-ext-html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
@@ -25,8 +24,6 @@ module.exports = {
   },
 
   configureWebpack: {
-    devtool: '#cheap-source-map',
-
     output: {
       path: path.resolve(__dirname, '../dist'),
       filename: '[name].[contenthash:8].js',
@@ -54,11 +51,10 @@ module.exports = {
             },
           },
           styles: {
-            test: /css/,
+            name: 'styles',
+            test: /(c|s[ac])ss/,
             chunks: 'all',
             enforce: true,
-            minChunks: 1,
-            minSize: 0,
           },
         },
       },
@@ -67,37 +63,25 @@ module.exports = {
     module: {
       rules: [
         {
-          test: /\.(js|ts|tsx)$/,
+          test: /\.(js|ts[x]?)$/,
           loader: 'babel-loader',
         },
         {
           test: /\.css$/,
           exclude: /vue-virtual-scroller/,
-          sideEffects: false,
           use: [
+            MiniCSSExtractPlugin.loader,
             'css-loader',
-            {
-              loader: 'postcss-loader',
-              options: {
-                plugins: [
-                  require('autoprefixer')(),
-                  require('cssnano')({
-                    preset: ['default', {
-                      discardComments: {
-                        removeAll: true,
-                      },
-                    }],
-                  }),
-                ]
-              }
-            }
-          ]
-        }
+            'postcss-loader',
+          ],
+        },
       ],
     },
 
     plugins: [
-      // Build date in app
+      new HashedModuleIdsPlugin(),
+
+      // Build date
       new DefinePlugin({
         'process.env': {
           BUILD_DATE: (() => {
@@ -153,19 +137,12 @@ module.exports = {
         defaultAttribute: 'defer',
       }),
 
-      // CSS
-      new StyleExtHtmlWebpackPlugin(),
-      new MiniCSSExtractPlugin({
-        filename: 'css/[name].[contenthash:8].css',
-        ignoreOrder: true,
-      }),
-
+      // Webpack bundle stats
       new BundleAnalyzerPlugin({
         analyzerMode: 'disabled',
         openAnalyzer: false,
         generateStatsFile: true
       }),
-      new HashedModuleIdsPlugin(),
     ],
 
     resolve: {
@@ -176,9 +153,7 @@ module.exports = {
   },
 
   parallel: true,
-  productionSourceMap: true,
   publicPath: '/',
-
   pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
