@@ -14,6 +14,14 @@ body {
 #app {
   background: none !important;
   min-height: 100vh;
+
+  .dead-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+  }
 }
 
 h1, h2, h3, p, td, span, input, select, option, li {

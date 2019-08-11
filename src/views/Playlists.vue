@@ -1,7 +1,7 @@
 <template>
   <div id="playlists">
     <p v-show="loading || !playlists.length"
-       class="loader font-weight-bold">{{ loadingMsg }}</p>
+       class="dead-center font-weight-bold">{{ loadingMsg }}</p>
     <PlaylistCard :disabled="loading"
                   :key="playlist.id" :playlist="playlist"
                   v-for="playlist in visiblePlaylists"
