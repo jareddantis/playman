@@ -20,11 +20,12 @@ import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
-import PlaylistCard from '@/components/PlaylistCard.vue'
-import PlaylistImportDialog from '@/components/dialogs/PlaylistImportDialog.vue'
 
 @Component({
-  components: {PlaylistImportDialog, PlaylistCard},
+  components: {
+    PlaylistImportDialog: () => import(/* webpackChunkName: "pid" */ '@/components/dialogs/PlaylistImportDialog.vue'),
+    PlaylistCard: () => import(/* webpackChunkName: "pcard" */ '@/components/PlaylistCard.vue'),
+  },
   computed: mapState(['checkedPlaylists', 'playlists']),
 })
 export default class Playlists extends Vue {

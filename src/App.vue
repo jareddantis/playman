@@ -22,10 +22,11 @@
 import Vue from 'vue'
 import {Component} from 'vue-property-decorator'
 import {mapState} from 'vuex'
-import Navbar from '@/components/Navbar.vue'
 
 @Component({
-  components: {Navbar},
+  components: {
+    Navbar: () => import(/* webpackChunkName: "navbar" */ '@/components/Navbar.vue'),
+  },
   computed: mapState(['offline']),
 })
 export default class App extends Vue {
@@ -33,6 +34,6 @@ export default class App extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import './styles/App';
 </style>

@@ -1,4 +1,4 @@
-@import "../global.scss";
+@import '../variables';
 
 #playlist {
   display: grid;
@@ -10,10 +10,11 @@
     grid-column: meta;
     width: 16rem;
     position: fixed;
+    text-align: center;
 
     .v-image {
       border-radius: 4px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2.5rem;
     }
 
     h1 {
@@ -44,7 +45,6 @@
       grid-row: meta;
       width: $body-width;
       position: relative;
-      text-align: center;
     }
 
     .tracks {

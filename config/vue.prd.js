@@ -12,9 +12,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        data: `@import "~@/styles/overrides.scss"`,
-        implementation: require('sass'),
-        fiber: require('fibers'),
+        data: `@import "~@/styles/overrides.sass"`,
       },
     },
   },
@@ -22,7 +20,7 @@ module.exports = {
   chainWebpack: (config) => {
     ["vue-modules", "vue", "normal-modules", "normal"].forEach((match) => {
       config.module.rule('scss').oneOf(match).use('sass-loader')
-        .tap(opt => Object.assign(opt, { data: `@import '~@/styles/overrides.scss';` }))
+        .tap((opt) => Object.assign(opt, { data: `@import '~@/styles/overrides.sass';` }))
     })
   },
 
@@ -55,11 +53,11 @@ module.exports = {
               return `npm.${packageName.replace('@', '')}`;
             },
           },
-          styles: {
-            name: 'styles',
-            test: /\.(css|s[a|c]ss)$/,
-            chunks: 'all',
+          common: {
+            chunks: 'initial',
             enforce: true,
+            minChunks: 1,
+            minSize: 0,
           },
         },
       },
@@ -74,8 +72,10 @@ module.exports = {
         {
           test: /\.css$/,
           exclude: /vue-virtual-scroller/,
+          sideEffects: false,
           use: [
             MiniCSSExtractPlugin.loader,
+            'style-loader',
             'css-loader',
             {
               loader: 'postcss-loader',
@@ -149,6 +149,7 @@ module.exports = {
         sync: [ /vue/ ],
         async: [
           /home/,
+          /playlist/,
         ],
         defaultAttribute: 'defer',
       }),

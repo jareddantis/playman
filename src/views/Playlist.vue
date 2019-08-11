@@ -54,10 +54,11 @@ import Vue from 'vue'
 import {mapState} from 'vuex'
 import {Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
-import PlaylistTrack from '@/components/PlaylistTrack.vue'
 
 @Component({
-  components: {PlaylistTrack},
+  components: {
+    PlaylistTrack: () => import(/* webpackChunkName: "ptrack" */ '@/components/PlaylistTrack.vue'),
+  },
   computed: mapState([
     'checkedTracks',
     'currentPlaylist',

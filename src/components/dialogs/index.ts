@@ -1,9 +1,9 @@
 import Vue from 'vue'
 
-Vue.component('ConfirmCopyDialog', () => import('./ConfirmCopyDialog.vue'))
-Vue.component('ConfirmDeleteDialog', () => import('./ConfirmDeleteDialog.vue'))
-Vue.component('ConfirmExportDialog', () => import('./ConfirmExportDialog.vue'))
-Vue.component('ConfirmMergeDialog', () => import('./ConfirmMergeDialog.vue'))
-Vue.component('ConfirmShuffleDialog', () => import('./ConfirmShuffleDialog.vue'))
-Vue.component('PlaylistEditDialog', () => import('./PlaylistEditDialog.vue'))
-Vue.component('PlaylistPickerDialog', () => import('./PlaylistPickerDialog.vue'))
+Vue.component('ConfirmCopyDialog', () => import(/* webpackChunkName: "ccd" */'./ConfirmCopyDialog.vue'))
+Vue.component('ConfirmDeleteDialog', () => import(/* webpackChunkName: "cdd" */'./ConfirmDeleteDialog.vue'))
+Vue.component('ConfirmExportDialog', () => import(/* webpackChunkName: "ced" */'./ConfirmExportDialog.vue'))
+Vue.component('ConfirmMergeDialog', () => import(/* webpackChunkName: "cmd" */'./ConfirmMergeDialog.vue'))
+Vue.component('ConfirmShuffleDialog', () => import(/* webpackChunkName: "csd" */'./ConfirmShuffleDialog.vue'))
+Vue.component('PlaylistEditDialog', () => import(/* webpackChunkName: "ped" */'./PlaylistEditDialog.vue'))
+Vue.component('PlaylistPickerDialog', () => import(/* webpackChunkName: "ppd" */'./PlaylistPickerDialog.vue'))

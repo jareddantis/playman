@@ -5,9 +5,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        data: `@import "~@/styles/overrides.scss"`,
-        implementation: require('sass'),
-        fiber: require('fibers'),
+        data: `@import "~@/styles/overrides.sass"`,
       },
     },
   },
@@ -15,7 +13,7 @@ module.exports = {
   chainWebpack: (config) => {
     ["vue-modules", "vue", "normal-modules", "normal"].forEach((match) => {
       config.module.rule('scss').oneOf(match).use('sass-loader')
-        .tap(opt => Object.assign(opt, { data: `@import '~@/styles/overrides.scss';` }))
+        .tap((opt) => Object.assign(opt, { data: `@import '~@/styles/overrides.sass';` }))
     })
   },
 
