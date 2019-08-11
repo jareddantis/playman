@@ -83,7 +83,9 @@ const store = new Vuex.Store({
     setTrackChecked: (state, { index, isChecked }) => {
       state.currentPlaylistTracks[index].checked = isChecked
       if (isChecked) {
-        state.checkedTracks.push(index)
+        if (!state.checkedTracks.includes(index)) {
+          state.checkedTracks.push(index)
+        }
       } else if (state.checkedTracks.includes(index)) {
         state.checkedTracks.splice(state.checkedTracks.indexOf(index), 1)
       }
