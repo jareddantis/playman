@@ -120,7 +120,3 @@ export default class Navbar extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-  @import '../styles/components/Navbar';
-</style>
