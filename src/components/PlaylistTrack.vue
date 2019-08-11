@@ -44,7 +44,7 @@ export default class PlaylistTrack extends Vue {
     this.$bus.$on('cancel-batch-edit', () => {
       if (!this.isReordering) {
         this.isChecked = false
-        this.onToggle()
+        this.$store.commit('setTrackChecked', { index: this.track.index, isChecked: false })
       }
     })
   }
