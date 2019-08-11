@@ -53,8 +53,9 @@ module.exports = {
               return `npm.${packageName.replace('@', '')}`;
             },
           },
-          common: {
-            chunks: 'initial',
+          styles: {
+            test: /css/,
+            chunks: 'all',
             enforce: true,
             minChunks: 1,
             minSize: 0,
@@ -74,8 +75,6 @@ module.exports = {
           exclude: /vue-virtual-scroller/,
           sideEffects: false,
           use: [
-            MiniCSSExtractPlugin.loader,
-            'style-loader',
             'css-loader',
             {
               loader: 'postcss-loader',
@@ -154,8 +153,12 @@ module.exports = {
         defaultAttribute: 'defer',
       }),
 
-      // Internalized CSS
+      // CSS
       new StyleExtHtmlWebpackPlugin(),
+      new MiniCSSExtractPlugin({
+        filename: 'css/[name].[contenthash:8].css',
+        ignoreOrder: true,
+      }),
 
       new BundleAnalyzerPlugin({
         analyzerMode: 'disabled',
