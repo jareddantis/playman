@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 id="status">{{ status }}</h2>
+    <h2 class="dead-center">{{ status }}</h2>
   </div>
 </template>
 
@@ -51,13 +51,3 @@ export default class Callback extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-  #status {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-</style>
