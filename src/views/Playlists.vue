@@ -24,7 +24,7 @@ import {Component} from 'vue-property-decorator'
 @Component({
   components: {
     PlaylistImportDialog: () => import(/* webpackChunkName: "pid" */ '@/components/dialogs/PlaylistImportDialog.vue'),
-    PlaylistCard: () => import(/* webpackChunkName: "pcard" */ '@/components/PlaylistCard.vue'),
+    PlaylistCard: () => import(/* webpackChunkName: "playlist-card" */ '@/components/PlaylistCard.vue'),
   },
   computed: mapState(['checkedPlaylists', 'playlists']),
 })

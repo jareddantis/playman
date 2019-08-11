@@ -57,7 +57,7 @@ import {Component} from 'vue-property-decorator'
 
 @Component({
   components: {
-    PlaylistTrack: () => import(/* webpackChunkName: "ptrack" */ '@/components/PlaylistTrack.vue'),
+    PlaylistTrack: () => import(/* webpackChunkName: "playlist-track" */ '@/components/PlaylistTrack.vue'),
   },
   computed: mapState([
     'checkedTracks',
