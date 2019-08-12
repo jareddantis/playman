@@ -32,7 +32,7 @@
             <v-card-text>
               <v-icon>sort_by_alpha</v-icon>
               <h3 class="headline">Sort tracks</h3>
-              <p>Sort playlist tracks by title, artist, or album</p>
+              <p>Remove duplicate tracks; sort tracks by title, artist, or album</p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -41,7 +41,7 @@
             <v-card-text>
               <v-icon>file_copy</v-icon>
               <h3 class="headline">Manage tracks</h3>
-              <p>Copy and move between playlists, and remove duplicates</p>
+              <p>Copy and move between playlists, and even <strong>create playlists from albums</strong></p>
             </v-card-text>
           </v-card>
         </v-flex>
