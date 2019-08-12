@@ -54,11 +54,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {mapState} from 'vuex'
-  import {Mutation} from 'vuex-class'
-  import {Component} from 'vue-property-decorator'
+import {mapState} from 'vuex'
+import {Mutation} from 'vuex-class'
+import {Component} from 'vue-property-decorator'
 
-  @Component({
+@Component({
   components: {
     PlaylistTrack: () => import(/* webpackChunkName: "playlist-track" */ '@/components/PlaylistTrack.vue'),
   },

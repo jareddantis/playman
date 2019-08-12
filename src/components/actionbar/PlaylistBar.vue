@@ -55,9 +55,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {Component} from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 
-  @Component
+@Component
 export default class PlaylistBar extends Vue {
   public exportSelected() {
     this.$bus.$emit('export-playlist', {count: 1})

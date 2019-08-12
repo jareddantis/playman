@@ -21,7 +21,7 @@ export default class Callback extends Vue {
     if (this.stateToken === state) {
       // Parse query string
       try {
-        const params: QueryParams = {
+        const params: {[key: string]: string | boolean} = {
           code: code as string,
           redirect_uri: this.$store.getters.redirectUri,
         }

@@ -29,7 +29,7 @@ export default class Spotify {
    * Spotify OAuth authorization prompt URI
    */
   get authUri(): string {
-    const params: QueryParams = {
+    const params: {[key: string]: string | boolean} = {
       client_id: 'a2d37a37164c48e48d3693491c20e7ae',
       response_type: 'code',
       redirect_uri: this.redirectUri,
