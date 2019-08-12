@@ -42,11 +42,8 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .privacy {
-      .v-btn {
-        background: white;
-        color: black;
-      }
+    .privacy .v-btn {
+      margin-bottom: 1rem;
     }
   }
 
@@ -56,6 +53,7 @@
 
     p {
       font-size: 0.9rem;
+      color: #986C9F;
     }
   }
 }

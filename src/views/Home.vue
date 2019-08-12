@@ -70,8 +70,7 @@
               <h3 class="headline">Keep it private</h3>
               <p>Playman only stores data in your browser and only transmits it to Spotify when necessary.</p>
               <p>View the code to see for yourself!</p>
-              <v-btn @click="window.open('https://github.com/jareddantis/playman', '_blank')"
-                     rounded x-large color="white">View on GitHub</v-btn>
+              <v-btn @click="openGitHub" rounded x-large>View on GitHub</v-btn>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -94,6 +93,7 @@ import {Component} from 'vue-property-decorator'
 @Component
 export default class Home extends Vue {
   public isLoggingIn: boolean = false
+  private repoUri = 'https://github.com/jareddantis/playman'
 
   public created() {
     this.$bus.$emit('loading', false)
@@ -103,6 +103,10 @@ export default class Home extends Vue {
     this.isLoggingIn = true
     this.$store.dispatch('setStateToken')
       .then(() => window.open(this.$store.getters.authUri, '_self'))
+  }
+
+  public openGitHub() {
+    window.open(this.repoUri, '_blank')
   }
 }
 </script>
