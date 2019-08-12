@@ -89,9 +89,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-  import {Component} from 'vue-property-decorator'
+import {Component} from 'vue-property-decorator'
 
-  @Component
+@Component
 export default class Home extends Vue {
   public isLoggingIn: boolean = false
 
@@ -101,7 +101,8 @@ export default class Home extends Vue {
 
   public login() {
     this.isLoggingIn = true
-    window.open(this.$store.getters.authUri, '_self')
+    this.$store.dispatch('setStateToken')
+      .then(() => window.open(this.$store.getters.authUri, '_self'))
   }
 }
 </script>

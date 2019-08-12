@@ -198,6 +198,14 @@ const store = new Vuex.Store({
       const { id, snapshot } = state.currentPlaylist
       return api.reorderPlaylistTracks(id, snapshot, currentPlaylistTracks, checkedTracks, placeTracksAfter)
     },
+    async setStateToken({commit}) {
+      const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      let result = ''
+      for (let i = 0; i < 12; i++) {
+        result += CHARS.charAt(Math.floor(Math.random() * CHARS.length))
+      }
+      commit('setStateToken', result)
+    },
     async shufflePlaylists({state}, shuffleMultiple: boolean) {
       if (shuffleMultiple) {
         return api.shufflePlaylists(state.checkedPlaylists)
