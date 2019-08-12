@@ -23,6 +23,7 @@ function getInitialState(): { [key: string]: any } {
     accessToken: '',
     expiry: 0,
     refreshToken: '',
+    stateToken: '',
     isLoggedIn: false,
 
     // User details
@@ -79,6 +80,10 @@ const store = new Vuex.Store({
     },
     setPlaylists: (state, playlists) => state.playlists = playlists,
     setPlaylistTracks: (state, tracks) => state.currentPlaylistTracks = tracks,
+    setStateToken: (state, token) => {
+      api.stateToken = token
+      state.stateToken = token
+    },
     setTokens: (state, authData) => Object.assign(state, authData),
     setTrackChecked: (state, { index, isChecked }) => {
       state.currentPlaylistTracks[index].checked = isChecked

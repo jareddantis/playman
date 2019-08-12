@@ -8,12 +8,11 @@ export default class Spotify {
   private readonly throttler!: PromiseThrottle
   private expiry: number = 0
   private refreshToken: string = ''
-  private stateToken: string = ''
+  private state: string = ''
   private userId: string = ''
 
   constructor() {
     // Init state
-    this.generateStateToken()
 
     // Init Promise Throttler
     this.throttler = new PromiseThrottle({
@@ -30,7 +29,7 @@ export default class Spotify {
    * Spotify OAuth authorization prompt URI
    */
   get authUri(): string {
-    const params: {[key: string]: string | boolean} = {
+    const params: QueryParams = {
       client_id: 'a2d37a37164c48e48d3693491c20e7ae',
       response_type: 'code',
       redirect_uri: this.redirectUri,
@@ -63,6 +62,16 @@ export default class Spotify {
    */
   get redirectUri(): string {
     return `http${this.environment === 'production' ? 's://playman.jared.gq' : '://localhost:8080'}/callback`
+  }
+
+  /**
+   * Spotify OAuth state token
+   */
+  get stateToken(): string {
+    return this.state
+  }
+  set stateToken(token: string) {
+    this.state = token
   }
 
   /**
@@ -506,17 +515,6 @@ export default class Spotify {
         .then(() => resolve())
         .catch((error) => reject(error))
     })
-  }
-
-  private generateStateToken() {
-    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let result = ''
-
-    for (let i = 0; i < 12; i++) {
-      result += CHARS.charAt(Math.floor(Math.random() * CHARS.length))
-    }
-
-    this.stateToken = result
   }
 
   /**
