@@ -11,6 +11,7 @@ const persistence = new VuexPersist({
     accessToken: state.accessToken,
     expiry: state.expiry,
     refreshToken: state.refreshToken,
+    stateToken: state.stateToken,
     isLoggedIn: state.isLoggedIn,
     username: state.username,
     avatarUri: state.avatarUri,
