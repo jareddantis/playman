@@ -77,7 +77,7 @@ export default class Navbar extends Vue {
   private checkedTracks!: any
   private isBatchEditing!: boolean
   private isReordering!: boolean
-  private loading: boolean = true
+  private loading: boolean = false
 
   get actionBar(): any {
     switch (this.$route.name) {
