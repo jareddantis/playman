@@ -1,4 +1,3 @@
-import qs from 'qs'
 import PromiseThrottle from 'promise-throttle'
 import SpotifyWebApi from 'spotify-web-api-node'
 import Worker from './spotify-worker'
@@ -31,7 +30,7 @@ export default class Spotify {
    * Spotify OAuth authorization prompt URI
    */
   get authUri(): string {
-    const API_QUERY = qs.stringify({
+    const params: {[key: string]: string | boolean} = {
       client_id: 'a2d37a37164c48e48d3693491c20e7ae',
       response_type: 'code',
       redirect_uri: this.redirectUri,
@@ -44,9 +43,12 @@ export default class Spotify {
         'ugc-image-upload',
       ].join(' '),
       show_dialog: false,
-    })
+    }
+    const query: string = Object.keys(params)
+      .map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&')
 
-    return `https://accounts.spotify.com/authorize?${API_QUERY}`
+    return `https://accounts.spotify.com/authorize?${query}`
   }
 
   /**
