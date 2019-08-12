@@ -41,7 +41,7 @@
             <v-card-text>
               <v-icon>file_copy</v-icon>
               <h3 class="headline">Manage tracks</h3>
-              <p>Copy and move between playlists, and remove duplicates <strong>(coming soon!)</strong></p>
+              <p>Copy and move between playlists, and remove duplicates</p>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -70,7 +70,7 @@
               <h3 class="headline">Keep it private</h3>
               <p>Playman only stores data in your browser and only transmits it to Spotify when necessary.</p>
               <p>View the code to see for yourself!</p>
-              <v-btn to="//github.com/jareddantis/playman"
+              <v-btn @click="window.open('https://github.com/jareddantis/playman', '_blank')"
                      rounded x-large color="white">View on GitHub</v-btn>
             </v-card-text>
           </v-card>
@@ -89,13 +89,13 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component} from 'vue-property-decorator'
+  import {Component} from 'vue-property-decorator'
 
-@Component
+  @Component
 export default class Home extends Vue {
   public isLoggingIn: boolean = false
 
-  public mounted() {
+  public created() {
     this.$bus.$emit('loading', false)
   }
 

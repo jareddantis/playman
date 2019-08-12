@@ -24,6 +24,14 @@
             <v-list-item-title>Sort playlist</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item @click="$bus.$emit('dedup-playlist')">
+          <v-list-item-icon>
+            <v-icon>file_copy</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Remove duplicates</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item @click="exportSelected">
           <v-list-item-icon>
             <v-icon>cloud_download</v-icon>
@@ -47,9 +55,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Component} from 'vue-property-decorator'
+  import {Component} from 'vue-property-decorator'
 
-@Component
+  @Component
 export default class PlaylistBar extends Vue {
   public exportSelected() {
     this.$bus.$emit('export-playlist', {count: 1})

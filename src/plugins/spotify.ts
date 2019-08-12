@@ -142,6 +142,17 @@ export default class Spotify {
     })
   }
 
+  public async dedupPlaylist(id: string, tracks: any[]) {
+    return new Promise((resolve, reject) => {
+      this.deleteAllPlaylistTracks(id).then(() => {
+        Worker.send({
+          type: 'remove_duplicate_tracks',
+          data: {tracks},
+        }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
+      })
+    })
+  }
+
   /**
    * Removes all tracks from a playlist.
    *

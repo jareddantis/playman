@@ -42,6 +42,7 @@
 
     <!-- Dialogs -->
     <ConfirmCopyDialog v-on:confirm="copyTracks"/>
+    <ConfirmDedupDialog v-on:confirm="deduplicate"/>
     <ConfirmDeleteDialog v-on:confirm="deleteHandler"/>
     <ConfirmExportDialog/>
     <ConfirmShuffleDialog v-on:confirm="shuffle"/>
@@ -53,11 +54,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapState} from 'vuex'
-import {Mutation} from 'vuex-class'
-import {Component} from 'vue-property-decorator'
+  import {mapState} from 'vuex'
+  import {Mutation} from 'vuex-class'
+  import {Component} from 'vue-property-decorator'
 
-@Component({
+  @Component({
   components: {
     PlaylistTrack: () => import(/* webpackChunkName: "playlist-track" */ '@/components/PlaylistTrack.vue'),
   },
@@ -143,6 +144,12 @@ export default class Playlist extends Vue {
         }
         this.loadEnd()
       })
+  }
+
+  public deduplicate() {
+    this.loadingMsg = `Removing duplicates from ${this.currentPlaylist.name}...`
+    this.loadStart()
+    this.$store.dispatch('dedupPlaylist', false).then(() => this.getPlaylist())
   }
 
   public onTrackToggled(payload: any) {

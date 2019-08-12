@@ -147,6 +147,9 @@ const store = new Vuex.Store({
     async copyToPlaylist({state}, {id, tracks}) {
       return new Promise((resolve, reject) => api.addTracksToPlaylist(id, tracks, resolve, reject))
     },
+    async dedupPlaylist({state}) {
+      return api.dedupPlaylist(state.currentPlaylist.id, state.currentPlaylistTracks)
+    },
     async deletePlaylists({state}, deleteMultiple: boolean) {
       return new Promise((resolve, reject) => {
         const ids = deleteMultiple ? state.checkedPlaylists : [state.currentPlaylist.id]

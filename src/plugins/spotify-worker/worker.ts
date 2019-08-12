@@ -101,6 +101,19 @@ const ops = {
     return str
   },
 
+  removeDuplicateTracks(tracks: any[]) {
+    const uniqueTracks: string[] = []
+
+    for (const {id} of tracks) {
+      const uri = `spotify:track:${id}`
+      if (!uniqueTracks.includes(uri)) {
+        uniqueTracks.push(uri)
+      }
+    }
+
+    return uniqueTracks
+  },
+
   reorderPlaylistTracks(tracks: any[], indices: number[], placeAfterIndex: number) {
     const tracksToMove: any = []
 
@@ -195,6 +208,8 @@ registerPromiseWorker((message) => {
         return ops.decodePlaylistTracks(data)
       case 'filter_user_playlists':
         return ops.filterUserPlaylists(data.playlists, data.username)
+      case 'remove_duplicate_tracks':
+        return ops.removeDuplicateTracks(data.tracks)
       case 'reorder_playlist_tracks':
         return ops.reorderPlaylistTracks(data.tracks, data.tracksToReorder, data.placeTracksAfter)
       case 'shuffle_playlist_tracks':

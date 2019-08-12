@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 Vue.component('ConfirmCopyDialog', () => import(/* webpackChunkName: "ccd" */'./ConfirmCopyDialog.vue'))
+Vue.component('ConfirmDedupDialog', () => import(/* webpackChunkName: "cddd" */'./ConfirmDedupDialog.vue'))
 Vue.component('ConfirmDeleteDialog', () => import(/* webpackChunkName: "cdd" */'./ConfirmDeleteDialog.vue'))
 Vue.component('ConfirmExportDialog', () => import(/* webpackChunkName: "ced" */'./ConfirmExportDialog.vue'))
 Vue.component('ConfirmMergeDialog', () => import(/* webpackChunkName: "cmd" */'./ConfirmMergeDialog.vue'))
