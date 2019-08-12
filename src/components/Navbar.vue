@@ -31,7 +31,7 @@
         <template v-slot:activator="{ on }">
           <img :alt="username" :src="avatarUri" v-on="on" v-show="!actionBar.cancelButton"/>
         </template>
-        <v-list two-line dark>
+        <v-list>
           <v-list-item @click="logout">
             <v-list-item-avatar>
               <v-icon>exit_to_app</v-icon>
@@ -40,6 +40,24 @@
               <v-list-item-title>Sign out</v-list-item-title>
               <v-list-item-subtitle>Signed in as
                 <span class="font-weight-bold">{{ username }}</span></v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="openFeedbackForm">
+            <v-list-item-avatar>
+              <v-icon>message</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>Comments or suggestions?</v-list-item-title>
+              <v-list-item-subtitle>I'd love to know what you think</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-avatar>
+              <v-icon>info</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>Playman {{ buildDate }}</v-list-item-title>
+              <v-list-item-subtitle>&copy; 2019 Jared Dantis</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -100,6 +118,10 @@ export default class Navbar extends Vue {
     }
   }
 
+  get buildDate(): string {
+    return !!process.env.BUILD_DATE ? `build ${process.env.BUILD_DATE}` : 'debug build'
+  }
+
   get showLogo(): boolean {
     return (this.$route.name === 'Playlists' && !this.isBatchEditing) || this.$route.name === 'Home'
   }
@@ -116,6 +138,10 @@ export default class Navbar extends Vue {
   public logout() {
     this.$store.commit('reset')
     this.$router.push({name: 'Home'})
+  }
+
+  public openFeedbackForm() {
+    window.open('https://forms.gle/otV4et1hHAb1jFCPA', '_blank')
   }
 }
 </script>
