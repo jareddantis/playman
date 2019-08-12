@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="600" v-model="showDialog" scrollable>
+  <v-dialog max-width="400" v-model="showDialog" scrollable>
     <v-card>
       <v-card-title>
         <span class="headline">Edit playlist details</span>

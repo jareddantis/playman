@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog max-width="400" v-model="showDialog">
+    <v-dialog max-width="300" v-model="showDialog">
       <v-card>
         <v-card-title>
           <span class="headline">Sort playlist by</span>

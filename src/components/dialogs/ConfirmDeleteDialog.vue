@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="600" v-model="showDialog">
+  <v-dialog max-width="300" v-model="showDialog">
     <v-card>
       <v-card-title>
         <span class="headline">Delete {{ items }}?</span>
