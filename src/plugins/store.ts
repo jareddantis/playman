@@ -183,6 +183,16 @@ const store = new Vuex.Store({
         api.exportPlaylists(state.checkedPlaylists, [], resolve, reject)
       })
     },
+    async getAlbumTracks(context, id) {
+      return new Promise((resolve, reject) => {
+        api.getAlbumTracks(id, [], 0, resolve, reject)
+      })
+    },
+    async getArtistAlbums(context, id) {
+      return new Promise((resolve, reject) => {
+        api.getArtistAlbums(id, [], 0, resolve, reject)
+      })
+    },
     async getPlaylist({commit}, id) {
       return api.getPlaylist(id).then((playlist: any) => {
         commit('emptyCheckedTracks')
@@ -197,6 +207,15 @@ const store = new Vuex.Store({
       const { checkedTracks, currentPlaylistTracks } = state
       const { id, snapshot } = state.currentPlaylist
       return api.reorderPlaylistTracks(id, snapshot, currentPlaylistTracks, checkedTracks, placeTracksAfter)
+    },
+    async searchArtists({commit}, query) {
+      return new Promise((resolve, reject) => {
+        api.searchArtists(query).then((results) => resolve(results))
+          .catch((error) => {
+            commit('setOffline', true)
+            reject(error)
+          })
+      })
     },
     async setStateToken({commit}) {
       const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -239,7 +258,7 @@ const store = new Vuex.Store({
     },
     async updatePlaylists({commit}) {
       return new Promise((resolve, reject) => {
-        api.getUserPlaylists([], resolve, reject)
+        api.getUserPlaylists([], 0, resolve, reject)
       }).then((playlists: any) => commit('setPlaylists', playlists))
     },
     async updateUserMeta({commit}) {
@@ -249,7 +268,7 @@ const store = new Vuex.Store({
           const result = response.body as any
           commit('setUserAvatar', result.images[0].url)
           commit('setUsername', result.id)
-          api.userID = result.id
+          api.setUserDetails(result.id, result.country)
           resolve()
         }).catch((error) => reject(new Error(error)))
       })

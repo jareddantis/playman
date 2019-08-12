@@ -1,0 +1,16 @@
+.v-dialog > .v-card {
+  border-radius: 0 !important;
+  background: linear-gradient(150deg, #3C315A 20%, #684E7C 90%) no-repeat;
+}
+.v-app-bar {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+.v-stepper {
+  background: none !important;
+  box-shadow: none;
+
+  .results {
+    margin-top: 1.5rem;
+    background: none;
+  }
+}

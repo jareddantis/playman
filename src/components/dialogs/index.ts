@@ -1,5 +1,6 @@
 import Vue from 'vue'
 
+Vue.component('AddTracksDialog', () => import(/* webpackChunkName: "atd" */'./AddTracksDialog.vue'))
 Vue.component('ConfirmCopyDialog', () => import(/* webpackChunkName: "ccd" */'./ConfirmCopyDialog.vue'))
 Vue.component('ConfirmDedupDialog', () => import(/* webpackChunkName: "cddd" */'./ConfirmDedupDialog.vue'))
 Vue.component('ConfirmDeleteDialog', () => import(/* webpackChunkName: "cdd" */'./ConfirmDeleteDialog.vue'))

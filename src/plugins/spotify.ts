@@ -9,6 +9,7 @@ export default class Spotify {
   private expiry: number = 0
   private refreshToken: string = ''
   private state: string = ''
+  private userCountry: string = ''
   private userId: string = ''
 
   constructor() {
@@ -40,6 +41,7 @@ export default class Spotify {
         'playlist-read-collaborative',
         'playlist-read-private',
         'ugc-image-upload',
+        'user-read-private',
       ].join(' '),
       show_dialog: false,
     }
@@ -75,13 +77,15 @@ export default class Spotify {
   }
 
   /**
-   * Store user ID (username).
-   * Used to filter available playlists and to create new playlists.
+   * Store user ID and country (username).
+   * Used to filter available playlists and albums, and to create new playlists.
    *
    * @param id - User ID
+   * @param country - User country
    */
-  set userID(id: string) {
+  public setUserDetails(id: string, country: string) {
     this.userId = id
+    this.userCountry = country
   }
 
   /**
@@ -298,6 +302,76 @@ export default class Spotify {
   }
 
   /**
+   * Gets all tracks in an album.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param id - Album ID
+   * @param initial - Initial list to feed the recursive function with
+   * @param offset - Index of track from which to query the next 50 tracks
+   * @param resolve - Promise resolve() to be called after all tracks have been retrieved
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  public async getAlbumTracks(id: string, initial: any[], offset: number,
+                              resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    const limit = 50
+
+    this.reauth().then(() => {
+      this.throttler.add(() => this.client.getAlbumTracks(id, {offset, limit}))
+        .then((response: any) => {
+          const results = initial.concat(response.body.items)
+
+          // Check if we have everything
+          if (response.body.next === null) {
+            // We have everything! Now let's simplify the received data
+            // into something we can easily consume
+            Worker.send({type: 'decode_album_tracks', data: results})
+              .then((reply) => resolve(reply))
+          } else {
+            // Retrieve next page
+            this.getAlbumTracks(id, results, offset + limit, resolve, reject)
+          }
+        }).catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  /**
+   * Gets a list of all albums by an artist.
+   * Recursive function (API endpoint is paginated).
+   *
+   * @param id - Artist ID
+   * @param initial - Initial list to feed the recursive function with
+   * @param offset - Index of album from which to query the next 50 albums
+   * @param resolve - Promise resolve() to be called after all albums have been retrieved
+   * @param reject - Promise reject() to be called in the event of a Spotify API error
+   */
+  public async getArtistAlbums(id: string, initial: any[], offset: number,
+                               resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    const limit = 50
+
+    this.reauth().then(() => {
+      this.throttler.add(() => this.client.getArtistAlbums(id, {
+        include_groups: 'album,compilation,single',
+        offset,
+        limit,
+      }))
+        .then((response: any) => {
+          const results = initial.concat(response.body.items)
+
+          // Check if we have everything
+          if (response.body.next === null) {
+            // We have everything! Now let's simplify the received data
+            // into something we can easily consume
+            Worker.send({type: 'decode_albums', data: {results, country: this.userCountry}})
+              .then((reply) => resolve(reply))
+          } else {
+            // Retrieve next page
+            this.getArtistAlbums(id, results, offset + limit, resolve, reject)
+          }
+        }).catch((error: any) => reject(new Error(error)))
+    })
+  }
+
+  /**
    * Retrieves details about the user currently logged in.
    */
   public async getMe() {
@@ -348,12 +422,16 @@ export default class Spotify {
    * Recursive function (API endpoint is paginated).
    *
    * @param initial - Initial list to feed the recursive function with
+   * @param offset - Index of playlist from which to query the next 20 playlists
    * @param resolve - Promise resolve() to be called after all playlists have been retrieved
    * @param reject - Promise reject() to be called in the event of a Spotify API error
    */
-  public async getUserPlaylists(initial: any[], resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+  public async getUserPlaylists(initial: any[], offset: number,
+                                resolve: (arg0: any) => void, reject: (arg0: any) => void) {
+    const limit = 20
+
     this.reauth().then(() => {
-      this.throttler.add(() => this.client.getUserPlaylists())
+      this.throttler.add(() => this.client.getUserPlaylists({offset, limit}))
         .then((response: any) => {
           const playlists = initial.concat(response.body.items)
 
@@ -369,7 +447,7 @@ export default class Spotify {
             }).then((results) => resolve(results))
           } else {
             // Retrieve next page
-            this.getUserPlaylists(playlists, resolve, reject)
+            this.getUserPlaylists(playlists, offset + limit, resolve, reject)
           }
         }).catch((error: any) => reject(new Error(error)))
     })
@@ -437,6 +515,21 @@ export default class Spotify {
   public reset() {
     this.refreshToken = ''
     this.expiry = 0
+  }
+
+  /**
+   * Searches the Spotify catalog for artists matching a query.
+   *
+   * @param query - Artist search query
+   */
+  public async searchArtists(query: string) {
+    return new Promise((resolve, reject) => {
+      this.reauth().then(() => {
+        this.throttler.add(() => this.client.searchArtists(query, {limit: 10}))
+          .then((response: any) => resolve(response.body.artists.items))
+          .catch((error: any) => reject(new Error(error)))
+      })
+    })
   }
 
   /**

@@ -3,10 +3,16 @@
     <v-dialog max-width="400" v-model="showDialog" scrollable>
       <v-card>
         <v-card-title>
-          <span class="headline">Import playlist</span>
+          <span class="headline">{{ fromScratch ? 'Create' : 'Import' }} playlist</span>
         </v-card-title>
         <v-card-text class="editor">
-          <div class="backup-picker">
+          <div class="add-tracks" v-if="fromScratch">
+            <v-btn rounded x-large @click="$bus.$emit('add-tracks')">
+              <v-icon>add</v-icon> Add tracks
+            </v-btn>
+            <p class="caption" v-show="tracks.length" v-html="trackSummary"></p>
+          </div>
+          <div class="backup-picker" v-else>
             <v-file-input accept=".tsv,text/tab-separated-values"
                           @change="onFileChanged" :disabled="loading"
                           :error="!backupIsValid" :error-messages="backupError"
@@ -14,7 +20,7 @@
                           prepend-icon="" prepend-inner-icon="insert_drive_file"
                           small-chips v-model="backupFile"></v-file-input>
           </div>
-          <div class="details" v-show="backupFile !== null && backupIsValid">
+          <div class="details" v-show="fromScratch || (backupFile !== null && backupIsValid)">
             <v-text-field :disabled="loading" :rules="nameRules" hide-details
                           label="Name" outlined v-model="name"></v-text-field>
             <v-textarea :disabled="loading" hide-details label="Description"
@@ -35,19 +41,13 @@
         <v-card-actions>
           <v-btn :disabled="loading" @click="showDialog = false" text>cancel</v-btn>
           <v-spacer></v-spacer>
-          <v-btn :loading="loading" @click="save" text>import</v-btn>
+          <v-btn :loading="loading" :disabled="!name || !tracks.length"
+                 @click="save" text>save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog max-width="250" v-model="validating">
-      <v-card>
-        <v-card-text class="loading-dialog">
-          <v-progress-circular indeterminate color="white"></v-progress-circular>
-          <p class="body-1">Validating backup</p>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <AddTracksDialog v-on:add-tracks="addTracks"/>
   </div>
 </template>
 
@@ -57,29 +57,36 @@ import {Component} from 'vue-property-decorator'
 import {parse as parseCsv} from 'papaparse'
 
 @Component
-export default class PlaylistImportDialog extends Vue {
+export default class PlaylistCreateDialog extends Vue {
   public backupError: string = ''
   private artFile: File | null = null
   private backupFile: File | null = null
   private backupIsValid: boolean = true
   private editDetails: any = {}
+  private fromScratch: boolean = false
   private loading = false
   private showDialog = false
   private tracks: any[] = []
-  private validating = false
 
   get backupSummary(): string {
     return (this.backupFile !== null && this.backupIsValid && this.tracks.length)
       ? `Includes ${this.tracks[0].name} and ${this.tracks.length - 1} others` : ''
   }
 
+  get trackSummary(): string {
+    const s = this.tracks.length !== 1 ? 's' : ''
+    return (this.fromScratch && this.tracks.length) ?
+      `Added ${this.tracks.length} track${s} ` +
+      `including <strong>${this.tracks[0].name}</strong> by <strong>${this.tracks[0].artist}` : ''
+  }
+
   public mounted() {
-    this.$bus.$on('import-playlist', () => {
-      this.artFile = null
-      this.backupFile = null
-      this.editDetails = {}
-      this.showDialog = true
-    })
+    this.$bus.$on('new-playlist', () => this.resetAndShow(true))
+    this.$bus.$on('import-playlist', () => this.resetAndShow(false))
+  }
+
+  public addTracks(tracks: string[]) {
+    this.tracks = this.tracks.concat(tracks)
   }
 
   public async onArtChanged() {
@@ -94,7 +101,6 @@ export default class PlaylistImportDialog extends Vue {
   public async onFileChanged() {
     if (this.backupFile !== null) {
       const uriFormat = /^spotify:track:[0-9A-Za-z]{22}$/
-      this.validating = true
       this.tracks = []
 
       parseCsv(this.backupFile, {
@@ -108,13 +114,11 @@ export default class PlaylistImportDialog extends Vue {
             this.backupError = ''
             this.backupIsValid = true
           }
-          this.validating = false
         },
         error: (error) => {
           this.tracks = []
           this.backupError = error.message
           this.backupIsValid = false
-          this.validating = false
         },
         step: (results, parser) => {
           if (uriFormat.test(results.data[0])) {
@@ -129,7 +133,6 @@ export default class PlaylistImportDialog extends Vue {
               this.tracks = []
               this.backupError = 'Backup contains invalid track URIs'
               this.backupIsValid = false
-              this.validating = false
             }
           }
         },
@@ -221,6 +224,14 @@ export default class PlaylistImportDialog extends Vue {
     this.$set(this.editDetails, 'name', name)
   }
 
+  private resetAndShow(fromScratch: boolean) {
+    this.fromScratch = fromScratch
+    this.artFile = null
+    this.backupFile = null
+    this.editDetails = {}
+    this.showDialog = true
+  }
+
   private toBase64(file: File) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -233,5 +244,5 @@ export default class PlaylistImportDialog extends Vue {
 </script>
 
 <style lang="scss" scoped>
-  @import '../../styles/components/PlaylistImportDialog';
+  @import '../../styles/components/PlaylistCreateDialog';
 </style>

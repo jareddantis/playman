@@ -14,6 +14,41 @@ const ops = {
     return year.toString() + month + day
   },
 
+  decodeAlbums(albums: any[], country: string): any[] {
+    const albumNames: string[] = []
+    const decoded = []
+    const available = albums.filter((album: any) => album.available_markets.includes(country))
+
+    for (const album of available) {
+      if (!albumNames.includes(album.name)) {
+        albumNames.push(album.name)
+        decoded.push({
+          checked: false,
+          name: album.name,
+          id: album.id,
+          images: album.images,
+          tracks: album.total_tracks,
+        })
+      }
+    }
+
+    return decoded
+  },
+
+  decodeAlbumTracks(tracks: any[]): any[] {
+    const decoded: any[] = []
+
+    tracks.forEach((track: any) => {
+      decoded.push({
+        name: track.name,
+        artist: track.artists[0].name,
+        uri: track.uri,
+      })
+    })
+
+    return decoded
+  },
+
   decodePlaylistTracks(tracks: any[]): any[] {
     const decoded = []
 
@@ -204,10 +239,16 @@ registerPromiseWorker((message) => {
         return ops.encodeMultipleToTSV(data)
       case 'tsv_encode_tracks':
         return ops.encodeToTSV(data.name, data.tracks, true)
+      case 'decode_albums':
+        return ops.decodeAlbums(data.results, data.country)
+      case 'decode_album_tracks':
+        return ops.decodeAlbumTracks(data)
       case 'decode_playlist_tracks':
         return ops.decodePlaylistTracks(data)
       case 'filter_user_playlists':
         return ops.filterUserPlaylists(data.playlists, data.username)
+      case 'get_track_uris':
+        return ops.tracksToUris(data)
       case 'remove_duplicate_tracks':
         return ops.removeDuplicateTracks(data.tracks)
       case 'reorder_playlist_tracks':
@@ -216,8 +257,6 @@ registerPromiseWorker((message) => {
         return ops.shufflePlaylistTracks(data.tracks)
       case 'sort_playlist_tracks':
         return ops.sortPlaylistTracks(data.tracks, data.mode)
-      case 'get_track_uris':
-        return ops.tracksToUris(data)
     }
   }
 })

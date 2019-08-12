@@ -12,7 +12,8 @@
       </v-card-title>
       <v-list>
         <v-list-item :key="playlist.id" v-for="playlist in targets"
-                     @click="resolve(playlist.id, playlist.name)">
+                     @click="resolve(playlist.id, playlist.name)"
+                     :disabled="loading">
           <v-list-item-content>
             <v-list-item-title v-text="playlist.name"></v-list-item-title>
           </v-list-item-content>
@@ -81,9 +82,3 @@ export default class PlaylistPickerDialog extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-  .v-avatar > div {
-    border-radius: 3px
-  }
-</style>

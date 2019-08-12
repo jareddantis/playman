@@ -8,7 +8,7 @@
                     v-on:toggled="onToggle"></PlaylistCard>
     </div>
 
-    <PlaylistImportDialog v-on:import-complete="updatePlaylists"/>
+    <PlaylistCreateDialog v-on:import-complete="updatePlaylists"/>
     <ConfirmDeleteDialog v-on:confirm="deleteSelected"/>
     <ConfirmExportDialog/>
     <ConfirmMergeDialog v-on:confirm="mergeSelected"/>
@@ -24,7 +24,7 @@ import {Component} from 'vue-property-decorator'
 
 @Component({
   components: {
-    PlaylistImportDialog: () => import(/* webpackChunkName: "pid" */ '@/components/dialogs/PlaylistImportDialog.vue'),
+    PlaylistCreateDialog: () => import(/* webpackChunkName: "pcd" */ '@/components/dialogs/PlaylistCreateDialog.vue'),
     PlaylistCard: () => import(/* webpackChunkName: "playlist-card" */ '@/components/PlaylistCard.vue'),
   },
   computed: mapState(['checkedPlaylists', 'playlists']),
