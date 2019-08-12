@@ -383,14 +383,12 @@ export default class Spotify {
       // We can only add 100 tracks to the replace endpoint per request,
       // which means that it would be better to just delete everything first
       // and add the new reordered tracks in batches of 100.
-      this.deleteAllPlaylistTracks(id).then(() => {
-        // Now that the playlist is empty,
-        // we can now build and send the new ordered list of tracks.
-        Worker.send({
-          type: 'reorder_playlist_tracks',
-          data: {tracks, tracksToReorder, placeTracksAfter},
-        }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
-      }).catch((error) => reject(new Error(error)))
+      Worker.send({
+        type: 'reorder_playlist_tracks',
+        data: {tracks, tracksToReorder, placeTracksAfter},
+      }).then((result: any) => this.replaceTracksInPlaylist(id, result))
+        .then(() => resolve())
+        .catch((error) => reject(error))
     })
   }
 
@@ -434,12 +432,12 @@ export default class Spotify {
       // Same concept as this.reorderPlaylistTracks,
       // but instead of taking a list of tracks to move to a specified start point,
       // we completely randomize the track order.
-      this.deleteAllPlaylistTracks(id).then(() => {
-        Worker.send({
-          type: 'shuffle_playlist_tracks',
-          data: {tracks},
-        }).then((result: any) => this.addTracksToPlaylist(id, result, resolve, reject))
-      }).catch((error) => reject(new Error(error)))
+      Worker.send({
+        type: 'shuffle_playlist_tracks',
+        data: {tracks},
+      }).then((result: any) => this.replaceTracksInPlaylist(id, result))
+        .then(() => resolve())
+        .catch((error) => reject(new Error(error)))
     })
   }
 
@@ -459,10 +457,9 @@ export default class Spotify {
       Worker.send({
         type: 'sort_playlist_tracks',
         data: {tracks, mode},
-      }).then((result: any) => {
-        this.deleteAllPlaylistTracks(id)
-          .then(() => this.addTracksToPlaylist(id, result, resolve, reject))
-      }).catch((error) => reject(new Error(error)))
+      }).then((result: any) => this.replaceTracksInPlaylist(id, result))
+        .then(() => resolve())
+        .catch((error) => reject(error))
     })
   }
 
@@ -543,6 +540,13 @@ export default class Spotify {
         // Token is still valid
         resolve({expired: false})
       }
+    })
+  }
+
+  private async replaceTracksInPlaylist(id: string, tracks: string[]) {
+    return new Promise((resolve, reject) => {
+      this.deleteAllPlaylistTracks(id)
+        .then(() => this.addTracksToPlaylist(id, tracks, resolve, reject))
     })
   }
 }
