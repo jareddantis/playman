@@ -27,6 +27,9 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Spotify OAuth authorization prompt URI
+   */
   get authUri(): string {
     const API_QUERY = qs.stringify({
       client_id: 'a2d37a37164c48e48d3693491c20e7ae',
@@ -46,14 +49,26 @@ export default class Spotify {
     return `https://accounts.spotify.com/authorize?${API_QUERY}`
   }
 
+  /**
+   * Whether we are currently authenticated or not
+   */
   get authenticated(): boolean {
     return this.refreshToken !== '' && this.expiry !== 0
   }
 
+  /**
+   * Spotify OAuth redirection URI
+   */
   get redirectUri(): string {
     return `http${this.environment === 'production' ? 's://playman.jared.gq' : '://localhost:8080'}/callback`
   }
 
+  /**
+   * Store user ID (username).
+   * Used to filter available playlists and to create new playlists.
+   *
+   * @param id - User ID
+   */
   set userID(id: string) {
     this.userId = id
   }
@@ -142,6 +157,12 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Removes duplicate tracks from a playlist.
+   *
+   * @param id - Playlist ID
+   * @param tracks - Tracks to remove duplicates from
+   */
   public async dedupPlaylist(id: string, tracks: any[]) {
     return new Promise((resolve, reject) => {
       this.deleteAllPlaylistTracks(id).then(() => {
@@ -343,6 +364,11 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Merges two or more playlists into a new playlist.
+   *
+   * @param ids - Playlist IDs to merge
+   */
   public async mergePlaylists(ids: string[]) {
     return new Promise(async (resolve, reject) => {
       // Merge playlist tracks...
@@ -392,6 +418,11 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Removes refresh token and expiry timestamp,
+   * which will cause this.authenticated = false,
+   * which will then cause store.ts:authenticate to perform authentication.
+   */
   public reset() {
     this.refreshToken = ''
     this.expiry = 0
@@ -441,6 +472,11 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Randomizes multiple playlists.
+   *
+   * @param ids - Playlist IDs
+   */
   public async shufflePlaylists(ids: string[]) {
     return new Promise(async (resolve, reject) => {
       for (const id of ids) {
@@ -452,6 +488,13 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Sorts a playlist's tracks by a given field.
+   *
+   * @param id - Playlist ID
+   * @param tracks - Tracks to sort
+   * @param mode - Track field to sort by. One of 'title', 'artist', and 'album'
+   */
   public async sortPlaylist(id: string, tracks: any[], mode: string) {
     return new Promise((resolve, reject) => {
       Worker.send({
@@ -508,7 +551,7 @@ export default class Spotify {
   }
 
   /**
-   * Refreshes the Spotify API token.
+   * Requests a new Spotify OAuth access token.
    */
   private async reauth() {
     return new Promise((resolve, reject) => {
@@ -543,6 +586,14 @@ export default class Spotify {
     })
   }
 
+  /**
+   * Replaces all tracks in a playlist.
+   * We use our own implementation instead of the Spotify Node API implementation
+   * because that cannot handle more than 100 tracks at once (limitation of the Spotify API).
+   *
+   * @param id - Playlist ID
+   * @param tracks - Tracks to replace playlist contents with
+   */
   private async replaceTracksInPlaylist(id: string, tracks: string[]) {
     return new Promise((resolve, reject) => {
       this.deleteAllPlaylistTracks(id)
