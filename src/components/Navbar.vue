@@ -56,7 +56,7 @@
               <v-icon>info</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title>Playman {{ buildDate }}</v-list-item-title>
+              <v-list-item-title>{{ buildDate }}</v-list-item-title>
               <v-list-item-subtitle>&copy; 2019 Jared Dantis</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -119,7 +119,7 @@ export default class Navbar extends Vue {
   }
 
   get buildDate(): string {
-    return !!process.env.BUILD_DATE ? `build ${process.env.BUILD_DATE}` : 'debug build'
+    return !!process.env.BUILD_DATE ? `Build ${process.env.BUILD_DATE}` : 'Debug build'
   }
 
   get showLogo(): boolean {
