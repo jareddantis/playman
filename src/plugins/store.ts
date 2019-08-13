@@ -111,6 +111,9 @@ const store = new Vuex.Store({
           const {accessToken, refreshToken, expiry} = state as any
 
           if (accessToken === '' || refreshToken === '' || expiry === 0) {
+            // No tokens
+            // Erase all data and redirect to landing page
+            commit('reset')
             reject(new Error('Not authenticated'))
           } else {
             api.setTokens(accessToken, refreshToken, expiry)
@@ -126,7 +129,12 @@ const store = new Vuex.Store({
               })
               .then(() => dispatch('updateUserMeta'))
               .then(() => resolve())
-              .catch((error) => reject(new Error(error)))
+              .catch((error) => {
+                // Auth error - probably revoked token or something
+                // Erase all data and redirect to landing page
+                commit('reset')
+                reject(new Error(error))
+              })
           }
         } else {
           // Already authenticated
