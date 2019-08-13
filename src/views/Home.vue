@@ -79,6 +79,8 @@
 
     <div class="footer">
       <p>&copy; 2019 Jared Dantis. Licensed under AGPLv3.</p>
+      <p><strong>Make backups!</strong> I will not be liable for any loss of data
+        that might occur from your use of this application.</p>
       <p>Spotify API used under the Spotify Developer Terms of Service.<br>
         &quot;Spotify&quot; is &copy; Spotify AB. All rights reserved.</p>
       <p>This application is not affiliated with or endorsed by Spotify AB.</p>
