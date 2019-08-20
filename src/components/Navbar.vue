@@ -47,8 +47,8 @@
               <v-icon>message</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title>Comments or suggestions?</v-list-item-title>
-              <v-list-item-subtitle>I'd love to know what you think</v-list-item-subtitle>
+              <v-list-item-title>Send feedback</v-list-item-title>
+              <v-list-item-subtitle>Comments, suggestions...</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
