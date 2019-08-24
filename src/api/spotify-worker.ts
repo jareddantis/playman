@@ -37,13 +37,19 @@ function authenticate(tokens: any): Promise<any> {
 registerPromiseWorker(async (message) => {
   const {type, data, tokens, user} = message
   const {country, username} = user
+
   try {
     const authResult = await authenticate(tokens)
-    const accessToken = authResult.expired ? authResult.accessToken : tokens.accessToken
-    const response = await fulfillRequest(accessToken, username, country, type, data)
-    return {
-      response,
-      auth: authResult,
+
+    if (type !== 'authenticate') {
+      const accessToken = authResult.expired ? authResult.accessToken : tokens.accessToken
+      const response = await fulfillRequest(accessToken, username, country, type, data)
+      return {
+        response,
+        auth: authResult,
+      }
+    } else {
+      return authResult
     }
   } catch (error) {
     throw error

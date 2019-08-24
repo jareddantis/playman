@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth) {
       // Redirect to / (login) on failed auth,
       // otherwise continue as normal
-      store.dispatch('updateUserMeta')
+      store.dispatch('authenticate')
         .then(() => next())
         .catch(() => next({path: '/', replace: true}))
     } else {
@@ -56,7 +56,7 @@ router.beforeEach((to, from, next) => {
     if (store.state.isLoggedIn) {
       // Redirect to /playlists on successful auth,
       // otherwise show / (login)
-      store.dispatch('updateUserMeta')
+      store.dispatch('authenticate')
         .then(() => next('/playlists'))
         .catch(() => next())
     } else {

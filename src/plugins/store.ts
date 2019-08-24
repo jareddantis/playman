@@ -89,6 +89,26 @@ const store = new Vuex.Store({
     },
   },
   actions: {
+    async authenticate({state, commit, dispatch}) {
+      const {accessToken, refreshToken, expiry} = state as any
+      try {
+        if (!!accessToken && !!refreshToken && !!expiry) {
+          const auth = await dispatch('spotify', {type: 'authenticate', data: null})
+          if (auth.expired) {
+            // Store new token and expiry
+            commit('mutate', ['accessToken', auth.accessToken])
+            commit('mutate', ['expiry', auth.expiry])
+          }
+          return
+        } else {
+          commit('reset')
+          await Promise.reject(new Error('Incomplete or missing auth data in storage'))
+        }
+      } catch (error) {
+        commit('reset')
+        throw error
+      }
+    },
     async spotify({state, commit}, message) {
       const {accessToken, refreshToken, expiry, username, country} = state as any
       const {type, data} = message
@@ -99,15 +119,20 @@ const store = new Vuex.Store({
           tokens: {accessToken, refreshToken, expiry},
           user: {country, username},
         }))
-        const {response, auth} = result
 
-        if (auth.expired) {
-          // Store new token and expiry
-          commit('mutate', ['accessToken', auth.accessToken])
-          commit('mutate', ['expiry', auth.expiry])
+        if (type === 'authenticate') {
+          return result
+        } else {
+          const {response, auth} = result
+
+          if (auth.expired) {
+            // Store new token and expiry
+            commit('mutate', ['accessToken', auth.accessToken])
+            commit('mutate', ['expiry', auth.expiry])
+          }
+
+          return response
         }
-
-        return response
       } catch (error) {
         commit('mutate', ['offline', true])
         throw error
