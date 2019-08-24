@@ -53,7 +53,7 @@ export default class Playlists extends Vue {
       this.toggleAll(false)
     })
     this.$bus.$on('deselect-all-playlists', () => this.toggleAll(false))
-    this.$bus.$on('playlists-select', () => this.setState(['isBatchEditing', false]))
+    this.$bus.$on('playlists-select', () => this.setState(['isBatchEditing', true]))
     this.$bus.$on('select-all-playlists', () => this.toggleAll(true))
   }
 
