@@ -30,11 +30,6 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "playlist" */ '../views/Playlist.vue'),
       meta: {requiresAuth: true},
     },
-    {
-      path: '/about',
-      name: 'About',
-      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-    },
   ],
 })
 
