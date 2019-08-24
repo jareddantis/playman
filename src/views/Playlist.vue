@@ -275,28 +275,36 @@ export default class Playlist extends Vue {
 
     if (this.currentPlaylistTracks.length) {
       this.loading = false
-    } else {
-      this.loadingMsg = `The playlist ${this.currentPlaylist.name} is empty.`
     }
   }
 
   private async getPlaylist() {
+    const id = this.$route.params.id
+
     this.unsetPlaylist().then(() => {
       this.loadStart()
       this.spotify({
         type: 'getPlaylist',
-        data: {
-          id: this.$route.params.id,
-        },
+        data: {id},
       }).then((playlist: any) => {
         this.setState(['currentPlaylist', playlist.details])
         this.setState(['currentPlaylistTracks', playlist.tracks])
-        this.loadEnd()
 
         if (!playlist.tracks.length) {
           this.loadingMsg = 'This playlist has no tracks.'
         }
-      })
+      }).catch((error) => {
+        switch (error.message) {
+          case '403':
+            this.loadingMsg = 'You do not have permission to view or edit this playlist.'
+            break
+          case '404':
+            this.loadingMsg = `Playlist ${id} not found.`
+            break
+          default:
+            this.loadingMsg = `Error retrieving playlist ${id}.`
+        }
+      }).finally(() => this.loadEnd())
     })
   }
 
