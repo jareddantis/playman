@@ -64,6 +64,7 @@ module.exports = {
       rules: [
         {
           test: /\.(js|ts[x]?)$/,
+          exclude: /\.worker\.ts$/,
           loader: 'babel-loader',
         },
         {
@@ -93,6 +94,7 @@ module.exports = {
             if (day < 10) { day = '0' + day }
             return year.toString() + month + day
           })(),
+          CALLBACK_URI: '"https://playman.jared.gq/callback"',
         },
       }),
 

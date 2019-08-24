@@ -1,4 +1,5 @@
 const path = require('path');
+const { DefinePlugin } = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -33,12 +34,19 @@ module.exports = {
       rules: [
         {
           test: /\.(js|ts|tsx)$/,
+          exclude: /\.worker\.ts$/,
           loader: 'babel-loader',
         },
       ],
     },
 
     plugins: [
+      new DefinePlugin({
+        'process.env': {
+          CALLBACK_URI: '"http://localhost:8080/callback"',
+        },
+      }),
+
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, '../src/public/index.dev.html'),
         title: 'Playman',
