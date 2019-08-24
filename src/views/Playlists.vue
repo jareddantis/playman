@@ -19,7 +19,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {mapState} from 'vuex'
-import {Mutation} from 'vuex-class'
+import {Action, Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 
 @Component({
@@ -34,8 +34,10 @@ export default class Playlists extends Vue {
   public loading: boolean = false
   public loadingMsg: string = ''
   public playlists!: any[]
-  @Mutation('setIsBatchEditing') private setIsBatchEditing!: (isEditing: boolean) => void
-  @Mutation('setOffline') private setOffline!: (isOffline: boolean) => void
+  @Action('setPlaylistChecked') private toggle!: (playlist: any) => void
+  @Action('spotify') private spotify!: (message: any) => Promise<any>
+  @Action('toggleAllPlaylists') private toggleAll!: (state: boolean) => void
+  @Mutation('mutate') private setState!: (payload: any[]) => void
 
   get visiblePlaylists(): any[] {
     return this.loading ? [] : this.playlists
@@ -47,51 +49,54 @@ export default class Playlists extends Vue {
 
     // Batch playlist editing
     this.$bus.$on('cancel-batch-edit', () => {
-      this.setIsBatchEditing(false)
-      this.$store.dispatch('toggleAllPlaylists', false)
+      this.setState(['isBatchEditing', false])
+      this.toggleAll(false)
     })
-    this.$bus.$on('deselect-all-playlists', () => this.$store.dispatch('toggleAllPlaylists', false))
-    this.$bus.$on('playlists-select', () => this.setIsBatchEditing(true))
-    this.$bus.$on('select-all-playlists', () => this.$store.dispatch('toggleAllPlaylists', true))
+    this.$bus.$on('deselect-all-playlists', () => this.toggleAll(false))
+    this.$bus.$on('playlists-select', () => this.setState(['isBatchEditing', false]))
+    this.$bus.$on('select-all-playlists', () => this.toggleAll(true))
   }
 
   public deleteSelected(items: string) {
     if (items === 'playlists') {
       this.loadingMsg = 'Deleting playlists...'
       this.loadStart()
-      this.$store.dispatch('deletePlaylists', true)
-        .then(() => {
-          this.$bus.$emit('cancel-batch-edit')
-          this.updatePlaylists()
-        })
-        .catch(() => this.setOffline(true))
+      this.spotify({
+        type: 'deletePlaylists',
+        data: {ids: this.checkedPlaylists},
+      }).then(() => {
+        this.$bus.$emit('cancel-batch-edit')
+        this.updatePlaylists()
+      })
     }
   }
 
   public mergeSelected() {
     this.loadingMsg = 'Merging playlists into a new playlist...'
     this.loadStart()
-    this.$store.dispatch('mergePlaylists')
-      .then(() => {
-        this.$bus.$emit('cancel-batch-edit')
-        this.updatePlaylists()
-      })
-      .catch(() => this.setOffline(true))
+    this.spotify({
+      type: 'mergePlaylists',
+      data: {ids: this.checkedPlaylists},
+    }).then(() => {
+      this.$bus.$emit('cancel-batch-edit')
+      this.updatePlaylists()
+    })
   }
 
   public shuffleSelected() {
     this.loadingMsg = 'Randomizing playlists...'
     this.loadStart()
-    this.$store.dispatch('shufflePlaylists', true)
-      .then(() => {
-        this.$bus.$emit('cancel-batch-edit')
-        this.updatePlaylists()
-      })
-      .catch(() => this.setOffline(true))
+    this.spotify({
+      type: 'shufflePlaylists',
+      data: {ids: this.checkedPlaylists},
+    }).then(() => {
+      this.$bus.$emit('cancel-batch-edit')
+      this.updatePlaylists()
+    })
   }
 
   public onToggle(payload: any) {
-    this.$store.commit('setPlaylistChecked', {
+    this.toggle({
       index: payload.index,
       isChecked: !payload.isChecked,
     })
@@ -101,9 +106,7 @@ export default class Playlists extends Vue {
     document.title = 'Playlists | Playman'
     this.loadingMsg = 'Loading your playlists...'
     this.loadStart()
-    this.$store.dispatch('updatePlaylists')
-      .then(() => this.loadEnd())
-      .catch(() => this.setOffline(true))
+    this.$store.dispatch('updatePlaylists').then(() => this.loadEnd())
   }
 
   private loadStart() {

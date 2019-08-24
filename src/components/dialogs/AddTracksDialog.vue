@@ -74,6 +74,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {Action} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 
 @Component
@@ -81,12 +82,11 @@ export default class AddTracksDialog extends Vue {
   public querying = false
   public showDialog = false
   public step: number = 1
-
   public artistQuery: string = ''
   public artistResults: any[] = []
-
   public albumResults: any[] = []
   public checkedAlbums: string[] = []
+  @Action('spotify') private spotify!: (message: any) => Promise<any>
 
   public created() {
     this.$bus.$on('add-tracks', () => this.resetAndShow())
@@ -95,24 +95,27 @@ export default class AddTracksDialog extends Vue {
   public async add() {
     this.querying = true
     let tracks: any[] = []
-    let error = false
+    let success = true
 
     for (const id of this.checkedAlbums) {
-      await this.$store.dispatch('getAlbumTracks', id)
-        .then((results) => tracks = tracks.concat(results))
-        .catch(() => error = true)
-
-      if (error) {
+      try {
+        const results = await this.spotify({
+          type: 'getAlbumTracks',
+          data: {id},
+        })
+        tracks = tracks.concat(results)
+      } catch (error) {
+        success = false
         break
       }
     }
 
-    if (!error) {
+    if (success) {
       this.$emit('add-tracks', tracks)
       this.querying = false
       this.showDialog = false
     } else {
-      this.$store.commit('setOffline', true)
+      this.showDialog = false
     }
   }
 
@@ -123,22 +126,26 @@ export default class AddTracksDialog extends Vue {
   public pickArtist(id: string) {
     this.querying = true
     this.albumResults = []
-    this.$store.dispatch('getArtistAlbums', id)
-      .then((results) => {
-        this.albumResults = results
-        this.step = 2
-        this.artistResults = []
-        this.artistQuery = ''
-      })
-      .catch(() => this.$store.commit('setOffline', true))
-      .finally(() => this.querying = false)
+    this.spotify({
+      type: 'getArtistAlbums',
+      data: {id},
+    }).then((results) => {
+      this.albumResults = results
+      this.step = 2
+      this.artistResults = []
+      this.artistQuery = ''
+    }).finally(() => this.querying = false)
   }
 
   public searchForArtist() {
     this.querying = true
     this.artistResults = []
-    this.$store.dispatch('searchArtists', this.artistQuery)
-      .then((results) => this.artistResults = results)
+    this.spotify({
+      type: 'searchArtists',
+      data: {
+        query: this.artistQuery,
+      },
+    }).then((results) => this.artistResults = results)
       .finally(() => this.querying = false)
   }
 

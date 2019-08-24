@@ -1,7 +1,6 @@
 import JSZip from 'jszip'
-import registerPromiseWorker from 'promise-worker/register'
 
-const ops = {
+const utils = {
   currentDate(): string {
     const now = new Date()
     const year = now.getFullYear()
@@ -70,8 +69,7 @@ const ops = {
     return decoded
   },
 
-  async encodeMultipleToTSV(data: any) {
-    const {username, playlists} = data
+  async encodeMultipleToTSV(username: string, playlists: any[]) {
     const zipName = `${username}-playlists-backup-${this.currentDate()}.zip`
     const zip = new JSZip()
 
@@ -222,7 +220,7 @@ const ops = {
     return this.tracksToUris(tracks)
   },
 
-  tracksToUris(tracks: any[]) {
+  tracksToUris(tracks: any[]): string[] {
     // Reduce tracks array into Spotify URIs
     const uris: string[] = []
     tracks.forEach((track: any) => uris.push(`spotify:track:${track.id}`))
@@ -230,33 +228,4 @@ const ops = {
   },
 }
 
-registerPromiseWorker((message) => {
-  if (message.type === 'message') {
-    const {type, data} = message.content
-
-    switch (type) {
-      case 'tsv_encode_multiple':
-        return ops.encodeMultipleToTSV(data)
-      case 'tsv_encode_tracks':
-        return ops.encodeToTSV(data.name, data.tracks, true)
-      case 'decode_albums':
-        return ops.decodeAlbums(data.results, data.country)
-      case 'decode_album_tracks':
-        return ops.decodeAlbumTracks(data)
-      case 'decode_playlist_tracks':
-        return ops.decodePlaylistTracks(data)
-      case 'filter_user_playlists':
-        return ops.filterUserPlaylists(data.playlists, data.username)
-      case 'get_track_uris':
-        return ops.tracksToUris(data)
-      case 'remove_duplicate_tracks':
-        return ops.removeDuplicateTracks(data.tracks)
-      case 'reorder_playlist_tracks':
-        return ops.reorderPlaylistTracks(data.tracks, data.tracksToReorder, data.placeTracksAfter)
-      case 'shuffle_playlist_tracks':
-        return ops.shufflePlaylistTracks(data.tracks)
-      case 'sort_playlist_tracks':
-        return ops.sortPlaylistTracks(data.tracks, data.mode)
-    }
-  }
-})
+export default utils

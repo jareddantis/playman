@@ -53,6 +53,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {Action} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 import {parse as parseCsv} from 'papaparse'
 
@@ -67,6 +68,7 @@ export default class PlaylistCreateDialog extends Vue {
   private loading = false
   private showDialog = false
   private tracks: any[] = []
+  @Action('spotify') private spotify!: (message: any) => Promise<any>
 
   get backupSummary(): string {
     return (this.backupFile !== null && this.backupIsValid && this.tracks.length)
@@ -91,8 +93,16 @@ export default class PlaylistCreateDialog extends Vue {
 
   public async onArtChanged() {
     if (this.artFile !== null && (this.$refs.artinput as any).validate()) {
-      const imageFile = this.artFile as File
-      this.art = await this.toBase64(imageFile) as string
+      try {
+        this.art = await this.spotify({
+          type: 'toBase64',
+          data: {
+            file: this.artFile as File,
+          },
+        })
+      } catch (error) {
+        this.art = require('../../assets/gradient.jpeg')
+      }
     } else {
       this.art = require('../../assets/gradient.jpeg')
     }
@@ -151,14 +161,16 @@ export default class PlaylistCreateDialog extends Vue {
     }
 
     this.loading = true
-    this.$store.dispatch('createPlaylist', {
-      details,
-      tracks: this.tracks.map((track: any) => track.uri),
+    this.spotify({
+      type: 'createPlaylist',
+      data: {
+        details,
+        tracks: this.tracks.map((track: any) => track.uri),
+      },
     }).then(() => {
-        this.$emit('import-complete')
-        this.showDialog = false
-      })
-      .finally(() => this.loading = false)
+      this.$emit('import-complete')
+      this.showDialog = false
+    }).finally(() => this.loading = false)
   }
 
   public toggleCollab() {
@@ -230,15 +242,6 @@ export default class PlaylistCreateDialog extends Vue {
     this.backupFile = null
     this.editDetails = {}
     this.showDialog = true
-  }
-
-  private toBase64(file: File) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve((reader.result as string).trim())
-      reader.onerror = (error) => reject(error)
-    })
   }
 }
 </script>

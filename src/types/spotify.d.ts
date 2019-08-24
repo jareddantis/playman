@@ -1,8 +1,4 @@
 declare class Spotify {
-  public authUri: string
-  public authenticated: boolean
-  public redirectUri: string
-
   public changePlaylistDetails(id: string, details: any): Promise<any>
   public deleteAllPlaylistTracks(id: string): Promise<Promise<any>>
   public deletePlaylistTracks(id: string, initial: any[], snapshot: string,

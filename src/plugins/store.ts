@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersist from 'vuex-persist'
-import Spotify from './spotify'
+import PromiseThrottle from 'promise-throttle'
+import { send as api } from '../api'
 
-const api = new Spotify()
 const persistence = new VuexPersist({
   key: 'playman',
   storage: window.localStorage,
   reducer: (state: any) => ({
     accessToken: state.accessToken,
+    country: state.country,
     expiry: state.expiry,
     refreshToken: state.refreshToken,
     stateToken: state.stateToken,
@@ -17,6 +18,7 @@ const persistence = new VuexPersist({
     avatarUri: state.avatarUri,
   }),
 })
+const throttler = new PromiseThrottle({requestsPerSecond: 5})
 
 function getInitialState(): { [key: string]: any } {
   return {
@@ -28,6 +30,7 @@ function getInitialState(): { [key: string]: any } {
     isLoggedIn: false,
 
     // User details
+    country: '',
     username: '',
     avatarUri: '',
 
@@ -53,21 +56,78 @@ const store = new Vuex.Store({
   plugins: [persistence.plugin],
   state: getInitialState(),
   mutations: {
-    emptyCheckedPlaylists: (state) => state.checkedPlaylists = [],
-    emptyCheckedTracks: (state) => state.checkedTracks = [],
-    reset: (state: any) => {
-      api.reset()
+    mutate: (state: any, payload: any[]) => Vue.set(state, payload[0], payload[1]),
+    reset(state) {
       const initialState = getInitialState()
       Object.keys(initialState).forEach((key) => {
         Vue.set(state, key, initialState[key])
       })
     },
-    setIsBatchEditing: (state, isEditing) => state.isBatchEditing = isEditing,
-    setIsReordering: (state, isReordering) => state.isReordering = isReordering,
-    setLoggedIn: (state, loginStatus) => state.isLoggedIn = loginStatus,
-    setOffline: (state, offline) => state.offline = offline,
-    setPlaylist: (state, playlist) => state.currentPlaylist = Object.assign({}, state.currentPlaylist, playlist),
-    setPlaylistChecked(state, {index, isChecked}) {
+  },
+  getters: {
+    authUri(state) {
+      const params: any = {
+        client_id: 'a2d37a37164c48e48d3693491c20e7ae',
+        response_type: 'code',
+        redirect_uri: process.env.CALLBACK_URI as string,
+        state: state.stateToken,
+        scope: [
+          'playlist-modify-private',
+          'playlist-modify-public',
+          'playlist-read-collaborative',
+          'playlist-read-private',
+          'ugc-image-upload',
+          'user-read-private',
+        ].join(' '),
+        show_dialog: false,
+      }
+      const query: string = Object.keys(params)
+        .map((key: string) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        .join('&')
+
+      return `https://accounts.spotify.com/authorize?${query}`
+    },
+  },
+  actions: {
+    async spotify({state, commit}, message) {
+      const {accessToken, refreshToken, expiry, username, country} = state as any
+      const {type, data} = message
+
+      try {
+        const result = await throttler.add(() => api({
+          type, data,
+          tokens: {accessToken, refreshToken, expiry},
+          user: {country, username},
+        }))
+        const {response, auth} = result
+
+        if (auth.expired) {
+          // Store new token and expiry
+          commit('mutate', ['accessToken', auth.accessToken])
+          commit('mutate', ['expiry', auth.expiry])
+        }
+
+        return response
+      } catch (error) {
+        commit('mutate', ['offline', true])
+        throw error
+      }
+    },
+
+    async exportPlaylists({state, dispatch}, single) {
+      try {
+        return await dispatch('spotify', {
+          type: single ? 'exportPlaylist' : 'exportPlaylists',
+          data: single ? {
+            name: state.currentPlaylist.name,
+            tracks: state.currentPlaylistTracks,
+          } : {ids: state.checkedPlaylists},
+        })
+      } catch (error) {
+        throw error
+      }
+    },
+    async setPlaylistChecked({state}, {index, isChecked}) {
       const {id} = state.playlists[index]
       state.playlists[index].checked = isChecked
 
@@ -79,14 +139,15 @@ const store = new Vuex.Store({
         state.checkedPlaylists = state.checkedPlaylists.filter((playlist: string) => playlist !== id)
       }
     },
-    setPlaylists: (state, playlists) => state.playlists = playlists,
-    setPlaylistTracks: (state, tracks) => state.currentPlaylistTracks = tracks,
-    setStateToken: (state, token) => {
-      api.stateToken = token
-      state.stateToken = token
+    async setStateToken({commit}) {
+      const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      let result = ''
+      for (let i = 0; i < 12; i++) {
+        result += CHARS.charAt(Math.floor(Math.random() * CHARS.length))
+      }
+      commit('mutate', ['stateToken', result])
     },
-    setTokens: (state, authData) => Object.assign(state, authData),
-    setTrackChecked: (state, { index, isChecked }) => {
+    async setTrackChecked({state}, {index, isChecked}) {
       state.currentPlaylistTracks[index].checked = isChecked
       if (isChecked) {
         if (!state.checkedTracks.includes(index)) {
@@ -96,163 +157,14 @@ const store = new Vuex.Store({
         state.checkedTracks.splice(state.checkedTracks.indexOf(index), 1)
       }
     },
-    setUserAvatar: (state, uri) => state.avatarUri = uri,
-    setUsername: (state, username) => state.username = username,
-  },
-  getters: {
-    isLoggedIn: (state: any) => state.isLoggedIn,
-    authUri: () => api.authUri,
-    redirectUri: () => api.redirectUri,
-  },
-  actions: {
-    async authenticate({state, commit, dispatch}) {
-      return new Promise((resolve, reject) => {
-        if (!api.authenticated) {
-          const {accessToken, refreshToken, expiry} = state as any
-
-          if (accessToken === '' || refreshToken === '' || expiry === 0) {
-            // No tokens
-            // Erase all data and redirect to landing page
-            commit('reset')
-            reject(new Error('Not authenticated'))
-          } else {
-            api.setTokens(accessToken, refreshToken, expiry)
-              .then((results: any) => {
-                if (results.expired) {
-                  // Store new token and expiry
-                  commit('setTokens', {
-                    accessToken: results.newToken,
-                    expiry: results.newExpiry,
-                  })
-                  commit('setLoggedIn', true)
-                }
-              })
-              .then(() => dispatch('updateUserMeta'))
-              .then(() => resolve())
-              .catch((error) => {
-                // Auth error - probably revoked token or something
-                // Erase all data and redirect to landing page
-                commit('reset')
-                reject(new Error(error))
-              })
-          }
-        } else {
-          // Already authenticated
-          commit('setLoggedIn', true)
-          resolve()
-        }
-      })
-    },
-    async createPlaylist(context, {details, tracks}) {
-      return new Promise((resolve, reject) => {
-        api.createPlaylist(details.name, tracks)
-          .then((id: any) => api.changePlaylistDetails(id, details))
-          .then(() => resolve())
-          .catch((error: any) => reject(error))
-      })
-    },
-    async changePlaylistDetails({state}, details) {
-      return new Promise((resolve, reject) => {
-        api.changePlaylistDetails(state.currentPlaylist.id, details)
-          .then(() => resolve())
-          .catch((error: any) => reject(error))
-      })
-    },
-    async copyToPlaylist({state}, {id, tracks}) {
-      return new Promise((resolve, reject) => api.addTracksToPlaylist(id, tracks, resolve, reject))
-    },
-    async dedupPlaylist({state}) {
-      return api.dedupPlaylist(state.currentPlaylist.id, state.currentPlaylistTracks)
-    },
-    async deletePlaylists({state}, deleteMultiple: boolean) {
-      return new Promise((resolve, reject) => {
-        const ids = deleteMultiple ? state.checkedPlaylists : [state.currentPlaylist.id]
-        api.deletePlaylists(ids, resolve, reject)
-      })
-    },
-    async deletePlaylistTracks({state}) {
-      return new Promise((resolve, reject) => {
-        const { checkedTracks, currentPlaylistTracks } = state
-        const { id, snapshot } = state.currentPlaylist
-
-        if (checkedTracks.length === currentPlaylistTracks.length) {
-          api.deleteAllPlaylistTracks(id)
-            .then(() => resolve())
-            .catch((error) => reject(error))
-        } else {
-          api.deletePlaylistTracks(id, snapshot, checkedTracks, resolve, reject)
-        }
-      })
-    },
-    async exportPlaylist({state}) {
-      return api.exportPlaylist(state.currentPlaylist.name, state.currentPlaylistTracks)
-    },
-    async exportPlaylists({state}) {
-      return new Promise((resolve, reject) => {
-        api.exportPlaylists(state.checkedPlaylists, [], resolve, reject)
-      })
-    },
-    async getAlbumTracks(context, id) {
-      return new Promise((resolve, reject) => {
-        api.getAlbumTracks(id, [], 0, resolve, reject)
-      })
-    },
-    async getArtistAlbums(context, id) {
-      return new Promise((resolve, reject) => {
-        api.getArtistAlbums(id, [], 0, resolve, reject)
-      })
-    },
-    async getPlaylist({commit}, id) {
-      return api.getPlaylist(id).then((playlist: any) => {
-        commit('emptyCheckedTracks')
-        commit('setPlaylist', playlist.details)
-        commit('setPlaylistTracks', playlist.tracks)
-      })
-    },
-    async mergePlaylists({state}) {
-      return api.mergePlaylists(state.checkedPlaylists)
-    },
-    async reorderPlaylistTracks({state}, placeTracksAfter) {
-      const { checkedTracks, currentPlaylistTracks } = state
-      const { id, snapshot } = state.currentPlaylist
-      return api.reorderPlaylistTracks(id, snapshot, currentPlaylistTracks, checkedTracks, placeTracksAfter)
-    },
-    async searchArtists({commit}, query) {
-      return new Promise((resolve, reject) => {
-        api.searchArtists(query).then((results) => resolve(results))
-          .catch((error) => {
-            commit('setOffline', true)
-            reject(error)
-          })
-      })
-    },
-    async setStateToken({commit}) {
-      const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-      let result = ''
-      for (let i = 0; i < 12; i++) {
-        result += CHARS.charAt(Math.floor(Math.random() * CHARS.length))
-      }
-      commit('setStateToken', result)
-    },
-    async shufflePlaylists({state}, shuffleMultiple: boolean) {
-      if (shuffleMultiple) {
-        return api.shufflePlaylists(state.checkedPlaylists)
-      } else {
-        const { id, snapshot } = state.currentPlaylist
-        return api.shufflePlaylist(id, snapshot, state.currentPlaylistTracks)
-      }
-    },
-    async sortPlaylist({state}, mode) {
-      return api.sortPlaylist(state.currentPlaylist.id, state.currentPlaylistTracks, mode)
-    },
     async toggleAllPlaylists({state, commit}, isChecked) {
-      commit('emptyCheckedPlaylists')
-      commit('setPlaylists', state.playlists.map((playlist: any) => {
+      commit('mutate', ['checkedPlaylists', []])
+      commit('mutate', ['playlists', state.playlists.map((playlist: any) => {
         if (isChecked) {
           state.checkedPlaylists.push(playlist.id)
         }
         return Object.assign(playlist, {checked: isChecked})
-      }))
+      })])
     },
     async uncheckAllTracks({state}) {
       while (state.checkedTracks.length) {
@@ -261,26 +173,20 @@ const store = new Vuex.Store({
       }
     },
     async unsetPlaylist({commit}) {
-      commit('emptyCheckedTracks')
-      commit('setPlaylist', {})
-      commit('setPlaylistTracks', [])
+      commit('mutate', ['checkedPlaylists', []])
+      commit('mutate', ['currentPlaylist', {}])
+      commit('mutate', ['currentPlaylistTracks', []])
     },
-    async updatePlaylists({commit}) {
-      return new Promise((resolve, reject) => {
-        api.getUserPlaylists([], 0, resolve, reject)
-      }).then((playlists: any) => commit('setPlaylists', playlists))
+    async updatePlaylists({commit, dispatch}) {
+      const playlists = await dispatch('spotify', {type: 'getUserPlaylists', data: null})
+      commit('mutate', ['playlists', playlists])
     },
-    async updateUserMeta({commit}) {
-      return new Promise((resolve, reject) => {
-        // Store user avatar and username
-        api.getMe().then((response: any) => {
-          const result = response.body as any
-          commit('setUserAvatar', result.images[0].url)
-          commit('setUsername', result.id)
-          api.setUserDetails(result.id, result.country)
-          resolve()
-        }).catch((error) => reject(new Error(error)))
-      })
+    async updateUserMeta({commit, dispatch}) {
+      const meta = await dispatch('spotify', {type: 'getMe', data: null})
+      commit('mutate', ['avatarUri', meta.images[0].url])
+      commit('mutate', ['country', meta.country])
+      commit('mutate', ['isLoggedIn', true])
+      commit('mutate', ['username', meta.id])
     },
   },
 })

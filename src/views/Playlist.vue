@@ -55,7 +55,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {mapState} from 'vuex'
-import {Mutation} from 'vuex-class'
+import {Action, Mutation} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 
 @Component({
@@ -95,7 +95,10 @@ export default class Playlist extends Vue {
   public isReordering!: boolean
   public loading: boolean = true
   public loadingMsg: string = ''
-  @Mutation('setIsReordering') private setIsReordering!: (isReordering: boolean) => void
+  @Action('setTrackChecked') private setTrackChecked!: (trackDetails: any) => void
+  @Action('spotify') private spotify!: (message: any) => Promise<any>
+  @Action('unsetPlaylist') private unsetPlaylist!: () => Promise<void>
+  @Mutation('mutate') private setState!: (payload: any[]) => void
 
   public created() {
     this.loadingMsg = 'Loading playlist, hang tight...'
@@ -107,10 +110,10 @@ export default class Playlist extends Vue {
       willMove,
     }))
     this.$bus.$on('cut-tracks', () => {
-      this.setIsReordering(true)
+      this.setState(['isReordering', true])
     })
     this.$bus.$on('paste-tracks', (pasteAfter: number) => {
-      this.setIsReordering(false)
+      this.setState(['isReordering', false])
       this.reorderTracks(pasteAfter)
     })
     this.$bus.$on('cancel-batch-edit', () => this.unselectAll())
@@ -118,7 +121,7 @@ export default class Playlist extends Vue {
   }
 
   public beforeDestroy() {
-    this.$store.dispatch('unsetPlaylist')
+    this.unsetPlaylist()
     window.removeEventListener('keydown', this.selectAll)
   }
 
@@ -135,8 +138,10 @@ export default class Playlist extends Vue {
     this.checkedTracks.forEach((track: number) => {
       tracks.push(`spotify:track:${this.currentPlaylistTracks[track].id}`)
     })
-    this.$store.dispatch('copyToPlaylist', {id: target.id, tracks})
-      .then(() => {
+    this.spotify({
+      type: 'addTracksToPlaylist',
+      data: {id: target.id, tracks},
+    }).then(() => {
         if (willMove) {
           this.deleteHandler('tracks')
         } else {
@@ -149,25 +154,53 @@ export default class Playlist extends Vue {
   public deduplicate() {
     this.loadingMsg = `Removing duplicates from ${this.currentPlaylist.name}...`
     this.loadStart()
-    this.$store.dispatch('dedupPlaylist', false).then(() => this.getPlaylist())
+    this.spotify({
+      type: 'dedupPlaylist',
+      data: {
+        id: this.currentPlaylist.id,
+        tracks: this.currentPlaylistTracks,
+      },
+    }).then(() => this.getPlaylist())
   }
 
   public onTrackToggled(payload: any) {
-    const {index, state} = payload
-    this.$store.commit('setTrackChecked', { index, isChecked: state })
+    this.setTrackChecked({
+      index: payload.index,
+      isChecked: payload.state,
+    })
   }
 
   public deleteHandler(items: string) {
+    const {id, snapshot} = this.currentPlaylist
+
     if (items === 'tracks') {
+      let action
+
+      if (this.checkedTracks.length === this.currentPlaylistTracks.length) {
+        action = {
+          type: 'emptyPlaylist',
+          data: {id},
+        }
+      } else {
+        action = {
+          type: 'deletePlaylistTracks',
+          data: {
+            id, snapshot,
+            tracks: this.checkedTracks,
+          },
+        }
+      }
+
       this.loadingMsg = `Deleting selected songs from ${this.currentPlaylist.name}...`
       this.loadStart()
-      this.$store.dispatch('deletePlaylistTracks')
-        .then(() => this.getPlaylist())
+      this.spotify(action).then(() => this.getPlaylist())
     } else if (items === 'playlist') {
       this.loadingMsg = `Deleting playlist ${this.currentPlaylist.name}...`
       this.loadStart()
-      this.$store.dispatch('deletePlaylists', false)
-        .then(() => this.$router.push({name: 'Playlists'}))
+      this.spotify({
+        type: 'deletePlaylists',
+        data: {ids: [id]},
+      }).then(() => this.$router.push({name: 'Playlists'}))
     }
   }
 
@@ -205,13 +238,26 @@ export default class Playlist extends Vue {
   public shuffle() {
     this.loadingMsg = `Randomizing ${this.currentPlaylist.name}...`
     this.loadStart()
-    this.$store.dispatch('shufflePlaylists', false).then(() => this.getPlaylist())
+    this.spotify({
+      type: 'shufflePlaylist',
+      data: {
+        id: this.currentPlaylist.id,
+        tracks: this.currentPlaylistTracks,
+      },
+    }).then(() => this.getPlaylist())
   }
 
   public sort(mode: string) {
     this.loadingMsg = `Sorting ${this.currentPlaylist.name} by ${mode.toLowerCase()}...`
     this.loadStart()
-    this.$store.dispatch('sortPlaylist', mode).then(() => this.getPlaylist())
+    this.spotify({
+      type: 'sortPlaylist',
+      data: {
+        id: this.currentPlaylist.id,
+        tracks: this.currentPlaylistTracks,
+        mode,
+      },
+    }).then(() => this.getPlaylist())
   }
 
   private loadStart() {
@@ -235,29 +281,41 @@ export default class Playlist extends Vue {
   }
 
   private async getPlaylist() {
-    this.$store.dispatch('unsetPlaylist')
-      .then(() => {
-        this.loadStart()
-        this.$store.dispatch('getPlaylist', this.$route.params.id)
-          .then(() => {
-            this.loadEnd()
-            if (!this.currentPlaylist.art.length) {
-              this.loadingMsg = 'This playlist has no tracks.'
-            }
-          })
+    this.unsetPlaylist().then(() => {
+      this.loadStart()
+      this.spotify({
+        type: 'getPlaylist',
+        data: {
+          id: this.$route.params.id,
+        },
+      }).then((playlist: any) => {
+        this.setState(['currentPlaylist', playlist.details])
+        this.setState(['currentPlaylistTracks', playlist.tracks])
+        this.loadEnd()
+
+        if (!playlist.tracks.length) {
+          this.loadingMsg = 'This playlist has no tracks.'
+        }
       })
+    })
   }
 
-  private async reorderTracks(placeTracksAfter: number) {
+  private reorderTracks(placeAfterIndex: number) {
     this.loadingMsg = `Saving reordered tracks to ${this.currentPlaylist.name}...`
     this.loadStart()
-
-    return this.$store.dispatch('reorderPlaylistTracks', placeTracksAfter)
-      .then(() => this.getPlaylist())
+    this.spotify({
+      type: 'reorderPlaylistTracks',
+      data: {
+        id: this.currentPlaylist.id,
+        tracks: this.currentPlaylistTracks,
+        indices: this.checkedTracks,
+        placeAfterIndex,
+      },
+    }).then(() => this.getPlaylist())
   }
 
   private unselectAll() {
-    this.setIsReordering(false)
+    this.setState(['isReordering', false])
     this.$store.dispatch('uncheckAllTracks')
   }
 }

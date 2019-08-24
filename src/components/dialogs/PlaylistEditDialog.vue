@@ -40,6 +40,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {Action} from 'vuex-class'
 import {mapState} from 'vuex'
 import {Component} from 'vue-property-decorator'
 
@@ -52,6 +53,7 @@ export default class PlaylistEditDialog extends Vue {
   private files: File | null = null
   private loading = false
   private showDialog = false
+  @Action('spotify') private spotify!: (message: any) => Promise<any>
 
   public mounted() {
     this.$bus.$on('show-playlist-details-dialogs', () => {
@@ -95,10 +97,10 @@ export default class PlaylistEditDialog extends Vue {
 
     if (Object.keys(details).length) {
       this.loading = true
-      this.$store.dispatch('changePlaylistDetails', details)
-        .then(() => {
-          this.showDialog = false
-        })
+      this.spotify({
+        type: 'changePlaylistDetails',
+        data: {details},
+      }).then(() => this.showDialog = false)
         .finally(() => this.loading = false)
     } else {
       this.showDialog = false

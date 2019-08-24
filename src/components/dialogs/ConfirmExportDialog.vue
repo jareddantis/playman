@@ -21,6 +21,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import {Action} from 'vuex-class'
 import {Component} from 'vue-property-decorator'
 import {saveAs} from 'file-saver'
 
@@ -30,6 +31,7 @@ export default class ConfirmExportDialog extends Vue {
   public loading = false
   public showDialog: boolean = false
   private single = false
+  @Action('exportPlaylists') private exportPlaylists!: (single: boolean) => Promise<any>
 
   public created() {
     this.$bus.$on('export-playlist', (payload: any) => {
@@ -46,7 +48,7 @@ export default class ConfirmExportDialog extends Vue {
 
   public confirm() {
     this.loading = true
-    this.$store.dispatch(this.single ? 'exportPlaylist' : 'exportPlaylists')
+    this.exportPlaylists(this.single)
       .then((exportData: any) => {
         const {blob, filename} = exportData
         saveAs(blob, filename)

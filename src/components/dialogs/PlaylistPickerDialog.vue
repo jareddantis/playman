@@ -76,9 +76,7 @@ export default class PlaylistPickerDialog extends Vue {
 
   private refreshPlaylists() {
     this.loading = true
-    this.$store.dispatch('updatePlaylists')
-      .then(() => this.loading = false)
-      .catch(() => this.$store.commit('setOffline', true))
+    this.$store.dispatch('updatePlaylists').then(() => this.loading = false)
   }
 }
 </script>
