@@ -205,27 +205,27 @@ export default class PlaylistCreateDialog extends Vue {
   }
 
   get desc() {
-    return this.editDetails.desc
+    return this.editDetails.description
   }
 
   set desc(desc: string) {
-    this.$set(this.editDetails, 'desc', desc)
+    this.$set(this.editDetails, 'description', desc)
   }
 
   get isCollab() {
-    return this.editDetails.isCollab
+    return this.editDetails.collaborative
   }
 
   set isCollab(mode: boolean) {
-    this.$set(this.editDetails, 'isCollab', mode)
+    this.$set(this.editDetails, 'collaborative', mode)
   }
 
   get isPublic() {
-    return this.editDetails.isPublic
+    return this.editDetails.public
   }
 
   set isPublic(mode: boolean) {
-    this.$set(this.editDetails, 'isPublic', mode)
+    this.$set(this.editDetails, 'public', mode)
   }
 
   get name() {

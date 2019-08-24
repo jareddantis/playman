@@ -32,7 +32,7 @@ export default class Spotify {
         const response = await this.client.addTracksToPlaylist(id, tracks.splice(0, 100))
         newSnapshotId = response.body.snapshot_id
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 
@@ -68,22 +68,25 @@ export default class Spotify {
         await this.client.changePlaylistDetails(id, details)
       }
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
   /**
    * Creates a playlist from a set of tracks.
    *
-   * @param name - Name of new playlist
+   * @param details - Details of new playlist
    * @param tracks - Tracks to add to new playlist
    */
-  public async createPlaylist(name: string, tracks: string[]) {
+  public async createPlaylist(details: any, tracks: string[]) {
     try {
-      const response = await this.client.createPlaylist(this.userId, name, {public: false})
-      return this.addTracksToPlaylist(response.body.id, tracks)
+      const {name} = details
+      const id = await this.client.createPlaylist(this.userId, name, {public: false})
+        .then((response: any) => response.body.id)
+      await this.addTracksToPlaylist(id, tracks)
+      await this.changePlaylistDetails(id, details)
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -99,7 +102,7 @@ export default class Spotify {
         return this.addTracksToPlaylist(id, utils.removeDuplicateTracks(tracks))
       })
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -116,7 +119,7 @@ export default class Spotify {
       try {
         await this.client.unfollowPlaylist(id)
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
   }
@@ -137,7 +140,7 @@ export default class Spotify {
         const response = await this.client.removeTracksFromPlaylistByPosition(id, tracksToRemove, snapshot)
         newSnapshotId = response.body.snapshot_id
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 
@@ -153,7 +156,7 @@ export default class Spotify {
     try {
       await this.client.replaceTracksInPlaylist(id, [])
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -187,7 +190,7 @@ export default class Spotify {
           })
         })
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 
@@ -214,7 +217,7 @@ export default class Spotify {
         hasNext = body.next !== null
         offset += limit
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 
@@ -243,7 +246,7 @@ export default class Spotify {
         hasNext = body.next !== null
         offset += limit
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 
@@ -266,22 +269,27 @@ export default class Spotify {
   public async getPlaylist(id: string) {
     try {
       const body = await this.client.getPlaylist(id).then((response: any) => response.body)
-      const tracks = await this.getPlaylistTracks(id)
 
-      return {
-        details: {
-          art: body.images,
-          name: body.name,
-          desc: body.description,
-          id,
-          isCollab: body.collaborative,
-          isPublic: body.public === true,
-          snapshot: body.snapshot_id,
-        },
-        tracks,
+      if (body.owner.id === this.userId) {
+        const tracks = await this.getPlaylistTracks(id)
+
+        return {
+          details: {
+            art: body.images,
+            name: body.name,
+            desc: body.description,
+            id,
+            isCollab: body.collaborative,
+            isPublic: body.public === true,
+            snapshot: body.snapshot_id,
+          },
+          tracks,
+        }
+      } else {
+        await Promise.reject(new Error('403'))
       }
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -302,7 +310,7 @@ export default class Spotify {
         hasNext = body.next !== null
         offset += limit
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 
@@ -328,7 +336,7 @@ export default class Spotify {
       // ...then create a playlist
       await this.createPlaylist('New Merged Playlist', uris)
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -346,7 +354,7 @@ export default class Spotify {
     try {
       await this.replaceTracksInPlaylist(id, reorderedTracks)
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -360,7 +368,7 @@ export default class Spotify {
       return await this.client.searchArtists(query, {limit: 10})
         .then((response: any) => response.body.artists.items)
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -376,7 +384,7 @@ export default class Spotify {
     try {
       await this.replaceTracksInPlaylist(id, shuffledTracks)
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -392,7 +400,7 @@ export default class Spotify {
           this.shufflePlaylist(id, playlist.tracks)
         })
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
   }
@@ -410,7 +418,7 @@ export default class Spotify {
     try {
       await this.replaceTracksInPlaylist(id, sortedTracks)
     } catch (error) {
-      throw error
+      throw new Error(error.statusCode)
     }
   }
 
@@ -434,7 +442,7 @@ export default class Spotify {
         hasNext = body.next !== null
         offset += limit
       } catch (error) {
-        throw error
+        throw new Error(error.statusCode)
       }
     }
 

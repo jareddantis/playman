@@ -134,7 +134,9 @@ const store = new Vuex.Store({
           return response
         }
       } catch (error) {
-        commit('mutate', ['offline', true])
+        if (error.message !== '404') {
+          commit('mutate', ['offline', true])
+        }
         throw error
       }
     },
@@ -199,6 +201,7 @@ const store = new Vuex.Store({
     },
     async unsetPlaylist({commit}) {
       commit('mutate', ['checkedPlaylists', []])
+      commit('mutate', ['checkedTracks', []])
       commit('mutate', ['currentPlaylist', {}])
       commit('mutate', ['currentPlaylistTracks', []])
     },

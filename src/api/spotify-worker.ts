@@ -65,7 +65,7 @@ async function fulfillRequest(accessToken: string, id: string, country: string, 
     case 'changePlaylistDetails':
       return await api.changePlaylistDetails(data.id, data.details)
     case 'createPlaylist':
-      return await api.createPlaylist(data.name, data.tracks)
+      return await api.createPlaylist(data.details, data.tracks)
     case 'dedupPlaylist':
       return await api.dedupPlaylist(data.id, data.tracks)
     case 'deletePlaylists':
