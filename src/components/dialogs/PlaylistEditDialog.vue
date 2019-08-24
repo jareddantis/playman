@@ -65,7 +65,12 @@ export default class PlaylistEditDialog extends Vue {
   public async onArtChanged() {
     if (this.files !== null && (this.$refs.artinput as any).validate()) {
       const imageFile = this.files as File
-      this.art = await this.toBase64(imageFile) as string
+      this.art = await this.spotify({
+        type: 'toBase64',
+        data: {
+          file: imageFile,
+        },
+      })
     } else {
       this.art = this.currentPlaylist.art[0].url
     }
@@ -170,15 +175,6 @@ export default class PlaylistEditDialog extends Vue {
 
   private hasChanged(key: string): boolean {
     return this.editDetails[key] !== this.currentPlaylist[key]
-  }
-
-  private toBase64(file: File) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve((reader.result as string).trim())
-      reader.onerror = (error) => reject(error)
-    })
   }
 }
 </script>
