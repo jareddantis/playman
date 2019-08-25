@@ -38,6 +38,10 @@ nav {
     .action-bar {
       display: flex;
       justify-content: flex-end;
+
+      & > .v-btn {
+        margin-left: 0.5rem;
+      }
     }
 
     img {
