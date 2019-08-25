@@ -56,7 +56,7 @@ export default class PlaylistEditDialog extends Vue {
   @Action('spotify') private spotify!: (message: any) => Promise<any>
 
   public mounted() {
-    this.$bus.$on('show-playlist-details-dialogs', () => {
+    this.$bus.$on('show-playlist-edit-dialog', () => {
       this.editDetails = Object.assign({}, this.currentPlaylist)
       this.showDialog = true
     })
@@ -108,7 +108,10 @@ export default class PlaylistEditDialog extends Vue {
           id: this.currentPlaylist.id,
           details,
         },
-      }).then(() => this.showDialog = false)
+      }).then(() => {
+        this.showDialog = false
+        this.$emit('edit-complete')
+      })
         .finally(() => this.loading = false)
     } else {
       this.showDialog = false

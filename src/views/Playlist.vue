@@ -46,7 +46,7 @@
     <ConfirmDeleteDialog v-on:confirm="deleteHandler"/>
     <ConfirmExportDialog/>
     <ConfirmShuffleDialog v-on:confirm="shuffle"/>
-    <PlaylistEditDialog/>
+    <PlaylistEditDialog v-on:edit-complete="onEditComplete"/>
     <PlaylistPickerDialog v-on:picked="confirmCopyTracks"/>
     <SortDialog v-on:confirm="sort"/>
   </div>
@@ -117,7 +117,13 @@ export default class Playlist extends Vue {
       this.reorderTracks(pasteAfter)
     })
     this.$bus.$on('cancel-batch-edit', () => this.unselectAll())
-    this.$bus.$on('edit-playlist-details', () => this.$bus.$emit('show-playlist-details-dialogs'))
+    this.$bus.$on('edit-playlist-details', () => {
+      // Disable Ctrl-A shortcut while editing
+      window.removeEventListener('keydown', this.selectAll)
+
+      // Show dialog
+      this.$bus.$emit('show-playlist-edit-dialog')
+    })
   }
 
   public beforeDestroy() {
@@ -161,6 +167,11 @@ export default class Playlist extends Vue {
         tracks: this.currentPlaylistTracks,
       },
     }).then(() => this.getPlaylist())
+  }
+
+  public onEditComplete() {
+    this.loadingMsg = 'Loading playlist, hang tight...'
+    this.getPlaylist()
   }
 
   public onTrackToggled(payload: any) {
