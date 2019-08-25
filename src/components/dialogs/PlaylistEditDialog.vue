@@ -104,7 +104,10 @@ export default class PlaylistEditDialog extends Vue {
       this.loading = true
       this.spotify({
         type: 'changePlaylistDetails',
-        data: {details},
+        data: {
+          id: this.currentPlaylist.id,
+          details,
+        },
       }).then(() => this.showDialog = false)
         .finally(() => this.loading = false)
     } else {
