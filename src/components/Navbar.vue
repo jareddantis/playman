@@ -8,7 +8,7 @@
     <div class="view">
       <div class="actions left" v-show="actionBar.cancelButton || actionBar.backButton">
         <!--      Navigate to previous page -->
-        <v-btn @click="$router.back()" color="white" :disabled="loading"
+        <v-btn @click="$router.back()" color="white"
                icon small text v-show="actionBar.backButton">
           <v-icon>arrow_back</v-icon>
         </v-btn>
@@ -27,7 +27,7 @@
       <component class="action-bar" :is="actionBar.name" v-show="!loading"></component>
 
       <!--      User menu -->
-      <v-menu nudge-bottom="10" offset-y :disabled="loading">
+      <v-menu nudge-bottom="10" offset-y>
         <template v-slot:activator="{ on }">
           <img :alt="username" :src="avatarUri" v-on="on" v-show="!actionBar.cancelButton"/>
         </template>
