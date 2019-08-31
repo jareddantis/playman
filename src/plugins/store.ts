@@ -123,7 +123,7 @@ const store = new Vuex.Store({
         if (type === 'authenticate') {
           return result
         } else {
-          if (!!username && !!country) {
+          if (type === 'getMe' || (!!username && !!country)) {
             const {response, auth} = result
 
             if (auth.expired) {
