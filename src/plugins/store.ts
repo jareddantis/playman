@@ -123,15 +123,19 @@ const store = new Vuex.Store({
         if (type === 'authenticate') {
           return result
         } else {
-          const {response, auth} = result
+          if (!!username && !!country) {
+            const {response, auth} = result
 
-          if (auth.expired) {
-            // Store new token and expiry
-            commit('mutate', ['accessToken', auth.accessToken])
-            commit('mutate', ['expiry', auth.expiry])
+            if (auth.expired) {
+              // Store new token and expiry
+              commit('mutate', ['accessToken', auth.accessToken])
+              commit('mutate', ['expiry', auth.expiry])
+            }
+
+            return response
+          } else {
+            await Promise.reject(new Error('Missing user information'))
           }
-
-          return response
         }
       } catch (error) {
         if (error.message !== '404') {

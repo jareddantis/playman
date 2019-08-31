@@ -8,11 +8,10 @@
       <router-view :key="$route.fullPath"/>
 
       <!-- Offline snackbar -->
-      <v-snackbar :timeout="0" bottom
-                  color="red darken-2" multi-line
-                  v-model="offline">
-        <p class="snackbar-text">Error in communicating with Spotify API.<br>
-          Please check your connection or try again later.</p>
+      <v-snackbar bottom color="red darken-2" multi-line v-model="offline">
+        <p class="snackbar-text">Error while communicating with Spotify.<br>
+          Please check your connection or try again later.<br>
+          If the problem persists, try logging out and back in.</p>
       </v-snackbar>
     </v-content>
   </v-app>
