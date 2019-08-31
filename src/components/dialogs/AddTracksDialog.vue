@@ -12,7 +12,7 @@
         <v-toolbar-title>Add tracks from artist</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn @click="add" text :loading="querying" :disabled="querying"
-               v-show="checkedAlbums.length">add tracks</v-btn>
+               v-show="checkedAlbums.length">add</v-btn>
       </v-app-bar>
 
       <v-stepper vertical v-model="step">
