@@ -8,13 +8,14 @@ module.exports = (ctx) => ({
       content: glob.sync([
         path.join(__dirname, './src/**/*.vue'),
         path.join(__dirname, './node_modules/vuetify/src/**/*.ts'),
+        path.join(__dirname, './node_modules/vue-virtual-scroller/src/**/*.vue'),
       ]),
       whitelist: [
         'body', 'html',
       ],
       whitelistPatterns: [
         /transition$/,
-        /vue-recycle-scroller/,
+        /^vue-recycle-scroller/,
         /-(leave|enter|appear)(|-(to|from|active))$/,
         /^router-link(|-exact)-active$/,
       ],
