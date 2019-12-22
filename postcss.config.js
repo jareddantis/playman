@@ -14,6 +14,7 @@ module.exports = (ctx) => ({
       ],
       whitelistPatterns: [
         /transition$/,
+        /vue-recycle-scroller/,
         /-(leave|enter|appear)(|-(to|from|active))$/,
         /^router-link(|-exact)-active$/,
       ],
