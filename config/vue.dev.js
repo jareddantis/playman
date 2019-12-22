@@ -6,7 +6,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        data: `@import "~@/styles/overrides.sass"`,
+        prependData: `@import "~@/styles/overrides.sass"`,
       },
     },
   },
@@ -14,7 +14,7 @@ module.exports = {
   chainWebpack: (config) => {
     ["vue-modules", "vue", "normal-modules", "normal"].forEach((match) => {
       config.module.rule('scss').oneOf(match).use('sass-loader')
-        .tap((opt) => Object.assign(opt, { data: `@import '~@/styles/overrides.sass';` }))
+        .tap((opt) => Object.assign(opt, { prependData: `@import '~@/styles/overrides.sass';` }))
     })
   },
 
