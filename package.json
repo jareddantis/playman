@@ -71,7 +71,7 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
-  "homepage": "https://playman.jared.gq",
+  "homepage": "https://playman.dantis.me",
   "license": "AGPL-3.0-only",
   "lint-staged": {
     "*.ts": [
