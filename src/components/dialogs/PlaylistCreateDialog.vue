@@ -131,6 +131,8 @@ export default class PlaylistCreateDialog extends Vue {
           this.backupIsValid = false
         },
         step: (results, parser) => {
+          // TODO
+          // @ts-ignore
           if (uriFormat.test(results.data[0])) {
             this.tracks.push({
               uri: results.data[0],

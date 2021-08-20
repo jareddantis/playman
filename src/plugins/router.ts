@@ -37,6 +37,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   if (to.path !== '/') {
     // Check for authentication
+    // @ts-ignore
     if (to.meta.requiresAuth) {
       // Redirect to / (login) on failed auth,
       // otherwise continue as normal
