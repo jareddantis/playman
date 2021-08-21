@@ -95,6 +95,7 @@ module.exports = {
             return year.toString() + month + day
           })(),
           CALLBACK_URI: '"https://playman.dantis.me/callback"',
+          SPID: '"a2d37a37164c48e48d3693491c20e7ae"',
         },
       }),
 

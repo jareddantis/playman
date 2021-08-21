@@ -44,6 +44,7 @@ module.exports = {
       new DefinePlugin({
         'process.env': {
           CALLBACK_URI: '"http://localhost:8080/callback"',
+          SPID: '"19ac80be172848cfafb4f9a0d150409a"',
         },
       }),
 

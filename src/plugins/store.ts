@@ -67,7 +67,7 @@ const store = new Vuex.Store({
   getters: {
     authUri(state) {
       const params: any = {
-        client_id: 'a2d37a37164c48e48d3693491c20e7ae',
+        client_id: process.env.SPID as string,
         response_type: 'code',
         redirect_uri: process.env.CALLBACK_URI as string,
         state: state.stateToken,
