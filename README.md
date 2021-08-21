@@ -2,27 +2,28 @@
 
 ## Project setup
 ```
-npm install
+(npm|yarn) install
 ```
 
-### Compiles and hot-reloads for development
+### Compile for development (with hot-reloads)
+
+The Netlify Functions module reads variables from the environment, which in this case we use to store Spotify authentication tokens and API endpoints.
+Before you try serving Playman, make sure you have these environment variables set:
+
+|Config key|Description|
+|-----|-----|
+|`API_URL`|Spotify API URL prefix. Currently `https://api.spotify.com/v1`|
+|`SPID`|Spotify client ID|
+|`SPSC`|Spotify client secret|
+
+Once you have these variables set, you can invoke
 ```
-npm run serve
+(npm|yarn) run serve
 ```
 
-### Compiles and minifies for production
+### Compile for production (with minification)
 ```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
+(npm|yarn) run build
 ```
 
 ### Customize configuration
